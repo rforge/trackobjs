@@ -1,0 +1,215 @@
+<html><head><title>Manage how objects are handled in a tracking session</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="Rchm.css">
+</head>
+<body>
+
+<table width="100%"><tr><td>track(trackObjs)</td><td align="right">R Documentation</td></tr></table><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="keyword" value="R:   track">
+<param name="keyword" value="R:   untrack">
+<param name="keyword" value="R:   track.remove">
+<param name="keyword" value="R:   track.save">
+<param name="keyword" value="R:   track.resave">
+<param name="keyword" value="R:   track.flush">
+<param name="keyword" value="R:   track.forget">
+<param name="keyword" value="R:   track.load">
+<param name="keyword" value=" Manage how objects are handled in a tracking session">
+</object>
+
+
+<h2>Manage how objects are handled in a tracking session</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Functions to start and stop tracking objects, remove them, load objects from
+RData files, and manage cached and saved copies of objects.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+track(expr, pos = 1, envir = as.environment(pos), list = NULL,
+        pattern = NULL, glob = NULL, all = FALSE)
+untrack(expr, pos = 1, envir = as.environment(pos), list = NULL,
+        pattern = NULL, glob = NULL, all = FALSE, keep.in.db = FALSE)
+track.remove(expr, pos = 1, envir = as.environment(pos), list = NULL,
+        pattern = NULL, glob = NULL, all = FALSE)
+track.save(expr, pos = 1, envir = as.environment(pos), list = NULL,
+        pattern = NULL, glob = NULL, all = missing(expr))
+track.resave(expr, pos = 1, envir = as.environment(pos), list = NULL,
+        pattern = NULL, glob = NULL, all = missing(expr))
+track.flush(expr, pos = 1, envir = as.environment(pos), list = NULL,
+        pattern = NULL, glob = NULL, all = missing(expr))
+track.forget(expr, pos = 1, envir = as.environment(pos), list = NULL,
+        pattern = NULL, glob = NULL, all = FALSE)
+track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
+        pattern = NULL, glob = NULL, cache = FALSE, clobber = FALSE,
+        time.of.file = TRUE, warn = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>expr</code></td>
+<td>
+An unquoted variable name </td></tr>
+<tr valign="top"><td><code>pos</code></td>
+<td>
+The search path position of the environment being tracked
+(default is 1 for the global environment)</td></tr>
+<tr valign="top"><td><code>envir</code></td>
+<td>
+The environment being tracked.  This is an alternate way
+(to the use of <code>pos=</code>)
+of specifying the environment being tracked, but should be rarely needed.</td></tr>
+<tr valign="top"><td><code>list</code></td>
+<td>
+A character vector of variable names to operate upon </td></tr>
+<tr valign="top"><td><code>pattern</code></td>
+<td>
+A regular expression specifying variable names to operate upon </td></tr>
+<tr valign="top"><td><code>glob</code></td>
+<td>
+A regular expression specifying variable names to operate upon </td></tr>
+<tr valign="top"><td><code>all</code></td>
+<td>
+If <code>TRUE</code>, operate upon all elegible variables</td></tr>
+<tr valign="top"><td><code>keep.in.db</code></td>
+<td>
+If <code>TRUE</code>, the variable is left in the
+tracking database, though the link to it is broken (it becomes masked)</td></tr>
+<tr valign="top"><td><code>files</code></td>
+<td>
+A vector of names of RData files (any file saved by <code>save()</code>)</td></tr>
+<tr valign="top"><td><code>cache</code></td>
+<td>
+<code>TRUE</code> or <code>FALSE</code> indicating whether to keep the tracked
+object cached in memory </td></tr>
+<tr valign="top"><td><code>clobber</code></td>
+<td>
+<code>TRUE</code> or <code>FALSE</code> indicating whether to
+overwrite existing objects of the same name</td></tr>
+<tr valign="top"><td><code>time.of.file</code></td>
+<td>
+If <code>TRUE</code>, use the access times on the file
+to populate the access time fields in the tracking summary.</td></tr>
+<tr valign="top"><td><code>warn</code></td>
+<td>
+If <code>TRUE</code>, issue warnings about object not acted upon.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+These functions are executed for their side effects:
+<ul>
+<li><code>track</code>: start tracking the specified variables
+<li><code>untrack</code>: stop tracking the specified variables, leaving the object in <code>envir</code> so that it can
+still be used.  If <code>keep.in.db=TRUE</code>, the variable is left
+in the tracking environment (but is masked), if
+<code>keep.in.db=FALSE</code> (the default), 
+all trace of the variable is completely removed from the tracking
+environment.
+<li><code>track.remove</code>: completely remove all
+traces of a tracked variable
+<li><code>track.save</code>: write unsaved variables to disk
+<li><code>track.flush</code>: write unsaved variables to disk, and remove from memory
+<li><code>track.forget</code>: delete cached
+versions without saving to file (file version will be retrieved next
+time the variable is accessed)
+<li><code>track.restart</code>: reload variable
+values from disk (can forget all cached vars, remove no-longer existing tracked vars)
+<li><code>track.load</code>: load variables from a
+saved RData file into the tracking session - if <code>list</code> is
+supplied, only these variables are loaded in.  Already existing
+variables will be skipped and not overwritten unless <code>clobber=TRUE</code> is supplied.
+</ul>
+
+<h3>Value</h3>
+
+<p>
+The value returned from these functions is invisible and typically contains the names
+of objects acted upon.
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>track:</code></td>
+<td>
+a character vector containing the names of
+objects added to the tracking environment</td></tr>
+<tr valign="top"><td><code>untrack, track.remove, track.save, track.flush, track.forget, track.restart:</code></td>
+<td>
+a
+character vector containing the names of
+objects in the tracking environment that were acted upon</td></tr>
+<tr valign="top"><td><code>track.load:</code></td>
+<td>
+a list with two components:
+<ul>
+<dt><code>loaded</code>:</dt><dd>names of objects that were loaded from <code>file</code></dd>
+<dt><code>skipped</code>:</dt><dd>names of objects in <code>file</code> that
+were not loaded</dd>
+</ul>
+</td></tr>
+</table>
+
+<h3>Author(s)</h3>
+
+<p>
+Tony Plate &lt;tplate@acm.org&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<a href="track.design.html">design</a> of the <code>trackObjs</code> package.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(trackObjs)
+unlink("tmp1", recursive=TRUE)
+track.start("tmp1")
+track(x &lt;- 33)
+X &lt;- array(1:24, dim=2:4)
+track(X)
+track(Y &lt;- list(a=1:3,b=2))
+X[2] &lt;- -1
+track.summary(time=0, access=1, size=FALSE)
+y1 &lt;- 2
+y2 &lt;- 3
+track(all=TRUE)
+z1 &lt;- 4
+z2 &lt;- 5
+z3 &lt;- 6
+untracked()
+track(list=c("z1", "z3"))
+untracked()
+track.summary(time=0, access=1, size=FALSE)
+ls(all=TRUE)
+track.stop()
+ls(all=TRUE)
+a &lt;- 7
+b &lt;- 8
+save(list=c("a", "b"), file="ab.rda")
+remove(list=c("a", "b"))
+track.start("tmp1")
+track.summary(time=0, access=1, size=FALSE)
+track.load("ab.rda")
+track.summary(time=0, access=1, size=FALSE)
+track.status()
+track.stop()
+unlink("tmp1", recursive=TRUE)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>trackObjs</em> version 0.8-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

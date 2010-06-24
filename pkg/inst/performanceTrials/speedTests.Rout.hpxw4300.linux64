@@ -1,0 +1,305 @@
+> source("trackObjs/inst/performanceTrials/funsForTesting.R")
+> options(width=100)
+> sessionInfo()
+R version 2.5.1 (2007-06-27)
+x86_64-unknown-linux-gnu
+
+locale:
+LC_CTYPE=en_US.UTF-8;LC_NUMERIC=C;LC_TIME=en_US.UTF-8;LC_COLLATE=en_US.UTF-8;LC_MONETARY=en_US.UTF-8;LC_MESSAGES=en_US.UTF-8;LC_PAPER=en_US.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US.UTF-8;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] "stats"     "graphics"  "grDevices" "utils"     "datasets"  "methods"   "base"
+
+other attached packages:
+trackObjs  tap.misc       vsa
+    "0.7"     "1.0"     "0.1"
+> runSaveLoadTest("both", scale=10, clobber=TRUE)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= vector, named.vector, matrix, named.matrix, array, named.array, list, data.frame, POSIXct, factor, named.factor
+                      class    mode      extent length    size            modified TA TW
+bhg                 numeric numeric     [24576]  24576 1573056 2007-09-06 22:25:55  0  2
+c1p5y                 array numeric  [53x71x35] 131705 1063056 2007-09-06 22:25:56  0  2
+goao7mswsh5z          array numeric  [53x71x35] 131705 1053848 2007-09-06 22:25:56  0  2
+j3s                  matrix numeric   [512x256] 131072 1048776 2007-09-06 22:25:55  0  2
+jm                   factor numeric    [262144] 262144 1050432 2007-09-06 22:25:57  0  2
+jv8h89z             numeric numeric    [131072] 131072 1048616 2007-09-06 22:25:54  0  2
+k3.q1pm2h1e          factor numeric     [26624]  26624 1599448 2007-09-06 22:25:58  0  2
+nzp8lrmyjs3d POSIXt,POSIXct numeric    [131072] 131072 1048880 2007-09-06 22:25:57  0  2
+ou3as                  list    list       [[2]]      2  686272 2007-09-06 22:25:56  0  2
+ss6q             data.frame    list [[32768x4]]      4 1049824 2007-09-06 22:25:56  0  2
+test1opts              list    list       [[6]]      6    2240 2007-09-06 22:25:54  0  1
+zo39                 matrix numeric   [512x256] 131072 1092032 2007-09-06 22:25:55  0  2
+Total: Processed 12026 Kb (11 objects) in 2.2/1.5 secs (5376/7903 Kb/s)
+Stop time= 0 secs (1002135 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 12026 Kb (11 objects) in 0.6/1.2 secs (21513/9686 Kb/s)
+Stop time= 0 secs (1002135 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=1)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= vector
+               class    mode   extent length    size            modified TA TW
+bhg          numeric numeric [131072] 131072 1048616 2007-09-06 22:26:00  0  2
+c1p5y        numeric numeric [131072] 131072 1048616 2007-09-06 22:26:01  0  2
+goao7mswsh5z numeric numeric [131072] 131072 1048616 2007-09-06 22:26:01  0  2
+j3s          numeric numeric [131072] 131072 1048616 2007-09-06 22:26:00  0  2
+jm           numeric numeric [131072] 131072 1048616 2007-09-06 22:26:02  0  2
+jv8h89z      numeric numeric [131072] 131072 1048616 2007-09-06 22:26:00  0  2
+k3.q1pm2h1e  numeric numeric [131072] 131072 1048616 2007-09-06 22:26:02  0  2
+nzp8lrmyjs3d numeric numeric [131072] 131072 1048616 2007-09-06 22:26:02  0  2
+ou3as        numeric numeric [131072] 131072 1048616 2007-09-06 22:26:01  0  2
+ss6q         numeric numeric [131072] 131072 1048616 2007-09-06 22:26:02  0  2
+test1opts       list    list    [[6]]      6    1600 2007-09-06 22:26:00  0  1
+zo39         numeric numeric [131072] 131072 1048616 2007-09-06 22:26:01  0  2
+Total: Processed 11264 Kb (11 objects) in 1.7/1.2 secs (6761/9690 Kb/s)
+Stop time= 0 secs (1024039 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 11264 Kb (11 objects) in 0.6/1 secs (17573/11580 Kb/s)
+Stop time= 0 secs (1024039 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=2)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= named.vector
+               class    mode  extent length    size            modified TA TW
+bhg          numeric numeric [24576]  24576 1573056 2007-09-06 22:26:05  0  2
+c1p5y        numeric numeric [24576]  24576 1573056 2007-09-06 22:26:06  0  2
+goao7mswsh5z numeric numeric [24576]  24576 1573056 2007-09-06 22:26:05  0  2
+j3s          numeric numeric [24576]  24576 1573056 2007-09-06 22:26:05  0  2
+jm           numeric numeric [24576]  24576 1573056 2007-09-06 22:26:07  0  2
+jv8h89z      numeric numeric [24576]  24576 1573056 2007-09-06 22:26:04  0  2
+k3.q1pm2h1e  numeric numeric [24576]  24576 1573056 2007-09-06 22:26:07  0  2
+nzp8lrmyjs3d numeric numeric [24576]  24576 1573056 2007-09-06 22:26:06  0  2
+ou3as        numeric numeric [24576]  24576 1573056 2007-09-06 22:26:06  0  2
+ss6q         numeric numeric [24576]  24576 1573056 2007-09-06 22:26:06  0  2
+test1opts       list    list   [[6]]      6    1608 2007-09-06 22:26:04  0  1
+zo39         numeric numeric [24576]  24576 1573056 2007-09-06 22:26:05  0  2
+Total: Processed 16898 Kb (11 objects) in 0.8/2 secs (22118/8310 Kb/s)
+Stop time= 0 secs (1536187 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 16898 Kb (11 objects) in 0.4/2 secs (43218/8435 Kb/s)
+Stop time= 0 secs (1408172 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=3)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= matrix
+              class    mode    extent length    size            modified TA TW
+bhg          matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:10  0  2
+c1p5y        matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:11  0  2
+goao7mswsh5z matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:11  0  2
+j3s          matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:10  0  2
+jm           matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:12  0  2
+jv8h89z      matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:10  0  2
+k3.q1pm2h1e  matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:12  0  2
+nzp8lrmyjs3d matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:12  0  2
+ou3as        matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:11  0  2
+ss6q         matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:11  0  2
+test1opts      list    list     [[6]]      6    1600 2007-09-06 22:26:09  0  1
+zo39         matrix numeric [512x256] 131072 1048776 2007-09-06 22:26:10  0  2
+Total: Processed 11266 Kb (11 objects) in 1.7/1.2 secs (6501/9426 Kb/s)
+Stop time= 0 secs (751077 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 11266 Kb (11 objects) in 0.7/1.1 secs (16423/10714 Kb/s)
+Stop time= 0 secs (938846 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=4)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= named.matrix
+              class    mode    extent length    size            modified TA TW
+bhg          matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:15  0  2
+c1p5y        matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:16  0  2
+goao7mswsh5z matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:15  0  2
+j3s          matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:15  0  2
+jm           matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:17  0  2
+jv8h89z      matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:14  0  2
+k3.q1pm2h1e  matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:17  0  2
+nzp8lrmyjs3d matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:16  0  2
+ou3as        matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:16  0  2
+ss6q         matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:16  0  2
+test1opts      list    list     [[6]]      6    1608 2007-09-06 22:26:14  0  1
+zo39         matrix numeric [512x256] 131072 1092032 2007-09-06 22:26:15  0  2
+Total: Processed 11731 Kb (11 objects) in 1.6/1.1 secs (7336/10254 Kb/s)
+Stop time= 0 secs (902370 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 11731 Kb (11 objects) in 0.7/1.1 secs (17964/11139 Kb/s)
+Stop time= 0 secs (977568 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=5)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= array
+             class    mode     extent length    size            modified TA TW
+bhg          array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:19  0  2
+c1p5y        array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:20  0  2
+goao7mswsh5z array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:20  0  2
+j3s          array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:19  0  2
+jm           array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:21  0  2
+jv8h89z      array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:19  0  2
+k3.q1pm2h1e  array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:21  0  2
+nzp8lrmyjs3d array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:21  0  2
+ou3as        array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:20  0  2
+ss6q         array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:21  0  2
+test1opts     list    list      [[6]]      6    1600 2007-09-06 22:26:19  0  1
+zo39         array numeric [53x71x35] 131705 1053848 2007-09-06 22:26:20  0  2
+Total: Processed 11321 Kb (11 objects) in 1.6/1.1 secs (6882/10381 Kb/s)
+Stop time= 0 secs (1029148 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 11321 Kb (11 objects) in 0.7/1 secs (17257/11450 Kb/s)
+Stop time= 0 secs (943386 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=6)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= named.array
+             class    mode     extent length    size            modified TA TW
+bhg          array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:24  0  2
+c1p5y        array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:25  0  2
+goao7mswsh5z array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:24  0  2
+j3s          array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:24  0  2
+jm           array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:25  0  2
+jv8h89z      array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:23  0  2
+k3.q1pm2h1e  array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:26  0  2
+nzp8lrmyjs3d array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:25  0  2
+ou3as        array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:25  0  2
+ss6q         array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:25  0  2
+test1opts     list    list      [[6]]      6    1608 2007-09-06 22:26:23  0  1
+zo39         array numeric [53x71x35] 131705 1063056 2007-09-06 22:26:24  0  2
+Total: Processed 11420 Kb (11 objects) in 1.6/1.1 secs (7223/10376 Kb/s)
+Stop time= 0 secs (1038141 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 11420 Kb (11 objects) in 0.7/1 secs (17146/11329 Kb/s)
+Stop time= 0 secs (951629 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=7)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= list
+             class mode extent length   size            modified TA TW
+bhg           list list  [[2]]      2 686272 2007-09-06 22:26:28  0  2
+c1p5y         list list  [[2]]      2 686272 2007-09-06 22:26:29  0  2
+goao7mswsh5z  list list  [[2]]      2 686272 2007-09-06 22:26:28  0  2
+j3s           list list  [[2]]      2 686272 2007-09-06 22:26:28  0  2
+jm            list list  [[2]]      2 686272 2007-09-06 22:26:29  0  2
+jv8h89z       list list  [[2]]      2 686272 2007-09-06 22:26:28  0  2
+k3.q1pm2h1e   list list  [[2]]      2 686272 2007-09-06 22:26:29  0  2
+nzp8lrmyjs3d  list list  [[2]]      2 686272 2007-09-06 22:26:29  0  2
+ou3as         list list  [[2]]      2 686272 2007-09-06 22:26:29  0  2
+ss6q          list list  [[2]]      2 686272 2007-09-06 22:26:29  0  2
+test1opts     list list  [[6]]      6   1600 2007-09-06 22:26:28  0  1
+zo39          list list  [[2]]      2 686272 2007-09-06 22:26:28  0  2
+Total: Processed 7372 Kb (11 objects) in 0.5/1.4 secs (15586/5213 Kb/s)
+Stop time= 0 secs (670187 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 7372 Kb (11 objects) in 0.2/1.3 secs (30090/5686 Kb/s)
+Stop time= 0 secs (614339 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=8)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= data.frame
+                  class mode      extent length    size            modified TA TW
+bhg          data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:32  0  2
+c1p5y        data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:33  0  2
+goao7mswsh5z data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:33  0  2
+j3s          data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:32  0  2
+jm           data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:34  0  2
+jv8h89z      data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:31  0  2
+k3.q1pm2h1e  data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:34  0  2
+nzp8lrmyjs3d data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:34  0  2
+ou3as        data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:33  0  2
+ss6q         data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:33  0  2
+test1opts          list list       [[6]]      6    1608 2007-09-06 22:26:31  0  1
+zo39         data.frame list [[32768x4]]      4 1049824 2007-09-06 22:26:32  0  2
+Total: Processed 11277 Kb (11 objects) in 2.1/1.2 secs (5340/9704 Kb/s)
+Stop time= 0 secs (939784 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 11277 Kb (11 objects) in 0.6/1.2 secs (17649/9691 Kb/s)
+Stop time= 0 secs (939784 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=9)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= POSIXct
+                      class    mode   extent length    size            modified TA TW
+bhg          POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:37  0  2
+c1p5y        POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:38  0  2
+goao7mswsh5z POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:38  0  2
+j3s          POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:37  0  2
+jm           POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:40  0  2
+jv8h89z      POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:37  0  2
+k3.q1pm2h1e  POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:40  0  2
+nzp8lrmyjs3d POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:40  0  2
+ou3as        POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:39  0  2
+ss6q         POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:39  0  2
+test1opts              list    list    [[6]]      6    1600 2007-09-06 22:26:36  0  1
+zo39         POSIXt,POSIXct numeric [131072] 131072 1048880 2007-09-06 22:26:38  0  2
+Total: Processed 11267 Kb (11 objects) in 3.4/0.7 secs (3362/15364 Kb/s)
+Stop time= 0 secs (1024297 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 11267 Kb (11 objects) in 0.6/0.6 secs (20412/17491 Kb/s)
+Stop time= 0 secs (938939 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=10)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= factor
+              class    mode   extent length    size            modified TA TW
+bhg          factor numeric [262144] 262144 1050432 2007-09-06 22:26:42  0  2
+c1p5y        factor numeric [262144] 262144 1050432 2007-09-06 22:26:44  0  2
+goao7mswsh5z factor numeric [262144] 262144 1050432 2007-09-06 22:26:43  0  2
+j3s          factor numeric [262144] 262144 1050432 2007-09-06 22:26:43  0  2
+jm           factor numeric [262144] 262144 1050432 2007-09-06 22:26:45  0  2
+jv8h89z      factor numeric [262144] 262144 1050432 2007-09-06 22:26:42  0  2
+k3.q1pm2h1e  factor numeric [262144] 262144 1050432 2007-09-06 22:26:45  0  2
+nzp8lrmyjs3d factor numeric [262144] 262144 1050432 2007-09-06 22:26:45  0  2
+ou3as        factor numeric [262144] 262144 1050432 2007-09-06 22:26:44  0  2
+ss6q         factor numeric [262144] 262144 1050432 2007-09-06 22:26:44  0  2
+test1opts      list    list    [[6]]      6    1600 2007-09-06 22:26:42  0  1
+zo39         factor numeric [262144] 262144 1050432 2007-09-06 22:26:43  0  2
+Total: Processed 11284 Kb (11 objects) in 3.1/0.9 secs (3649/12765 Kb/s)
+Stop time= 0 secs (1025813 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 11284 Kb (11 objects) in 0.8/0.8 secs (13628/14964 Kb/s)
+Stop time= 0 secs (940328 Kb/s)
+> runSaveLoadTest("both", scale=10, clobber=TRUE, obj.type=11)
+Running 'create' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+track.options=
+  list(cache = FALSE, writeToDisk = TRUE, maintainSummary = TRUE,
+      alwaysSaveSummary = FALSE, recordAccesses = TRUE)
+Object types= named.factor
+              class    mode  extent length    size            modified TA TW
+bhg          factor numeric [26624]  26624 1599448 2007-09-06 22:26:48  0  2
+c1p5y        factor numeric [26624]  26624 1599448 2007-09-06 22:26:49  0  2
+goao7mswsh5z factor numeric [26624]  26624 1599448 2007-09-06 22:26:49  0  2
+j3s          factor numeric [26624]  26624 1599448 2007-09-06 22:26:48  0  2
+jm           factor numeric [26624]  26624 1599448 2007-09-06 22:26:50  0  2
+jv8h89z      factor numeric [26624]  26624 1599448 2007-09-06 22:26:47  0  2
+k3.q1pm2h1e  factor numeric [26624]  26624 1599448 2007-09-06 22:26:50  0  2
+nzp8lrmyjs3d factor numeric [26624]  26624 1599448 2007-09-06 22:26:50  0  2
+ou3as        factor numeric [26624]  26624 1599448 2007-09-06 22:26:49  0  2
+ss6q         factor numeric [26624]  26624 1599448 2007-09-06 22:26:49  0  2
+test1opts      list    list   [[6]]      6    1608 2007-09-06 22:26:47  0  1
+zo39         factor numeric [26624]  26624 1599448 2007-09-06 22:26:48  0  2
+Total: Processed 17182 Kb (11 objects) in 0.8/2.1 secs (20928/8121 Kb/s)
+Stop time= 0 secs (1561961 Kb/s)
+Running 'verify' test w 11 objs in dir 'test1', seed=1, scale=10 & simple names
+Total: Processed 17182 Kb (11 objects) in 0.4/2.1 secs (45096/8305 Kb/s)
+Stop time= 0 secs (1431798 Kb/s)
+>
+

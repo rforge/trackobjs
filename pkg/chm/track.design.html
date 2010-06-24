@@ -1,0 +1,347 @@
+<html><head><title>Design of a tracking environment</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="Rchm.css">
+</head>
+<body>
+
+<table width="100%"><tr><td>track.design(trackObjs)</td><td align="right">R Documentation</td></tr></table><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="keyword" value="R:   track.design">
+<param name="keyword" value=" Design of a tracking environment">
+</object>
+
+
+<h2>Design of a tracking environment</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This document describes the layout of a tracking environment.  Object
+tracking works by replacing a variable with an active binding, and
+keeping the actual value of the variable on disk and/or in another
+environment.  Tracked objects are automatically resaved to disk when
+they are changed.  Basic characteristics, such as class, size, extent,
+and creation and modification times are recorded in a summary of all
+tracked objects.
+</p>
+
+
+<h3>Details</h3>
+
+<p>
+Object tracking works by replacing a variable with an active binding,
+and keeping the actual value of the variable on disk and/or in another
+environment.  Whenever the variable is fetched or assigned, the active
+binding is called, and it writes the object to disk if necessary, and
+records basic characteristics of the objects in a summary of all
+objects, including creation, modification and access times.
+</p>
+<p>
+A tracking environment can be linked to one environment on the search
+path, but the tracking environment is not on the search path itself.  An
+environment can only have one tracking environment linked to it.  Variables
+cannot be tracked automatically: they must be registered with the
+tracking environment using the function <code>track()</code>.
+</p>
+<p>
+Any user-created environment on the search path, or the global
+environment, can be tracked.
+</p>
+<p>
+The format used to store R objects in files is the one used by
+<code>save()</code>/<code>load()</code> &ndash; the objects in those files can be read
+using <code>load()</code> if desired.
+</p>
+<p>
+The various variables and files involved in tracking are as follows
+(assuming the RData suffix being used is "rda").
+Note that the default tracked visible environment is the global environment.
+</p>
+<pre>
+
+Tracked Visible Environment
+(on search list)
+attr(., "trackingEnv") -&gt; Tracking Environment   +-&gt;  Tracking Directory (files)
++-----------------+       (not on search list)  /         |
+|                 |       attr(., "trackingDir")          |
+|                 |   +-------------------------+         +
+|                 |   |        .trackingFileMap |         +- filemap.txt
+|                 |   |        .trackingSummary |         +- .trackingSummary.rda
+|                 |   |        .trackingUnsaved |         |
+|                 |   | .trackingSummaryChanged |         |
+|                 |   |        .trackingOptions |         |
+|         x (*)   |   |                   x (@) |         +- x.rda
+|       abc (*)   |   |                 abc (@) |         +- abc.rda
+|         Y (*)   |   |                   Y (@) |         +- _1.rda
+|        x1       |   +-------------------------+
+|        x2       |        
++-----------------+
+
+</pre>
+<ul>
+<li>variables marked (*) are tracked and are actually an active
+binding that refers to the corresponding variable in the tracking environment.
+<li>variables marked (@) may or may not exist &ndash; if they do not exist in
+the tracking environment, they will be automatically read from file
+when the corresponding tracked object is accessed.
+<li>The "trackingEnv" attribute on the tracked environment is the
+tracking environment.  This is implemented as an attribute on the
+tracked environment rather than as a variable in the tracked environment
+so that <code>save.image()</code> on the tracked environment will ignore the
+tracking environment.  If the tracking environment were stored as a
+variable in the tracked environment, <code>save.image()</code> could end up
+storing two copies of every tracked variable: one when it accessed the
+active binding (it stores a copy of the object: <code>save()</code> doesn't
+know it's an active binding); and another if the object is cached in the
+tracking environment.
+<li>The "trackingDir" attribute on the tracking environment specifies
+the absolute pathname of the directory under which tracked objects are
+stored on file.  It uses the absolute pathname because the current
+directory of the R session can be changed using <code>setwd()</code>, which
+would result in losing a relative pathname.
+<li><code>.trackingFileMap</code> stores the base part of the file name corresponding to
+each tracked object as a named character vector (the names on the
+vector are the object names).  Objects that do not have simple names
+have an associated file name like "_NNN" where
+"NNN" is a number.  For example, the <code>.trackingFileMap</code> for the
+above configuration could be <code>c(abc="abc", x="x", Y="_1")</code>.
+Simple object names are those conforming to the following rules:
+<ul>
+<li>less than 55 characters
+<li>are comprised of only lower-case letters, digits 0 through 9,
+"." and "_"
+<li>begin with a lower-case letter
+<li>are not one of the following: <code>con</code>, <code>prn</code>,
+<code>aux</code>, <code>nul</code>, <code>com1</code> through <code>com9</code>, <code>lpt1</code>
+through <code>lpt9</code>, and do not begin with one of these names followed
+by a period (i.e., <code>prn.foo</code> and <code>prn.foo.bar</code> are both not
+simple names) (these are special file names under Microsoft Windows - see
+<a href="http://en.wikipedia.org/wiki/Filename">http://en.wikipedia.org/wiki/Filename</a> and <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/fileio/fs/naming_a_file.asp">http://msdn.microsoft.com/library/default.asp?url=/library/en-us/fileio/fs/naming_a_file.asp</a>)
+</ul>
+<p>
+The object <code>.trackingFileMap</code> is always kept in memory and is
+always saved to disk (as text in the file <code>filemap.txt</code>) whenever it is
+changed.
+<li><code>.trackingSummary</code> is a data frame recording various basic
+characteristics of the tracked objects, such as class, size and
+extent, and also times of creation, and most recent modification and
+access.  The tracking summary should be accessed using the function <code>track.summary()</code>.
+<li><code>.trackingSummaryChanged</code> A logical flag indicating whether
+or not the tracking summary copy on disk is in sync with version in
+memory.  To reduce overhead on accessing objects, there is an option
+to not resave the tracking summary when it is changed on accessing an
+object &ndash; this variable indicates if it has been changed.
+<li><code>.trackingUnsaved</code>: If the tracking options are set up so
+that objects are not automatically written to files on assignment,
+this variable contains a vector of names of all objects that have not
+been saved.
+<li><code>.trackingOptions</code>: are accessed and changed by the
+<code>track.options()</code> function.  They are kept in memory, and also
+written to disk whenever they are changed.
+The tracking directory is organized as an R package.  It's layout is as follows (saying, for example, that
+<code>attr(trackingEnv, "trackingDir")</code> is <code>/tmp/trackdir1</code>, and <code>.trackingFileMap</code> is <code>c(abc="abc", x="x", Y="_1")</code>):
+</ul>
+
+<pre>
+/tmp/trackdir1 
+      |
+      +- filemap.txt
+      +- .trackingSummary.rda
+      +- x.rda
+      +- abc.rda
+      +- _1.rda
+</pre>
+</p>
+
+
+<h3>Terminology</h3>
+
+<p>
+One could describe a tracking environment as "attached" to the tracked
+environment, but that using that term would risk confusion with the role
+of the <code>attach()</code> function and search path in R.  So, instead the
+<code>trackObjs</code> package says that a tracking environment is "linked" to
+the tracked environment.
+</p>
+
+<dl>
+<dt>track:</dt><dd>The <code>trackObjs</code> <EM>tracks</EM> variables, by
+setting up a one-to-one relationship between R objects and files
+on disks so that when an object in R is modified, the file on disk
+is automatically updated.</dd>
+<dt>tracked environment:</dt><dd>A <EM>tracked</EM> environment contains
+user variables and is usually on the search path.</dd>
+<dt>tracked object:</dt><dd>A <EM>tracked</EM> object (in a tracked
+environment) that has an active binding
+so that when it is modified, the corresponding file on disk is
+also modified.</dd>
+<dt>untracked object:</dt><dd>An <EM>untracked</EM> object in a tracked
+environment is an ordinary object that is not tracked and has no
+corresponding file.</dd>
+<dt>tracking environment:</dt><dd>A <EM>tracking</EM> environment is a
+special environment used by the <code>trackObjs</code> package to track
+objects in the <EM>tracked</EM> environment</dd>
+<dt>linked:</dt><dd>A tracking environment is <EM>linked</EM> to a tracked
+environment (by the <code>trackingEnv</code> attribute on the tracked
+environment, which <EM>points</EM> to the tracking environment.)</dd>
+<dt>start tracking, stop tracking:</dt><dd>Tracking is <EM>started</EM> by
+creating a tracking environment, linking it to the tracked
+environment, and setting up bindings for tracked objects.</dd>
+<dt>tracking database:</dt><dd>A <EM>tracking</EM> database is the
+collection of files and directories that stores the tracking information.</dd>
+<dt>active tracking database:</dt><dd>A <EM>tracking</EM> database that is
+currently linked to an environment in a running R session.</dd>
+</dl>
+
+<h3>Untrackable variables</h3>
+
+<p>
+Only ordinary variables can be tracked &ndash; variables that are active
+bindings cannot be tracked.
+</p>
+<p>
+Several variable names are reserved and cannot be tracked:
+<code>.trackingEnv</code>, <code>.trackingFileMap</code>, <code>.trackingUnsaved</code>,
+<code>.trackingSummary</code>, <code>.trackingSummaryChanged</code>,
+<code>.trackingOptions</code>.  Additionally, any variable with a newline
+character ("\n") as part of its name cannot be tracked (the main
+reason for this is that the mapping from object names to file names is
+stored in a text file, and newline character delimits the name).
+</p>
+
+
+<h3>The file map</h3>
+
+<p>
+The mapping from object names to file names is stored in the file
+<code>fileMap.txt</code>.  This data is stored as ordinary text file to make
+it easy for users to see the object-file mappings outside of R.
+</p>
+
+
+<h3>Implementation considerations</h3>
+
+<p>
+The reason that objects must be explicitly registered for tracking is
+that there is currently no way of setting up a function to be called
+when a new object is created, so new objects are always created as
+ordinary R objects.  Similarly, the R <code>remove()</code> functions does not
+have any hooks, so if <code>remove()</code> is called on a tracked variable,
+it will just remove the active binding in the visible environment, but
+will not disturb the underlying tracking environment.  The
+<code>track.remove()</code> function will completely remove a tracked variable
+from the visible environment and the underlying tracking environment
+(including deleting an associated disk file.)
+</p>
+<p>
+Object tracking was intended to be used in situations where large
+numbers of large objects must be manipulated.  Consequently, there is a
+good chance of exhausting resources while using the <code>trackObjs</code>
+package.  The <code>trackObjs</code> code tries to check return codes when
+creating objects or writing files, and in cases where it is unable to
+complete an operation it tries leave the tracking environment in a state
+from which objects can be salvaged.  The functions
+<code>track.rebuild()</code> and <code>track.flush()</code> are provided to
+help recover from situations where resource limitations prevented
+successful operation.  Note that files are generally written in a
+"unsafe" manner (i.e., existing files can be overwritten with partial
+new files), but in these cases data is retained in the memory and can be
+rewritten after resolving file system problems.
+</p>
+<p>
+The R functions <code>exists()</code> should be used with care on tracked
+objects, because it will actually fetch the object, possibly needing to
+read it from disk.  In the <code>trackObjs</code> code, the <code>exists("x")</code>
+function is not used to check existence of a possibly tracked object
+<code>x</code>, instead an idiom like <code>is.element("x", objects(all=TRUE))</code>
+is used.
+</p>
+<p>
+These statements about the available facilities in R were true as of
+R-2.4.1 (released Dec 2006).
+</p>
+<p>
+The rules for how variable names are mapped to file names are based on
+trying to use filenames that will work properly on all three operating
+systems R works on (Linux, Windows, and Mac OS X).  A somewhat obscure
+point that must be taken into account is the case-insensitivity of Mac
+OS X and Windows.  Even though modern versions of the OS's seem to use
+case in their file names, this is because they are case preserving, but
+they are in fact still case insensitive.  This means that a file created
+with the name "X.rda" is the same file as the "x.rda".
+Here is a short shell transcript showing this behavior in
+a bash shell running under
+Windows and Mac OS X (it's the same in both).
+<pre>
+    $ echo 123 &gt; X
+    $ cat x
+    123
+    $ echo 456 &gt; x
+    $ cat x
+    456
+    $ cat X
+    456
+</pre>
+Thus, in order to work on OS's, file mapping must be used to create
+different filenames for the R objects "x" and "X" (which are in fact
+different in R.)
+</p>
+
+
+<h3>Portability</h3>
+
+<p>
+Tracking directories are intended to be operating-system independent
+and completely portable across different operating systems.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>
+Tony Plate &lt;tplate@acm.org&gt;
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Roger D. Peng. Interacting with data using the filehash package. R
+News, 6(4):19-24, October
+2006. <code>http://cran.r-project.org/doc/Rnews</code> and
+<code>http://sandybox.typepad.com/software</code>
+</p>
+<p>
+David E. Brahm. Delayed data packages. R News, 2(3):11-12, December
+2002.  <code>http://cran.r-project.org/doc/Rnews</code>
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<a onclick="findlink('trackObjs-package', 'Overview.html')" style="text-decoration: underline; color: blue; cursor: hand">Overview</a> of the <code>trackObjs</code> package.
+</p>
+<p>
+Documentation for <code><a onclick="findlink('base', 'makeActiveBinding.html')" style="text-decoration: underline; color: blue; cursor: hand">makeActiveBinding</a></code> and related
+functions (in 'base' package).
+</p>
+<p>
+Inspriation from the packages <code><a onclick="findlink('g.data', 'g.data-package.html')" style="text-decoration: underline; color: blue; cursor: hand">g.data</a></code> and
+<code><a onclick="findlink('filehash', 'filehash-package.html')" style="text-decoration: underline; color: blue; cursor: hand">filehash</a></code>.
+</p>
+
+<script Language="JScript">
+function findlink(pkg, fn) {
+var Y, link;
+Y = location.href.lastIndexOf("\\") + 1;
+link = location.href.substring(0, Y);
+link = link + "../../" + pkg + "/chtml/" + pkg + ".chm::/" + fn;
+location.href = link;
+}
+</script>
+
+
+<hr><div align="center">[Package <em>trackObjs</em> version 0.8-3 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

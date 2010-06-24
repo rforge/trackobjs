@@ -1,0 +1,199 @@
+<html><head><title>Set and get tracking options on a tracked environment</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="Rchm.css">
+</head>
+<body>
+
+<table width="100%"><tr><td>track.options(trackObjs)</td><td align="right">R Documentation</td></tr></table><object type="application/x-oleobject" classid="clsid:1e2a7bd0-dab9-11d0-b93a-00c04fc99f9e">
+<param name="keyword" value="R:   track.options">
+<param name="keyword" value=" Set and get tracking options on a tracked environment">
+</object>
+
+
+<h2>Set and get tracking options on a tracked environment</h2>
+
+
+<h3>Description</h3>
+
+<p>
+Set and get tracking options on a tracked environment.  One
+independent set of tracking options exists for each tracked environment.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
+        trackingEnv, only.preprocess = FALSE, old.options = list())
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+Either option names as character data, or specifications
+for setting options, as named arguments, or in
+a named list </td></tr>
+<tr valign="top"><td><code>pos</code></td>
+<td>
+The search path position of the environment being tracked
+(default is 1 for the global environment)</td></tr>
+<tr valign="top"><td><code>envir</code></td>
+<td>
+The environment being tracked.  This is an alternate way
+(to the use of <code>pos=</code>)
+of specifying the environment being tracked, but should be rarely needed.</td></tr>
+<tr valign="top"><td><code>save</code></td>
+<td>
+If <code>TRUE</code>, current options are saved to disk and will
+be used in future.  Note that all current options settings are saved,
+not just the new settings made in this call.</td></tr>
+<tr valign="top"><td><code>trackingEnv</code></td>
+<td>
+The hidden environment in which tracked objects
+are stored.  It is not necessary to supply this in normal use. </td></tr>
+<tr valign="top"><td><code>only.preprocess</code></td>
+<td>
+If <code>TRUE</code>, process any options
+specifications and return the full list of option settings with
+the values as specified, and defaults for all othe roptions.  Stored
+options are neither accessed nor changed.  Intended for internal use.</td></tr>
+<tr valign="top"><td><code>old.options</code></td>
+<td>
+A list of old options to use, can only be suppled
+when <code>only.preprocess=TRUE</code>.  Intended for internal use.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+Valid option names and values are as follows:
+<dl>
+<dt>summaryTimes:</dt><dd>logical, or integer value 0,1,2,3</dd>
+<dt>summaryAccess:</dt><dd>logical, or integer value 0,1,2,3,4</dd>
+<dt>cache:</dt><dd>logical (default TRUE) (keep written objects in memory?)</dd>
+<dt>writeToDisk:</dt><dd>logical (default TRUE) (always write changed objects to disk?)</dd>
+<dt>useDisk:</dt><dd>logical (default TRUE) if FALSE, don't write anything
+&ndash; not implemented yet</dd>
+<dt>recordAccesses:</dt><dd>logical (default TRUE) if TRUE, record
+counts and times for access ("get") operations on tracked variables</dd>
+<dt>maintainSummary:</dt><dd>logical (default TRUE) if TRUE, record time &amp; number of accesses</dd>
+<dt>alwaysSaveSummary:</dt><dd>logical (default TRUE) if TRUE, always save
+the summary on any change</dd>
+<dt>RDataSuffix:</dt><dd>character (default <code>"rda"</code>) suffix to use for files
+containing saved R objects</dd>
+</dl>
+
+<p>
+The option settings are saved as a list in an object called
+<code>.trackingOptions</code> in the tracking environment (with a copy
+mirrored to a file in the tracking dir if <code>save=TRUE</code>.)
+</p>
+<p>
+The options can be used to tune performance to resource availability (time &amp;
+memory) and robustness in the face of machine or user error.  Some
+possible settings are:
+</p>
+
+<dl>
+<dt>maximize robustness and speed:</dt><dd><code>cache=TRUE</code> and
+<code>writeToDisk=TRUE</code> (the default): always write an object to disk when it is
+changed, and keep a copy in memory, so that an object only needs
+to be read once</dd>
+<dt>minimize memory usage and maximize robustness:</dt><dd><code>writeToDisk=TRUE</code>, <code>cache=FALSE</code>: always write an
+object to disk when it is changed, and don't keep a copy in memory
+&ndash; need to read from disk whenever the object is referred to</dd>
+<dt>maximize speed:</dt><dd><code>writeToDisk=FALSE</code>,
+<code>cache=TRUE</code>: don't write the object to disk - just keep
+a copy in memory after it is first accessed and only write it when
+<code>track.stop()</code> or
+one of <code>track.save()</code> or its friends is called.  This
+combination less robust because changed variables can be lost if R crashes,
+or the user quits R without remembering to call
+<code>track.stop()</code>.  This mode of operation is like the
+<code>g.data</code> package, but with automatically keeping track of
+which variables have been changed and need to be written to disk
+(and the writing of changed variables with one call to
+<code>track.save()</code> or <code>track.stop()</code>).</dd>
+</dl>
+<p>
+The combination <code>writeToDisk=FALSE</code> and
+<code>cache=FALSE</code> is possible, but is unlikely to be desirable
+&ndash; this will keep changed objects in memory, but will not keep
+merely fetched objects in memory.
+</p>
+<p>
+The options <code>maintainSummary</code>, <code>recordAccesses</code>, and
+<code>alwaysSaveSummary</code> control when the object summary is updated
+and when it is saved to disk (the default is for it to be updated and
+saved to disk for every read and write access to an object, whether or
+not the object is cached in memory).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+The value returned is a list of option values.  If options were
+specified as arguments, the old values of those options are returned
+(unless <code>only.preprocess=TRUE</code> was supplied).  If no options were
+specified as arguments, the full list of current option values is returned.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Tony Plate &lt;tplate@acm.org&gt;
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<a href="track.design.html">design</a> of the <code>trackObjs</code> package.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(trackObjs)
+unlink("tmp1", recursive=TRUE)
+track.start("tmp1")
+track(x &lt;- 33)
+X &lt;- array(1:24, dim=2:4)
+track.status()
+track.options(cache=TRUE, writeToDisk=FALSE) # change for just this session
+# different ways of retrieving option values
+track.options(c("cache", "writeToDisk"))
+track.options("cache", "writeToDisk")
+track.options("cache")
+track.options()
+track(X)
+# see the effect of the changed options on the status of X (X is not saved to disk)
+track.status()
+X[1,1,1] &lt;- 0
+track.status()
+track.flush()
+track.status()
+track.stop()
+track.start("tmp1")
+# note that options previously changed are back at defaults (because default
+# to track.options() is save=FALSE
+track.options(c("cache", "writeToDisk"))
+track.options(cache=TRUE, writeToDisk=FALSE, save=TRUE) # change the options on disk
+track.options(c("cache", "writeToDisk"))
+track.stop()
+track.start("tmp1")
+# now options previously changed are remembered (because track.options(..., save=TRUE) was used)
+track.options(c("cache", "writeToDisk"))
+track.stop()
+</pre>
+
+
+
+<hr><div align="center">[Package <em>trackObjs</em> version 0.8-5 <a href="00Index.html">Index</a>]</div>
+
+</body></html>

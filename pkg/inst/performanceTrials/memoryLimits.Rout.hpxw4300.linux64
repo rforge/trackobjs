@@ -1,0 +1,138 @@
+R version 2.5.1 (2007-06-27)
+Copyright (C) 2007 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # process 40 16Mb objects (about 640Mb) with memory limited to 128Mb
+> library(trackObjs)
+> source("trackObjs/inst/performanceTrials/funsForTesting.R")
+> options(width=100)
+> sessionInfo()
+R version 2.5.1 (2007-06-27)
+x86_64-unknown-linux-gnu
+
+locale:
+LC_CTYPE=en_US.UTF-8;LC_NUMERIC=C;LC_TIME=en_US.UTF-8;LC_COLLATE=en_US.UTF-8;LC_MONETARY=en_US.UTF-8;LC_MESSAGES=en_US.UTF-8;LC_PAPER=en_US.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US.UTF-8;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] "stats"     "graphics"  "grDevices" "utils"     "datasets"  "methods"   "base"
+
+other attached packages:
+trackObjs  tap.misc       vsa
+    "0.7"     "1.0"     "0.1"
+> mem.limits(nsize=2^20, vsize=2^27) # vsize=128Mb
+    nsize     vsize
+  1048576 134217728
+> mem.limits()
+    nsize     vsize
+  1048576 134217728
+> unlink("tmp1", recursive=TRUE)
+> track.start("tmp1", options=list(cache=FALSE))
+> totSize <- 0
+> for (i in 1:40) {
++     x <- createTestObj(1, 14) # scale=14 is a 16Mb object
++     n <- randObjName(3, simple=TRUE, max.len=7)
++     track(list=n)
++     assign(n, value=x)
++     totSize <- totSize + object.size(x)
++     cat("Done obj", i, "totSize=", totSize, "\n")
++ }
+Done obj 1 totSize= 16777256
+Done obj 2 totSize= 33554512
+Done obj 3 totSize= 50331768
+Done obj 4 totSize= 67109024
+Done obj 5 totSize= 83886280
+Done obj 6 totSize= 100663536
+Done obj 7 totSize= 117440792
+Done obj 8 totSize= 134218048
+Done obj 9 totSize= 150995304
+Done obj 10 totSize= 167772560
+Done obj 11 totSize= 184549816
+Done obj 12 totSize= 201327072
+Done obj 13 totSize= 218104328
+Done obj 14 totSize= 234881584
+Done obj 15 totSize= 251658840
+Done obj 16 totSize= 268436096
+Done obj 17 totSize= 285213352
+Done obj 18 totSize= 301990608
+Done obj 19 totSize= 318767864
+Done obj 20 totSize= 335545120
+Done obj 21 totSize= 352322376
+Done obj 22 totSize= 369099632
+Done obj 23 totSize= 385876888
+Done obj 24 totSize= 402654144
+Done obj 25 totSize= 419431400
+Done obj 26 totSize= 436208656
+Done obj 27 totSize= 452985912
+Done obj 28 totSize= 469763168
+Done obj 29 totSize= 486540424
+Done obj 30 totSize= 503317680
+Done obj 31 totSize= 520094936
+Done obj 32 totSize= 536872192
+Done obj 33 totSize= 553649448
+Done obj 34 totSize= 570426704
+Done obj 35 totSize= 587203960
+Done obj 36 totSize= 603981216
+Done obj 37 totSize= 620758472
+Done obj 38 totSize= 637535728
+Done obj 39 totSize= 654312984
+Done obj 40 totSize= 671090240
+> track.summary()
+          class    mode    extent  length     size            modified TA TW
+a       numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:35  0  2
+a0v     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:20  0  2
+a2vdkzb numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:47  0  2
+axgd7t  numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:38  0  2
+b       numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:24  0  2
+cb6     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:52  0  2
+d.qsd4p numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:23  0  2
+e1lfbq4 numeric numeric [2097152] 2097152 16777256 2007-09-06 22:37:04  0  2
+e2q5y3n numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:33  0  2
+f8b     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:44  0  2
+f9      numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:35  0  2
+g       numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:58  0  2
+hb7gs   numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:56  0  2
+im      numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:26  0  2
+iqybu0o numeric numeric [2097152] 2097152 16777256 2007-09-06 22:37:10  0  2
+jz      numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:21  0  2
+k       numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:13  0  2
+khlv3   numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:04  0  2
+ms9e3iz numeric numeric [2097152] 2097152 16777256 2007-09-06 22:37:07  0  2
+n5a     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:55  0  2
+phx     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:32  0  2
+qe      numeric numeric [2097152] 2097152 16777256 2007-09-06 22:37:01  0  2
+qv      numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:41  0  2
+r       numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:53  0  2
+r1q7    numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:17  0  2
+r2      numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:18  0  2
+r.u90   numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:27  0  2
+rx      numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:41  0  2
+tsqm    numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:10  0  2
+u       numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:38  0  2
+uzk     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:01  0  2
+v       numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:58  0  2
+v2      numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:50  0  2
+v9iobr9 numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:07  0  2
+vzfzxr. numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:30  0  2
+wxyo    numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:50  0  2
+wzb     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:44  0  2
+xu6     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:35:29  0  2
+xxqf    numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:47  0  2
+zpx     numeric numeric [2097152] 2097152 16777256 2007-09-06 22:36:15  0  2
+> track.stop()
+> unlink("tmp1", recursive=TRUE)
+>
+

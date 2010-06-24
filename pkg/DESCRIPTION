@@ -1,0 +1,14 @@
+Package: trackObjs
+Version: 0.9-0
+Date: 2010-06-15
+Title: Track Objects
+Author: Tony Plate <tplate@acm.org>
+Maintainer: Tony Plate <tplate@acm.org>
+Description: Automatically stores objects in files on disk so that
+  files are rewritten when objects are changed, and so
+  that objects are accessible but do not occupy memory until
+  they are accessed. Also tracks times when objects are created
+  and modified, and caches some basic characteristics of objects
+  to allow for fast summaries of objects.
+License: GPL
+Depends: R (>= 2.1.0)

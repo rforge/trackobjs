@@ -1,0 +1,38 @@
+		CHANGES in trackObjs version 0.9-0 (2010-06-15)
+ENHANCEMENTS
+    o   add ability to auto-track new and deleted variables using
+        task callbacks (on by default)
+    o   add two new option components:
+           - autoTrackExclude: vector of regexps specifying vars
+               not to track automatically
+           - clobberVars: vector of variable names that can be
+               silently clobbered when attaching a tracking db.
+	       The default is ".Random.seed".
+               (to avoid annoying errors/messages about variables
+                .Random.seed)
+    o   change track(x <- value) so that if x already exists, or
+        is already tracked, x still gets the new value
+
+		CHANGES in trackObjs version 0.8-6 (2009-11-03)
+ENHANCEMENTS
+    o   Fix documentation links so that they pass the stricter
+        tests in R CMD check.
+
+		CHANGES in trackObjs version 0.8-3 (2009-02-20)
+BUG FIXES
+    o	Make each test use a unique tracking database so that
+    	tests don't interfere with each other when run in parallel.
+
+		CHANGES in trackObjs version 0.8-0
+BUG FIXES
+    o   Fixed faulty detection of conflicting existing objects
+        when starting to track to an existing directory.
+
+    o   Replaced environment on function that is in the active
+        binding for a tracked object.  Previously, that function
+        could, if constructed via track(obj <- value), have a
+        copy of the tracked object in its environment, which would
+        stay present taking up memory even if the object was
+        flushed out of the tracking environment.
+
+    o   Fixed bug that stopped track.stop(all=TRUE) from working

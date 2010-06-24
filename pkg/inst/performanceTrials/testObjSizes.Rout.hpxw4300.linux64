@@ -1,0 +1,98 @@
+> library(trackObjs)
+> source("trackObjs/inst/performanceTrials/funsForTesting.R")
+> x <- list(createTestObj(return.types=TRUE), as.character(1:16))
+> objSizes <- matrix(0, nrow=length(x[[1]]), ncol=length(x[[2]]), dimnames=x)
+> objLens <- objSizes
+> for (s in seq(ncol(objSizes))) {
++     cat("Doing scale=", s, ": ", sep="")
++     for (i in seq(nrow(objSizes))) {
++         cat("", i)
++         x <- createTestObj(i, s)
++         objSizes[i, s] <- object.size(x)
++         objLens[i, s] <- length(x)
++     }
++     cat("\n")
++ }
+Doing scale=1:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=2:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=3:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=4:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=5:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=6:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=7:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=8:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=9:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=10:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=11:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=12:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=13:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=14:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=15:  1 2 3 4 5 6 7 8 9 10 11
+Doing scale=16:  1 2 3 4 5 6 7 8 9 10 11
+> objSizes
+                1    2     3     4     5      6      7      8      9      10
+vector       2088 4136  8232 16424 32808  65576 131112 262184 524328 1048616
+named.vector 3264 6336 12480 24768 49344  98496 196800 393408 786624 1573056
+matrix       2224 4296  8480 16584 32960  65736 131968 262344 524376 1048776
+named.matrix 4416 7232 12536 22208 40824  76736 147448 284096 555032 1092032
+array        2224 4432  8048 17056 33120  66064 131248 255760 527056 1053848
+named.array  3712 6176 10160 19680 36264  69912 135976 261608 534416 1063056
+list         3816 4568  6920 10408 21136  42592  85504 171328 342976  686272
+data.frame   3296 5344  9440 17632 34016  66784 132320 263392 525536 1049824
+POSIXct      2352 4400  8496 16688 33072  65840 131376 262448 524592 1048880
+factor       3904 5952 10048 18240 34624  67392 132928 264000 526144 1050432
+named.factor 5128 8248 14488 26968 51928 101848 201688 401368 800728 1599448
+                  11      12       13       14       15        16
+vector       2097192 4194344  8388648 16777256 33554472  67108904
+named.vector 3145920 6291648 12583104 25166016 50331840 100663488
+matrix       2096904 4194504  8387016 16777416 33547464  67109064
+named.matrix 2157968 4280768  8508896 16949696 33790976  67453376
+array        2099184 4214992  8489536 16856096 33718480  67436560
+named.array  2110688 4229408  8507648 16878800 33747008  67472424
+list         1372864 2746048  5492416 10985152 21970624  43941568
+data.frame   2098400 4195552  8389856 16778464 33555680  67110112
+POSIXct      2097456 4194608  8388912 16777520 33554736  67109168
+factor       2099008 4196160  8390464 16779072 33556288  67110720
+named.factor 3196888 6391768 12781528 25561048 51120088 102238168
+> objLens
+               1    2    3    4    5     6     7     8      9     10     11
+vector       256  512 1024 2048 4096  8192 16384 32768  65536 131072 262144
+named.vector  48   96  192  384  768  1536  3072  6144  12288  24576  49152
+matrix       253  512 1035 2048 4095  8192 16471 32768  65522 131072 262088
+named.matrix 253  512 1035 2048 4095  8192 16471 32768  65522 131072 262088
+array        252  528  980 2106 4114  8232 16380 31944  65856 131705 262372
+named.array  252  528  980 2106 4114  8232 16380 31944  65856 131705 262372
+list           5    5    5    5    2     2     2     2      2      2      2
+data.frame     4    4    4    4    4     4     4     4      4      4      4
+POSIXct      256  512 1024 2048 4096  8192 16384 32768  65536 131072 262144
+factor       512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288
+named.factor  52  104  208  416  832  1664  3328  6656  13312  26624  53248
+                  12      13      14      15       16
+vector        524288 1048576 2097152 4194304  8388608
+named.vector   98304  196608  393216  786432  1572864
+matrix        524288 1048352 2097152 4193408  8388608
+named.matrix  524288 1048352 2097152 4193408  8388608
+array         526848 1061166 2106986 4214784  8429544
+named.array   526848 1061166 2106986 4214784  8429544
+list               2       2       2       2        2
+data.frame         4       4       4       4        4
+POSIXct       524288 1048576 2097152 4194304  8388608
+factor       1048576 2097152 4194304 8388608 16777216
+named.factor  106496  212992  425984  851968  1703936
+>
+> sessionInfo()
+R version 2.5.1 (2007-06-27)
+x86_64-unknown-linux-gnu
+
+locale:
+LC_CTYPE=en_US.UTF-8;LC_NUMERIC=C;LC_TIME=en_US.UTF-8;LC_COLLATE=en_US.UTF-8;LC_MONETARY=en_US.UTF-8;LC_MESSAGES=en_US.UTF-8;LC_PAPER=en_US.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US.UTF-8;LC_IDENTIFICATION=C
+
+attached base packages:
+[1] "stats"     "graphics"  "grDevices" "utils"     "datasets"  "methods"
+[7] "base"
+
+other attached packages:
+trackObjs  tap.misc       vsa
+    "0.7"     "1.0"     "0.1"
+>
+

@@ -1,0 +1,29 @@
+
+
+> # Very simple test of tracking
+> library(trackObjs)
+> # Set the locale used by order() so that track.status() & track.summary() put
+> # rows in the same order on different systems (so that the test output matches).
+> invisible(Sys.setlocale("LC_COLLATE", "C"))
+> unlink("tmp1", recursive=TRUE)
+> track.start("tmp1", cache=TRUE)
+> track(x <- 33)
+> track.status(tracked=TRUE)
+   Status InMem FileBase FileExists Saved
+x tracked  TRUE        x       TRUE  TRUE
+> X <- array(1:24, dim=2:4)
+> track(X)
+> track.status(tracked=TRUE)
+   Status InMem FileBase FileExists Saved
+X tracked  TRUE       _1       TRUE  TRUE
+x tracked  TRUE        x       TRUE  TRUE
+> track(Y <- list(a=1:3,b=2))
+> X[2] <- -1
+> track.summary(time=0, access=1, size=FALSE)
+    class    mode  extent length TA TW
+X   array numeric [2x3x4]     24  2  3
+Y    list    list   [[2]]      2  0  1
+x numeric numeric     [1]      1  0  1
+> track.stop()
+> unlink("tmp1", recursive=TRUE)
+> 

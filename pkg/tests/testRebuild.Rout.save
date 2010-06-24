@@ -1,0 +1,700 @@
+
+
+> library(trackObjs)
+> # Set the locale used by order() so that track.status() & track.summary() put
+> # rows in the same order on different systems (so that the test output matches).
+> invisible(Sys.setlocale("LC_COLLATE", "C"))
+> options(width=120)
+> options(error=function() NULL)
+> unlink("tmp7", recursive=TRUE)
+> 
+> #################################################
+> # Tests:
+> # (1) rebuild a complete unlinked directory (nothing to do)
+> # (2) rebuild a complete active directory (nothing to do)
+> # (3) rebuild a unlinked directory with filemap gone
+> # (4) rebuild an unlinked directory with the filemap & summary
+> #     missing entries
+> # (5) rebuild an unlinked directory with the filemap & summary
+> #     missing entries, & new .rda files
+> # (6) rebuild an unlinked directory with just new .rda files
+> # (7) rebuild an active directory with the filemap & summary
+> #     missing entries (different missing in the env & file
+> #     versions), & new .rda files
+> #################################################
+> 
+> # Test (1) rebuild a complete unlinked directory (nothing to do)
+> trackObjs:::create.fake.Sys.time(0)
+> track.start("tmp7")
+> track(x <- 33)
+> track(X <- array(1:24, dim=2:4))
+> track(Y <- list(a=1:3,b=2))
+> X[2] <- -1
+> track(abc <- "def")
+> track(def <- list(1,2,3))
+> invisible(Y); invisible(abc); invisible(abc); invisible(abc)
+> track.summary(time=3, size=FALSE, access=1) # omit the 'size' column: it varies by machine
+        class      mode  extent length            modified             created            accessed TA TW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11  1  1
+abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14  3  1
+def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10  0  1
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
+> track.stop()
+> # Rebuild the unlinked dir, and show the returned value
+> res <- track.rebuild(dir="tmp7", verbose=2, dry.run=FALSE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Using tracking summary read from file.
+New file map has 0 newly constructed entries and uses 5 old entries
+New summary has 0 newly constructed entries and uses 0 recovered and 5 old entries
+Writing file map to file.
+Saving object summary to file.
+> res$fileMap
+    X     Y   abc   def     x 
+ "_1"  "_2" "abc" "def"   "x" 
+> res$summary[,-5]
+        class      mode  extent length            modified             created            accessed A ES SA SW PA PW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  1  2  3  0  0
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  1  1  1  0  0
+abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14 1  1  3  1  0  0
+def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10 1  1  0  1  0  0
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  1  0  1  0  0
+> 
+> # Test (2) rebuild a complete active directory (nothing to do)
+> track.start("tmp7")
+> track.summary(time=3, size=FALSE, access=1) # omit the 'size' column: it varies by machine
+        class      mode  extent length            modified             created            accessed TA TW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11  1  1
+abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14  3  1
+def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10  0  1
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
+> # Rebuild the active dir, and show the returned value
+> res <- track.rebuild(dir="tmp7", verbose=2, dry.run=FALSE)
+Rebuilding an active tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Found a fileMap in the environment and on disk
+Using tracking summary from tracking environment.
+Using tracking summary read from file.
+New file map has 0 newly constructed entries and uses 5 old entries
+New summary has 0 newly constructed entries and uses 0 recovered and 5 old entries
+Assigning '.trackingFileMap' and '.trackingSummary' in tracking environment.
+Writing file map to file.
+Saving object summary to file.
+> res$fileMap
+    X     Y   abc   def     x 
+ "_1"  "_2" "abc" "def"   "x" 
+> res$summary[,-5]
+        class      mode  extent length            modified             created            accessed A ES SA SW PA PW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  2  0  0  2  3
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  2  0  0  1  1
+abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14 1  2  0  0  3  1
+def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10 1  2  0  0  0  1
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  2  0  0  0  1
+> track.stop()
+> 
+> # Test (3) rebuild a unlinked directory with filemap gone
+> unlink("tmp7/filemap.txt")
+> trackObjs:::create.fake.Sys.time(3600)
+> res <- track.rebuild(dir="tmp7", verbose=2, dry.run=FALSE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+File map file ('./tmp7/filemap.txt') does not exist; continuing...
+Using tracking summary read from file.
+Some data files are not in the file map: '_1.rda', '_2.rda', 'abc.rda', 'def.rda', 'x.rda'
+Loading file './tmp7/_1.rda' for unknown object ... loaded 'X'
+Loading file './tmp7/_2.rda' for unknown object ... loaded 'Y'
+Loading file './tmp7/abc.rda' for unknown object ... loaded 'abc'
+Loading file './tmp7/def.rda' for unknown object ... loaded 'def'
+Loading file './tmp7/x.rda' for unknown object ... loaded 'x'
+New file map has 5 newly constructed entries and uses 0 old entries
+New summary has 0 newly constructed entries and uses 5 recovered and 0 old entries
+Writing file map to file.
+Saving object summary to file.
+> res$fileMap
+    X     Y   abc   def     x 
+ "_1"  "_2" "abc" "def"   "x" 
+> res$summary[,-5]
+        class      mode  extent length            modified             created            accessed A ES SA SW PA PW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  2  0  0  2  3
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  2  0  0  1  1
+abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14 1  2  0  0  3  1
+def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10 1  2  0  0  0  1
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  2  0  0  0  1
+> track.start("tmp7")
+> track.summary(time=3, size=FALSE, access=1)
+        class      mode  extent length            modified             created            accessed TA TW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11  1  1
+abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14  3  1
+def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10  0  1
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
+> track.status()
+       Status InMem FileBase FileExists Saved
+X     tracked FALSE       _1       TRUE  TRUE
+Y     tracked FALSE       _2       TRUE  TRUE
+abc   tracked FALSE      abc       TRUE  TRUE
+def   tracked FALSE      def       TRUE  TRUE
+res untracked    NA     <NA>         NA    NA
+x     tracked FALSE        x       TRUE  TRUE
+> track(z <- 22)
+> track.summary(time=3, size=FALSE, access=1)
+        class      mode  extent length            modified             created            accessed TA TW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11  1  1
+abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14  3  1
+def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10  0  1
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
+z     numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08  0  1
+> track.status()
+       Status InMem FileBase FileExists Saved
+X     tracked FALSE       _1       TRUE  TRUE
+Y     tracked FALSE       _2       TRUE  TRUE
+abc   tracked FALSE      abc       TRUE  TRUE
+def   tracked FALSE      def       TRUE  TRUE
+res untracked    NA     <NA>         NA    NA
+x     tracked FALSE        x       TRUE  TRUE
+z     tracked FALSE        z       TRUE  TRUE
+> track.stop()
+> 
+> # Test (4) rebuild an unlinked directory with the filemap & summary missing entries
+> # First delete entries 2 & 3 from the filemap
+> filemap <- readLines("tmp7/filemap.txt", -1)
+> cat(paste(filemap[-(2:3)], "\n", sep=""), sep="", file="tmp7/filemap.txt")
+> readLines("tmp7/filemap.txt", -1)
+[1] "_1:X"    "def:def" "x:x"     "z:z"    
+> # And delete entries 3 & 4 from the summary
+> load("tmp7/.trackingSummary.rda")
+> .trackingSummary <- .trackingSummary[-(3:4),]
+> save(".trackingSummary", file="tmp7/.trackingSummary.rda")
+> remove(list=c("filemap", ".trackingSummary"))
+> # Put the 'time' forward another hour to make new times clearly visible
+> trackObjs:::create.fake.Sys.time(2*3600)
+> res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, dry.run=FALSE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Using tracking summary read from file.
+Some data files are not in the file map: '_2.rda', 'abc.rda'
+Some objects in the file map are not in the summary:
+Object File   
+def    def.rda
+Loading file './tmp7/_2.rda' for unknown object ... loaded 'Y'
+Loading file './tmp7/abc.rda' for unknown object ... loaded 'abc'
+Loading file './tmp7/def.rda' for object 'def' ... loaded 'def'
+New file map has 2 newly constructed entries and uses 4 old entries
+New summary has 2 newly constructed entries and uses 1 recovered and 3 old entries
+Writing file map to file.
+Saving object summary to file.
+> res$fileMap
+    X     Y   abc   def     x     z 
+ "_1"  "_2" "abc" "def"   "x"   "z" 
+> res$summary[ , -5]
+        class      mode  extent length            modified             created            accessed A ES SA SW PA PW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  3  0  0  2  3
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  3  0  0  1  1
+abc character character     [1]      1 2001-01-01 11:00:03 2001-01-01 11:00:03 2001-01-01 11:00:03 1  1  0  1  0  0
+def      list      list   [[3]]      3 2001-01-01 11:00:04 2001-01-01 11:00:04 2001-01-01 11:00:04 1  1  0  1  0  0
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  3  0  0  0  1
+z     numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08 1  1  0  1  0  0
+> track.start("tmp7")
+> track.summary(time=3, size=FALSE, access=1)
+        class      mode  extent length            modified             created            accessed TA TW
+X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
+Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11  1  1
+abc character character     [1]      1 2001-01-01 11:00:03 2001-01-01 11:00:03 2001-01-01 11:00:03  0  1
+def      list      list   [[3]]      3 2001-01-01 11:00:04 2001-01-01 11:00:04 2001-01-01 11:00:04  0  1
+x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
+z     numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08  0  1
+> track.stop()
+> 
+> # Test (5) rebuild an unlinked directory with the filemap & summary missing entries, & new .rda files
+> filemap <- readLines("tmp7/filemap.txt", -1)
+> cat(paste(filemap[-(2:3)], "\n", sep=""), sep="", file="tmp7/filemap.txt")
+> readLines("tmp7/filemap.txt", -1)
+[1] "_1:X"    "def:def" "x:x"     "z:z"    
+> # And delete entries 3 & 4 from the summary
+> load("tmp7/.trackingSummary.rda")
+> .trackingSummary <- .trackingSummary[-(3:4),]
+> save(".trackingSummary", file="tmp7/.trackingSummary.rda")
+> # And put some extra files in tmp7
+> x1 <- 1
+> x2 <- 2
+> x1.1 <- 3
+> x3 <- 4
+> X4 <- 5
+> X5 <- 6
+> X6 <- 7
+> save("x1", file="tmp7/x1.rda")
+> save("x2", file="tmp7/x2.rda")
+> save("x1.1", file="tmp7/x1.1.rda")
+> save("x3", file="tmp7/x4.rda")
+> save("X4", file="tmp7/xx4.rda")
+> save("X5", file="tmp7/.x5.rda")
+> save("X6", file="tmp7/_6.rda")
+> remove(list=c("filemap", ".trackingSummary", "x1", "x2", "x1.1", "x3", "X4", "X5", "X6"))
+> # Put the 'time' forward another hour to make new times clearly visible
+> trackObjs:::create.fake.Sys.time(3*3600)
+> res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, dry.run=TRUE, fix=FALSE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Using tracking summary read from file.
+Some data files are not in the file map: '.x5.rda', '_2.rda', '_6.rda', 'abc.rda', 'x1.1.rda', 'x1.rda', 'x2.rda', 'x4.rda', 'xx4.rda'
+Some objects in the file map are not in the summary:
+Object File   
+def    def.rda
+Loading file './tmp7/.x5.rda' for unknown object ... loaded 'X5'
+.x5.rda cannot be used as is because objects that do not have a 'simple' name must be stored in a file beginning with '_'
+Error in track.rebuild(dir = "tmp7", verbose = 2, use.file.times = FALSE,  : 
+  Cannot proceed further -- rerun with fix=TRUE
+> res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, dry.run=TRUE, fix=TRUE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Using tracking summary read from file.
+Some data files are not in the file map: '.x5.rda', '_2.rda', '_6.rda', 'abc.rda', 'x1.1.rda', 'x1.rda', 'x2.rda', 'x4.rda', 'xx4.rda'
+Some objects in the file map are not in the summary:
+Object File   
+def    def.rda
+Loading file './tmp7/.x5.rda' for unknown object ... loaded 'X5'
+.x5.rda cannot be used as is because objects that do not have a 'simple' name must be stored in a file beginning with '_', would move to ./tmp7/quarantine and rewrite the object
+Would save object 'X5' to './tmp7/_3.rda'
+Loading file './tmp7/_2.rda' for unknown object ... loaded 'Y'
+Loading file './tmp7/_6.rda' for unknown object ... loaded 'X6'
+Loading file './tmp7/abc.rda' for unknown object ... loaded 'abc'
+Loading file './tmp7/x1.1.rda' for unknown object ... loaded 'x1.1'
+Loading file './tmp7/x1.rda' for unknown object ... loaded 'x1'
+Loading file './tmp7/x2.rda' for unknown object ... loaded 'x2'
+Loading file './tmp7/x4.rda' for unknown object ... loaded 'x3'
+x4.rda cannot be used as is because the file has a 'simple' name different to the object name, would move to ./tmp7/quarantine and rewrite the object
+Would save object 'x3' to './tmp7/x3.rda'
+Loading file './tmp7/xx4.rda' for unknown object ... loaded 'X4'
+xx4.rda cannot be used as is because the file has a 'simple' name different to the object name, would move to ./tmp7/quarantine and rewrite the object
+Would save object 'X4' to './tmp7/_4.rda'
+Loading file './tmp7/def.rda' for object 'def' ... loaded 'def'
+New file map has 9 newly constructed entries and uses 4 old entries
+New summary has 9 newly constructed entries and uses 1 recovered and 3 old entries
+> res$fileMap
+     X     X4     X5     X6      Y    abc    def      x     x1   x1.1     x2     x3      z 
+  "_1"   "_4"   "_3"   "_6"   "_2"  "abc"  "def"    "x"   "x1" "x1.1"   "x2"   "x3"    "z" 
+> res$summary[ , -5]
+         class      mode  extent length            modified             created            accessed A ES SA SW PA PW
+X        array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  4  0  0  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:11 2001-01-01 12:00:11 2001-01-01 12:00:11 1  1  0  1  0  0
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:03 2001-01-01 12:00:03 2001-01-01 12:00:03 1  1  0  1  0  0
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:05 2001-01-01 12:00:05 2001-01-01 12:00:05 1  1  0  1  0  0
+Y         list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  4  0  0  1  1
+abc  character character     [1]      1 2001-01-01 12:00:06 2001-01-01 12:00:06 2001-01-01 12:00:06 1  1  0  1  0  0
+def       list      list   [[3]]      3 2001-01-01 12:00:12 2001-01-01 12:00:12 2001-01-01 12:00:12 1  1  0  1  0  0
+x      numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  4  0  0  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:08 2001-01-01 12:00:08 2001-01-01 12:00:08 1  1  0  1  0  0
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:07 2001-01-01 12:00:07 2001-01-01 12:00:07 1  1  0  1  0  0
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:09 2001-01-01 12:00:09 2001-01-01 12:00:09 1  1  0  1  0  0
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:10 2001-01-01 12:00:10 2001-01-01 12:00:10 1  1  0  1  0  0
+z      numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08 1  2  0  0  0  1
+> res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, dry.run=FALSE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Using tracking summary read from file.
+Some data files are not in the file map: '.x5.rda', '_2.rda', '_6.rda', 'abc.rda', 'x1.1.rda', 'x1.rda', 'x2.rda', 'x4.rda', 'xx4.rda'
+Some objects in the file map are not in the summary:
+Object File   
+def    def.rda
+Loading file './tmp7/.x5.rda' for unknown object ... loaded 'X5'
+.x5.rda cannot be used as is because objects that do not have a 'simple' name must be stored in a file beginning with '_'
+Error in track.rebuild(dir = "tmp7", verbose = 2, use.file.times = FALSE,  : 
+  Cannot proceed further -- rerun with fix=TRUE
+> res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, fix=TRUE, dry.run=FALSE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Using tracking summary read from file.
+Some data files are not in the file map: '.x5.rda', '_2.rda', '_6.rda', 'abc.rda', 'x1.1.rda', 'x1.rda', 'x2.rda', 'x4.rda', 'xx4.rda'
+Some objects in the file map are not in the summary:
+Object File   
+def    def.rda
+Loading file './tmp7/.x5.rda' for unknown object ... loaded 'X5'
+.x5.rda cannot be used as is because objects that do not have a 'simple' name must be stored in a file beginning with '_', moving to ./tmp7/quarantine and rewriting the object
+Saving object 'X5' to './tmp7/_3.rda'
+Loading file './tmp7/_2.rda' for unknown object ... loaded 'Y'
+Loading file './tmp7/_6.rda' for unknown object ... loaded 'X6'
+Loading file './tmp7/abc.rda' for unknown object ... loaded 'abc'
+Loading file './tmp7/x1.1.rda' for unknown object ... loaded 'x1.1'
+Loading file './tmp7/x1.rda' for unknown object ... loaded 'x1'
+Loading file './tmp7/x2.rda' for unknown object ... loaded 'x2'
+Loading file './tmp7/x4.rda' for unknown object ... loaded 'x3'
+x4.rda cannot be used as is because the file has a 'simple' name different to the object name, moving to ./tmp7/quarantine and rewriting the object
+Saving object 'x3' to './tmp7/x3.rda'
+Loading file './tmp7/xx4.rda' for unknown object ... loaded 'X4'
+xx4.rda cannot be used as is because the file has a 'simple' name different to the object name, moving to ./tmp7/quarantine and rewriting the object
+Saving object 'X4' to './tmp7/_4.rda'
+Loading file './tmp7/def.rda' for object 'def' ... loaded 'def'
+New file map has 9 newly constructed entries and uses 4 old entries
+New summary has 9 newly constructed entries and uses 1 recovered and 3 old entries
+Writing file map to file.
+Saving object summary to file.
+> res$fileMap
+     X     X4     X5     X6      Y    abc    def      x     x1   x1.1     x2     x3      z 
+  "_1"   "_4"   "_3"   "_6"   "_2"  "abc"  "def"    "x"   "x1" "x1.1"   "x2"   "x3"    "z" 
+> res$summary[ , -5]
+         class      mode  extent length            modified             created            accessed A ES SA SW PA PW
+X        array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  4  0  0  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:23 2001-01-01 12:00:23 2001-01-01 12:00:23 1  1  0  1  0  0
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:15 2001-01-01 12:00:15 2001-01-01 12:00:15 1  1  0  1  0  0
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:17 2001-01-01 12:00:17 2001-01-01 12:00:17 1  1  0  1  0  0
+Y         list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  4  0  0  1  1
+abc  character character     [1]      1 2001-01-01 12:00:18 2001-01-01 12:00:18 2001-01-01 12:00:18 1  1  0  1  0  0
+def       list      list   [[3]]      3 2001-01-01 12:00:24 2001-01-01 12:00:24 2001-01-01 12:00:24 1  1  0  1  0  0
+x      numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  4  0  0  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:20 2001-01-01 12:00:20 2001-01-01 12:00:20 1  1  0  1  0  0
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:19 2001-01-01 12:00:19 2001-01-01 12:00:19 1  1  0  1  0  0
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:21 2001-01-01 12:00:21 2001-01-01 12:00:21 1  1  0  1  0  0
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:22 2001-01-01 12:00:22 2001-01-01 12:00:22 1  1  0  1  0  0
+z      numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08 1  2  0  0  0  1
+> track.start("tmp7")
+> track.summary(time=3, size=FALSE, access=1)
+         class      mode  extent length            modified             created            accessed TA TW
+X        array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:23 2001-01-01 12:00:23 2001-01-01 12:00:23  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:15 2001-01-01 12:00:15 2001-01-01 12:00:15  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:17 2001-01-01 12:00:17 2001-01-01 12:00:17  0  1
+Y         list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11  1  1
+abc  character character     [1]      1 2001-01-01 12:00:18 2001-01-01 12:00:18 2001-01-01 12:00:18  0  1
+def       list      list   [[3]]      3 2001-01-01 12:00:24 2001-01-01 12:00:24 2001-01-01 12:00:24  0  1
+x      numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:20 2001-01-01 12:00:20 2001-01-01 12:00:20  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:19 2001-01-01 12:00:19 2001-01-01 12:00:19  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:21 2001-01-01 12:00:21 2001-01-01 12:00:21  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:22 2001-01-01 12:00:22 2001-01-01 12:00:22  0  1
+z      numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08  0  1
+> track.stop()
+> 
+> # Test (6) rebuild an unlinked directory with just new .rda files
+> ##################################################
+> # Clean up all the directories created in these tests
+> unlink("tmp7", recursive=TRUE)
+> # And put some extra files in tmp7
+> x1 <- 1
+> x2 <- 2
+> x1.1 <- 3
+> x3 <- 4
+> X4 <- 5
+> X5 <- 6
+> X6 <- 7
+> dir.create("tmp7")
+> save("x1", file="tmp7/x1.rda")
+> save("x2", file="tmp7/x2.rda")
+> save("x1.1", file="tmp7/x1.1.rda")
+> save("x3", file="tmp7/x4.rda")
+> save("X4", file="tmp7/xx4.rda")
+> save("X5", file="tmp7/.x5.rda")
+> save("X6", file="tmp7/_6.rda")
+> remove(list=c("x1", "x2", "x1.1", "x3", "X4", "X5", "X6"))
+> res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, fix=TRUE, dry.run=FALSE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from names of various RData files: 'xx4.rda'...
+File map file ('./tmp7/filemap.txt') does not exist; continuing...
+Some data files are not in the file map: '.x5.rda', '_6.rda', 'x1.1.rda', 'x1.rda', 'x2.rda', 'x4.rda', 'xx4.rda'
+Loading file './tmp7/.x5.rda' for unknown object ... loaded 'X5'
+.x5.rda cannot be used as is because objects that do not have a 'simple' name must be stored in a file beginning with '_', moving to ./tmp7/quarantine and rewriting the object
+Saving object 'X5' to './tmp7/_1.rda'
+Loading file './tmp7/_6.rda' for unknown object ... loaded 'X6'
+Loading file './tmp7/x1.1.rda' for unknown object ... loaded 'x1.1'
+Loading file './tmp7/x1.rda' for unknown object ... loaded 'x1'
+Loading file './tmp7/x2.rda' for unknown object ... loaded 'x2'
+Loading file './tmp7/x4.rda' for unknown object ... loaded 'x3'
+x4.rda cannot be used as is because the file has a 'simple' name different to the object name, moving to ./tmp7/quarantine and rewriting the object
+Saving object 'x3' to './tmp7/x3.rda'
+Loading file './tmp7/xx4.rda' for unknown object ... loaded 'X4'
+xx4.rda cannot be used as is because the file has a 'simple' name different to the object name, moving to ./tmp7/quarantine and rewriting the object
+Saving object 'X4' to './tmp7/_2.rda'
+New file map has 7 newly constructed entries and uses 0 old entries
+New summary has 7 newly constructed entries and uses 0 recovered and 0 old entries
+Writing file map to file.
+Saving object summary to file.
+> res$fileMap
+    X4     X5     X6     x1   x1.1     x2     x3 
+  "_2"   "_1"   "_6"   "x1" "x1.1"   "x2"   "x3" 
+> res$summary[ , -5]
+       class    mode extent length            modified             created            accessed A ES SA SW PA PW
+X4   numeric numeric    [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33 1  1  0  1  0  0
+X5   numeric numeric    [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27 1  1  0  1  0  0
+X6   numeric numeric    [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28 1  1  0  1  0  0
+x1   numeric numeric    [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30 1  1  0  1  0  0
+x1.1 numeric numeric    [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29 1  1  0  1  0  0
+x2   numeric numeric    [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31 1  1  0  1  0  0
+x3   numeric numeric    [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32 1  1  0  1  0  0
+> track.start("tmp7")
+> track.summary(time=3, size=FALSE, access=1)
+       class    mode extent length            modified             created            accessed TA TW
+X4   numeric numeric    [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
+X5   numeric numeric    [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+X6   numeric numeric    [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+x1   numeric numeric    [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x1.1 numeric numeric    [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x2   numeric numeric    [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
+x3   numeric numeric    [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+> track.stop()
+> 
+> ###
+> # Test (7) rebuild an active directory with the filemap & summary
+> #   missing entries (different missing in the env & file
+> #   versions), & new .rda files
+> trackObjs:::create.fake.Sys.time(3600 * 4)
+> track.start("tmp7")
+> track(x <- 33)
+> track(X <- array(1:24, dim=2:4))
+> track(Y <- list(a=1:3,b=2))
+> X[2] <- -1
+> track(abc <- "def")
+> track(def <- list(1,2,3))
+> invisible(Y); invisible(abc); invisible(abc); invisible(abc)
+> track.summary(time=3, size=FALSE, access=1) # omit the 'size' column: it varies by machine
+         class      mode  extent length            modified             created            accessed TA TW
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11  1  1
+abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14  3  1
+def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10  0  1
+x      numeric   numeric     [1]      1 2001-01-01 13:00:02 2001-01-01 13:00:02 2001-01-01 13:00:02  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+> track.status()
+        Status InMem FileBase FileExists Saved
+X      tracked FALSE       _3       TRUE  TRUE
+X4     tracked FALSE       _2       TRUE  TRUE
+X5     tracked FALSE       _1       TRUE  TRUE
+X6     tracked FALSE       _6       TRUE  TRUE
+Y      tracked FALSE       _4       TRUE  TRUE
+abc    tracked FALSE      abc       TRUE  TRUE
+def    tracked FALSE      def       TRUE  TRUE
+res  untracked    NA     <NA>         NA    NA
+x      tracked FALSE        x       TRUE  TRUE
+x1     tracked FALSE       x1       TRUE  TRUE
+x1.1   tracked FALSE     x1.1       TRUE  TRUE
+x2     tracked FALSE       x2       TRUE  TRUE
+x3     tracked FALSE       x3       TRUE  TRUE
+> # damage the filemap stored in the tracking environment
+> trackingEnv <- attr(globalenv(), "trackingEnv")
+> filemap <- get(".trackingFileMap", envir=trackingEnv)
+> filemap
+    X4     X5     X6     x1   x1.1     x2     x3      x      X      Y    abc    def 
+  "_2"   "_1"   "_6"   "x1" "x1.1"   "x2"   "x3"    "x"   "_3"   "_4"  "abc"  "def" 
+> assign(".trackingFileMap", filemap[-match(c("x", "X", "x1", "def"), names(filemap))], envir=trackingEnv)
+> # damage the filemap stored on disk
+> filemap2 <- filemap[-match(c("x", "X", "x2", "abc"), names(filemap))]
+> cat(paste(filemap2, ":", names(filemap2), "\n", sep=""), sep="", file="tmp7/filemap.txt")
+> readLines("tmp7/filemap.txt", -1)
+[1] "_2:X4"     "_1:X5"     "_6:X6"     "x1:x1"     "x1.1:x1.1" "x3:x3"     "_4:Y"      "def:def"  
+> # damage the summary stored in the tracking environment
+> .trackingSummary <- get(".trackingSummary", envir=trackingEnv)
+> assign(".trackingSummary", .trackingSummary[-match(c("x", "abc", "X4"), rownames(.trackingSummary)),], envir=trackingEnv)
+> # damage the summary stored on disk
+> .trackingSummary <- .trackingSummary[-match(c("x", "def", "x1"), rownames(.trackingSummary)),]
+> save(".trackingSummary", file="tmp7/.trackingSummary.rda")
+> # drop some extra save files in the tracking directory
+> aa <- list(1,2,3)
+> bb <- list(4,5)
+> save("aa", file="tmp7/x5.rda")
+> save("bb", file="tmp7/bb.rda")
+> remove(list=c("aa", "bb", "filemap", "filemap2", ".trackingSummary", "trackingEnv"))
+> # remove an active binding
+> remove(list=c("Y", "x1.1"))
+> # And put a masking object in place
+> Y <- "I'm in the way"
+> # put an extra object in the tracking directory
+> assign("cc", list(6), envir=attr(globalenv(), "trackingEnv"))
+> # and see if we can rebuild ...
+> trackObjs:::create.fake.Sys.time(3600 * 5)
+> res <- track.rebuild(verbose=2, fix=TRUE, dry.run=TRUE, use.file.times=FALSE)
+Rebuilding an active tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Found a fileMap in the environment and on disk
+Using tracking summary from tracking environment.
+Using tracking summary read from file.
+Some data files are not in the file map: '_3.rda', 'abc.rda', 'bb.rda', 'x.rda', 'x2.rda', 'x5.rda'
+Loading file './tmp7/_3.rda' for unknown object ... loaded 'X'
+Loading file './tmp7/abc.rda' for unknown object ... loaded 'abc'
+Loading file './tmp7/bb.rda' for unknown object ... loaded 'bb'
+Loading file './tmp7/x.rda' for unknown object ... loaded 'x'
+Loading file './tmp7/x2.rda' for unknown object ... loaded 'x2'
+Loading file './tmp7/x5.rda' for unknown object ... loaded 'aa'
+x5.rda cannot be used as is because the file has a 'simple' name different to the object name, would move to ./tmp7/quarantine and rewrite the object
+Would save object 'aa' to './tmp7/aa.rda'
+Looking at object 'cc' in tracking environment
+New file map has 7 newly constructed entries and uses 8 old entries
+New summary has 4 newly constructed entries and uses 3 recovered and 8 old entries
+Would rebuild 4 missing active bindings: aa, bb, cc, x1.1
+1 tracked vars are masked by non-active bindings -- to fix, please manually remove these vars from the tracked environment before re-running track.rebuild()
+The masked vars are: Y
+> res$fileMap
+     X     X4     X5     X6      Y     aa    abc     bb     cc    def      x     x1   x1.1     x2     x3 
+  "_3"   "_2"   "_1"   "_6"   "_4"   "aa"  "abc"   "bb"   "cc"  "def"    "x"   "x1" "x1.1"   "x2"   "x3" 
+> res$summary[ , -5]
+         class      mode  extent length            modified             created            accessed A ES SA SW PA PW
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06 1  1  2  3  0  0
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33 1  3  0  0  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27 1  3  0  0  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28 1  3  0  0  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11 1  1  1  1  0  0
+aa        list      list   [[3]]      3 2001-01-01 14:00:07 2001-01-01 14:00:07 2001-01-01 14:00:07 1  1  0  1  0  0
+abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14 1  1  3  1  0  0
+bb        list      list   [[2]]      2 2001-01-01 14:00:04 2001-01-01 14:00:04 2001-01-01 14:00:04 1  1  0  1  0  0
+cc        list      list   [[1]]      1 2001-01-01 14:00:08 2001-01-01 14:00:08 2001-01-01 14:00:08 1  1  0  1  0  0
+def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10 1  1  0  1  0  0
+x      numeric   numeric     [1]      1 2001-01-01 14:00:05 2001-01-01 14:00:05 2001-01-01 14:00:05 1  1  0  1  0  0
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30 1  3  0  0  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29 1  3  0  0  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31 1  3  0  0  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32 1  3  0  0  0  1
+> res <- track.rebuild(verbose=2, fix=TRUE, dry.run=FALSE, use.file.times=FALSE)
+Rebuilding an active tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Found a fileMap in the environment and on disk
+Using tracking summary from tracking environment.
+Using tracking summary read from file.
+Some data files are not in the file map: '_3.rda', 'abc.rda', 'bb.rda', 'x.rda', 'x2.rda', 'x5.rda'
+Loading file './tmp7/_3.rda' for unknown object ... loaded 'X'
+Loading file './tmp7/abc.rda' for unknown object ... loaded 'abc'
+Loading file './tmp7/bb.rda' for unknown object ... loaded 'bb'
+Loading file './tmp7/x.rda' for unknown object ... loaded 'x'
+Loading file './tmp7/x2.rda' for unknown object ... loaded 'x2'
+Loading file './tmp7/x5.rda' for unknown object ... loaded 'aa'
+x5.rda cannot be used as is because the file has a 'simple' name different to the object name, moving to ./tmp7/quarantine and rewriting the object
+Saving object 'aa' to './tmp7/aa.rda'
+Looking at object 'cc' in tracking environment
+New file map has 7 newly constructed entries and uses 8 old entries
+New summary has 4 newly constructed entries and uses 3 recovered and 8 old entries
+Rebuilding 4 missing active bindings: aa, bb, cc, x1.1
+1 tracked vars are masked by non-active bindings -- to fix, please manually remove these vars from the tracked environment before re-running track.rebuild()
+The masked vars are: Y
+Assigning '.trackingFileMap' and '.trackingSummary' in tracking environment.
+Writing file map to file.
+Saving object summary to file.
+> track.summary(time=3, size=FALSE, access=1) # omit the 'size' column: it varies by machine
+         class      mode  extent length            modified             created            accessed TA TW
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11  1  1
+aa        list      list   [[3]]      3 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
+abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14  3  1
+bb        list      list   [[2]]      2 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
+cc        list      list   [[1]]      1 2001-01-01 14:00:16 2001-01-01 14:00:16 2001-01-01 14:00:16  0  1
+def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10  0  1
+x      numeric   numeric     [1]      1 2001-01-01 14:00:13 2001-01-01 14:00:13 2001-01-01 14:00:13  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+Warning message:
+In track.summary(time = 3, size = FALSE, access = 1) :
+  some vars are in the summary but not tracked (info in summary may be wrong for the visible instances of these vars): 'Y'
+> track.status()
+        Status InMem FileBase FileExists Saved
+X      tracked FALSE       _3       TRUE  TRUE
+X4     tracked FALSE       _2       TRUE  TRUE
+X5     tracked FALSE       _1       TRUE  TRUE
+X6     tracked FALSE       _6       TRUE  TRUE
+Y       masked FALSE       _4       TRUE  TRUE
+aa     tracked FALSE       aa       TRUE  TRUE
+abc    tracked FALSE      abc       TRUE  TRUE
+bb     tracked FALSE       bb       TRUE  TRUE
+cc     tracked  TRUE       cc      FALSE FALSE
+def    tracked FALSE      def       TRUE  TRUE
+res  untracked    NA     <NA>         NA    NA
+x      tracked FALSE        x       TRUE  TRUE
+x1     tracked FALSE       x1       TRUE  TRUE
+x1.1   tracked FALSE     x1.1       TRUE  TRUE
+x2     tracked FALSE       x2       TRUE  TRUE
+x3     tracked FALSE       x3       TRUE  TRUE
+> remove(list="Y")
+> res <- track.rebuild(verbose=2, fix=TRUE, dry.run=FALSE, use.file.times=FALSE)
+Rebuilding an active tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Found a fileMap in the environment and on disk
+Using tracking summary from tracking environment.
+Using tracking summary read from file.
+New file map has 0 newly constructed entries and uses 15 old entries
+New summary has 0 newly constructed entries and uses 0 recovered and 15 old entries
+Rebuilding 1 missing active bindings: Y
+Assigning '.trackingFileMap' and '.trackingSummary' in tracking environment.
+Writing file map to file.
+Saving object summary to file.
+> track.summary(time=3, size=FALSE, access=1) # omit the 'size' column: it varies by machine
+         class      mode  extent length            modified             created            accessed TA TW
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11  1  1
+aa        list      list   [[3]]      3 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
+abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14  3  1
+bb        list      list   [[2]]      2 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
+cc        list      list   [[1]]      1 2001-01-01 14:00:16 2001-01-01 14:00:16 2001-01-01 14:00:16  0  1
+def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10  0  1
+x      numeric   numeric     [1]      1 2001-01-01 14:00:13 2001-01-01 14:00:13 2001-01-01 14:00:13  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+> track.status()
+        Status InMem FileBase FileExists Saved
+X      tracked FALSE       _3       TRUE  TRUE
+X4     tracked FALSE       _2       TRUE  TRUE
+X5     tracked FALSE       _1       TRUE  TRUE
+X6     tracked FALSE       _6       TRUE  TRUE
+Y      tracked FALSE       _4       TRUE  TRUE
+aa     tracked FALSE       aa       TRUE  TRUE
+abc    tracked FALSE      abc       TRUE  TRUE
+bb     tracked FALSE       bb       TRUE  TRUE
+cc     tracked  TRUE       cc      FALSE FALSE
+def    tracked FALSE      def       TRUE  TRUE
+res  untracked    NA     <NA>         NA    NA
+x      tracked FALSE        x       TRUE  TRUE
+x1     tracked FALSE       x1       TRUE  TRUE
+x1.1   tracked FALSE     x1.1       TRUE  TRUE
+x2     tracked FALSE       x2       TRUE  TRUE
+x3     tracked FALSE       x3       TRUE  TRUE
+> track.stop()
+> track.start("tmp7")
+> track.summary(time=3, size=FALSE, access=1)
+         class      mode  extent length            modified             created            accessed TA TW
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11  1  1
+aa        list      list   [[3]]      3 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
+abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14  3  1
+bb        list      list   [[2]]      2 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
+cc        list      list   [[1]]      1 2001-01-01 14:00:16 2001-01-01 14:00:16 2001-01-01 14:00:16  0  1
+def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10  0  1
+x      numeric   numeric     [1]      1 2001-01-01 14:00:13 2001-01-01 14:00:13 2001-01-01 14:00:13  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+> track.status()
+        Status InMem FileBase FileExists Saved
+X      tracked FALSE       _3       TRUE  TRUE
+X4     tracked FALSE       _2       TRUE  TRUE
+X5     tracked FALSE       _1       TRUE  TRUE
+X6     tracked FALSE       _6       TRUE  TRUE
+Y      tracked FALSE       _4       TRUE  TRUE
+aa     tracked FALSE       aa       TRUE  TRUE
+abc    tracked FALSE      abc       TRUE  TRUE
+bb     tracked FALSE       bb       TRUE  TRUE
+cc     tracked FALSE       cc       TRUE  TRUE
+def    tracked FALSE      def       TRUE  TRUE
+res  untracked    NA     <NA>         NA    NA
+x      tracked FALSE        x       TRUE  TRUE
+x1     tracked FALSE       x1       TRUE  TRUE
+x1.1   tracked FALSE     x1.1       TRUE  TRUE
+x2     tracked FALSE       x2       TRUE  TRUE
+x3     tracked FALSE       x3       TRUE  TRUE
+> unlink("tmp7", recursive=TRUE)
+> 

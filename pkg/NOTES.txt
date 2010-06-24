@@ -1,0 +1,92 @@
+todo: change existing tests to use auto=FALSE and add tests for the default auto=TRUE
+todo: add tests for existing x in track(x <- value)
+todo: make track.stop() more versatile -- keep variables (with or without deleting files)
+todo: document track.sync()
+
+done: explain defaults of functions better in track.manage.Rd
+
+done: explain status better in track.status.Rd
+
+fixed for .Random.seed: Startup problems: automatically constructed variables in the globalenv prevent track.start() from working properly -- check if they are the same, and print their names in the error message
+
+done: Write track.sync() - like track(all=TRUE), use in http://developer.r-project.org/TaskHandlers.pdf
+
+done: fix behavior of track(x <- 33) so that if 'x' already exists and has a regular binding, we don't get an error (just overwrite 'x'?)
+
+> x <- 1:2
+> track(x <- 33)
+Error in makeActiveBinding(objname, env = envir, fun = f) : 
+  symbol already has a regular binding
+>
+
+Doesn't properly release memory (did I fix this with the environment assignment in track() ?)
+
+This doesn't result in increasing memory usage:
+n <- 10
+m <- 2e6
+constructObject <- function(i) i+rnorm(m)
+for (i in 1:3) {
+   xname <- paste("x", i, sep="")
+   cat("Doing", xname, "\n")
+   assign(xname, constructObject(i))
+   save(xname, file=paste(xname, ".rda"))
+   print(gc(TRUE))
+   cat("Removing", xname, "\n")
+   remove(list=xname)
+   print(gc(TRUE))
+}
+
+But this does:
+
+mem.limits()/1e6
+# library(trackObjs)
+source.pkg("trackObjs")
+gc(TRUE)
+# start tracking to store data objects in the directory 'data'
+track.start("data")
+n <- 10
+m <- 2e6
+constructObject <- function(i) i+rnorm(m)
+# steps 1, 2 & 3:
+track(x1 <- constructObject(1))
+gc(TRUE)
+track(x2 <- constructObject(2))
+gc(TRUE)
+track(x3 <- constructObject(3))
+gc(TRUE)
+
+
+Rest of code for example:
+
+
+# allow R only 40Mb of vector memory
+mem.limits(vsize=40e6)
+mem.limits()/1e6
+library(trackObjs)
+# start tracking to store data objects in the directory 'data'
+# each object is 8Mb, and we store 10 of them
+track.start("data")
+n <- 10
+m <- 1e6
+constructObject <- function(i) i+rnorm(m)
+# steps 1, 2 & 3:
+for (i in 1:n) {
+   xname <- paste("x", i, sep="")
+   cat("", xname)
+   assign(xname, constructObject(i))
+   # store in a file, accessible by name:
+   track(list=xname)
+}
+cat("\n")
+gc(TRUE)
+# accessing object by name
+object.size(x1)/2^20 # In Mb
+mean(x1)
+mean(x2)
+gc(TRUE)
+# steps 4:6
+result <- sapply(1:n, function(i) mean(get(paste("x", i, sep=""))))
+result
+# remove the data objects
+track.remove(list=paste("x", 1:n, sep=""))
+track.stop()
