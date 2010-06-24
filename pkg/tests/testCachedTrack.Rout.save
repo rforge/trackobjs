@@ -6,7 +6,7 @@
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp1", recursive=TRUE)
-> track.start("tmp1", cache=TRUE)
+> track.start("tmp1", cache=TRUE, auto=FALSE)
 > track(x <- 33)
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved

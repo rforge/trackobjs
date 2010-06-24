@@ -52,12 +52,10 @@ Here is a brief example of tracking some variables in the global environment:
 \preformatted{
 > library(trackObjs)
 > track.start("tmp1")
-> x <- 123                  # Not yet tracked
-> track(x)                  # Variable 'x' is now tracked
-> track(y <- matrix(1:6, ncol=2)) # 'y' is assigned & tracked
+> x <- 123                  # Variable 'x' is now tracked
+> y <- matrix(1:6, ncol=2)  # 'y' is assigned & tracked
 > z1 <- list("a", "b", "c")
 > z2 <- Sys.time()
-> track(list=c("z1", "z2")) # Track a bunch of variables
 > track.summary(size=F)     # See a summary of tracked vars
             class    mode extent length            modified TA TW
 x         numeric numeric    [1]      1 2007-09-07 08:50:58  0  1

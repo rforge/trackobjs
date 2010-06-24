@@ -49,7 +49,11 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ##   addTaskCallback(track.sync.callback, data=globalenv())
     ## and
     ##   assign(".trackAuto", TRUE, envir=globalenv())
-    trackingEnv <- getTrackingEnv(data)
+    trackingEnv <- getTrackingEnv(data, stop.on.not.tracked = FALSE)
+    ## trackingEnv will be missing on the callback following the completion
+    ## of the command track.stop()
+    if (is.null(trackingEnv))
+        return(FALSE)
     keep.auto.tracking <- mget(".trackAuto", envir=trackingEnv, ifnotfound=FALSE)[[1]]
     ## This is the easist way to remove the callback when it is no longer wanted,
     ## otherwise we have the problem of identifying the appropriate callback

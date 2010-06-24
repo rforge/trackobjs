@@ -80,12 +80,12 @@ library(trackObjs)
 unlink("tmp1", recursive=TRUE)
 # build a tracking dir populated with some variables
 track.start("tmp1")
-track(x <- 33)
-track(X <- array(1:24, dim=2:4))
-track(Y <- list(a=1:3,b=2))
+x <- 33
+X <- array(1:24, dim=2:4)
+Y <- list(a=1:3,b=2)
 X[2] <- -1
-track(abc <- "def")
-track(def <- list(1,2,3))
+abc <- "def"
+def <- list(1,2,3)
 invisible(Y); invisible(abc); invisible(abc); invisible(abc)
 track.summary()
 track.stop()

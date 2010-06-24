@@ -8,7 +8,7 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > trackObjs:::create.fake.Sys.time(0)
 > unlink("tmp9", recursive=TRUE)
-> track.start("tmp9")
+> track.start("tmp9", auto=FALSE)
 > track(data <- data.frame(x=rnorm(10), y=rnorm(10)))
 > X <- array(1:24, dim=2:4)
 > track(X)

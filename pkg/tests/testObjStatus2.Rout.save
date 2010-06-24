@@ -9,12 +9,12 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp4", recursive=TRUE)
 > remove(list=ls(all=TRUE))
-> track.start("tmp4", cache=FALSE)
+> track.start("tmp4", cache=FALSE, auto=FALSE)
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), globalenv())
 > .trackingFileMap <- "aren't I a mischevious little object :-)"
-> .trackingEnv <- "I simply can't be tracked!"
+> # .trackingEnv <- "Assigning me like this will break tracking!"
 > track(uncoop)
 Warning message:
 In track(uncoop) : cannot track 'uncoop' because it is an active binding

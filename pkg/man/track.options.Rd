@@ -103,7 +103,7 @@ track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
 library(trackObjs)
 unlink("tmp1", recursive=TRUE)
 track.start("tmp1")
-track(x <- 33)
+x <- 33
 X <- array(1:24, dim=2:4)
 track.status()
 track.options(cache=TRUE, writeToDisk=FALSE) # change for just this session
@@ -112,7 +112,6 @@ track.options(c("cache", "writeToDisk"))
 track.options("cache", "writeToDisk")
 track.options("cache")
 track.options()
-track(X)
 # see the effect of the changed options on the status of X (X is not saved to disk)
 track.status()
 X[1,1,1] <- 0

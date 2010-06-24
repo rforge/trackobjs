@@ -7,7 +7,7 @@
 > options(width=100)
 > trackObjs:::create.fake.Sys.time(0)
 > unlink("tmp8", recursive=TRUE)
-> track.start("tmp8")
+> track.start("tmp8", auto=FALSE)
 > track(x <- 33)
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved

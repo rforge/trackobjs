@@ -114,20 +114,16 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
 library(trackObjs)
 unlink("tmp1", recursive=TRUE)
 track.start("tmp1")
-track(x <- 33)
+x <- 33
 X <- array(1:24, dim=2:4)
-track(X)
-track(Y <- list(a=1:3,b=2))
+Y <- list(a=1:3,b=2)
 X[2] <- -1
 track.summary(time=0, access=1, size=FALSE)
 y1 <- 2
 y2 <- 3
-track(all=TRUE)
 z1 <- 4
 z2 <- 5
 z3 <- 6
-untracked()
-track(list=c("z1", "z3"))
 untracked()
 track.summary(time=0, access=1, size=FALSE)
 ls(all=TRUE)

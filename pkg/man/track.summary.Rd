@@ -88,10 +88,9 @@ track.summary(expr, pos = 1, envir = as.environment(pos), list = NULL, pattern =
 library(trackObjs)
 unlink("tmp1", recursive=TRUE)
 track.start("tmp1")
-track(x <- 33)
+x <- 33
 X <- array(1:24, dim=2:4)
-track(X)
-track(Y <- list(a=1:3,b=2))
+Y <- list(a=1:3,b=2)
 X[2] <- -1
 y1 <- 2
 y2 <- 3

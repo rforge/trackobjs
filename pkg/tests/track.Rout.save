@@ -6,7 +6,7 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > trackObjs:::create.fake.Sys.time(0)
 > unlink("tmp11", recursive=TRUE)
-> track.start("tmp11")
+> track.start("tmp11", auto=FALSE)
 > track(x <- 33)
 > X <- array(1:24, dim=2:4)
 > track(X)
@@ -19,7 +19,7 @@ Y    list    list   [[2]]      2  0  1
 x numeric numeric     [1]      1  0  1
 > y1 <- 2
 > y2 <- 3
-> track(all=TRUE)
+> track()
 > track.summary(time=0, access=1, size=FALSE)
      class    mode  extent length TA TW
 X    array numeric [2x3x4]     24  2  3

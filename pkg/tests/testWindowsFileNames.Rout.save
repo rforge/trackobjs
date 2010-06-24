@@ -8,7 +8,7 @@
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp10", recursive=TRUE)
-> track.start("tmp10")
+> track.start("tmp10", auto=FALSE)
 > track(x <- 1)
 > track(prn <- 2)
 > track(nul <- 3)
@@ -39,7 +39,7 @@ nul      numeric numeric     [1]      1  0  1
 prn      numeric numeric     [1]      1  0  1
 x        numeric numeric     [1]      1  0  1
 > track.stop()
-> track.start("tmp10")
+> track.start("tmp10", auto=FALSE)
 > x
 [1] 1
 > prn

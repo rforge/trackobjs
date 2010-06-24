@@ -1,7 +1,11 @@
 		CHANGES in trackObjs version 0.9-0 (2010-06-15)
 ENHANCEMENTS
-    o   add ability to auto-track new and deleted variables using
-        task callbacks (on by default)
+    o   Major improvement in user level functionality: added
+        ability to auto-track new and deleted variables using
+        task callbacks (on by default).  This means that all
+        the user has to do to track all created objects (and
+        keep up with deletions) is to issue the command
+        track.start() to start tracking.
     o   add two new option components:
            - autoTrackExclude: vector of regexps specifying vars
                not to track automatically

@@ -318,11 +318,9 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         makeActiveBinding(objname, env=envir, fun=f)
     }
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
-    browser()
     if (auto) {
         addTaskCallback(track.sync.callback, data=envir)
         assign(".trackAuto", TRUE, envir=trackingEnv)
-        browser()
     }
     return(invisible(NULL))
 }
@@ -564,10 +562,13 @@ setTrackingEnv <- function(trackedEnv, trackingEnv) {
     invisible(NULL)
 }
 
-getTrackingEnv <- function(trackedEnv) {
+getTrackingEnv <- function(trackedEnv, stop.on.not.tracked = TRUE) {
     env <- mget(".trackingEnv", ifnotfound=list(NULL), envir=trackedEnv)[[1]]
     if (is.null(env))
-        stop("env ", envname(trackedEnv), " is not tracked (has no '.trackingEnv' variable)")
+        if (stop.on.not.tracked)
+            stop("env ", envname(trackedEnv), " is not tracked (has no '.trackingEnv' variable)")
+        else
+            return(NULL)
     if (!is.environment(env))
         stop("variable '.trackingEnv' in env ", envname(trackedEnv),
              " is not an environment")

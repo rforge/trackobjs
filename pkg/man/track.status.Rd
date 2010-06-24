@@ -108,14 +108,14 @@ track.start("tmp1", cache=TRUE)
 # create some objects that are untrackable for various reasons
 makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), globalenv())
 .trackingFileMap <- "aren't I a mischevious little object :-)"
-.trackingEnv <- "I simply can't be tracked!"
-track(uncoop)
-track(.trackingFileMap)
-track(x1 <- 123)
-track(x2 <- 456)
-track(x3 <- 789)
-track(x4 <- -321)
-track(x5 <- -654)
+# .trackingEnv <- "Assigning me like this will break tracking!"
+uncoop
+.trackingFileMap
+x1 <- 123
+x2 <- 456
+x3 <- 789
+x4 <- -321
+x5 <- -654
 x6 <- -987
 track.status()
 remove(list=c("x4", "x5"))
