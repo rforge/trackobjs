@@ -2,38 +2,27 @@
 
 > # Test the various functions that show and change object status,
 > # and functions that load saved objects into tracking databases.
-> # This version works with the tracked environment being a new
-> # environment attached in position 2.
-> # Otherwise, the same as testobjStatus.Rout.save, but with
-> # cache=FALSE (the default)
+> # Same as testobjStatus.Rout.save, but with cache=FALSE (the default)
 > library(trackObjs)
 > # Set the locale used by order() so that track.status() & track.summary() put
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
-> unlink("tmp5", recursive=TRUE)
-> attach(NULL, name="testenv")
+> unlink("tmp4", recursive=TRUE)
 > remove(list=ls(all=TRUE))
-> track.start("tmp5", pos=2, cache=FALSE, auto=FALSE)
+> track.start("tmp4", cache=FALSE)
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
-> makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), as.environment("testenv"))
-> assign(".trackingFileMap", "aren't I a mischevious little object :-)", pos=2)
-> # assign(".trackingEnv", "Assigning me like this will break tracking!", pos=2)
-> track(uncoop, pos=2)
-Warning message:
-In track(uncoop, pos = 2) :
-  cannot track 'uncoop' because it is an active binding
-> track(.trackingFileMap, pos=2)
-Warning message:
-In track(.trackingFileMap, pos = 2) :
-  cannot track 1 variables (these are used in implementing tracking or are illegal variable names): '.trackingFileMap'
-> track(x1 <- 123, pos=2)
-> track(x2 <- 456, pos=2)
-> track(x3 <- 789, pos="testenv")
-> track(x4 <- -321, pos=2)
-> track(x5 <- -654, pos=2)
-> assign("x6", -987, pos=2)
-> track.status(pos=2)
+> makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), globalenv())
+> .trackingFileMap <- "aren't I a mischevious little object :-)"
+> # .trackingEnv <- "Assigning me like this will break tracking!"
+> .trackingFileMap <- NULL
+> x1 <- 123
+> x2 <- 456
+> x3 <- 789
+> x4 <- -321
+> x5 <- -654
+> x6 <- -987
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -42,11 +31,11 @@ x3         tracked FALSE       x3       TRUE  TRUE
 x4         tracked FALSE       x4       TRUE  TRUE
 x5         tracked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
-> remove(list=c("x4", "x5"), pos="testenv")
-> assign("x5", "not tracked", pos=2)
-> track.flush(x2, pos=2)
+> remove(list=c("x4", "x5"))
+> x5 <- "not tracked"
+> track.flush(x2)
 [1] "x2"
-> track.status(reserved=TRUE, pos=2)
+> track.status(reserved=TRUE)
                       Status InMem FileBase FileExists Saved
 .trackingEnv     untrackable    NA     <NA>         NA    NA
 .trackingFileMap untrackable    NA     <NA>         NA    NA
@@ -57,9 +46,9 @@ x3                   tracked FALSE       x3       TRUE  TRUE
 x4                  orphaned FALSE       x4       TRUE  TRUE
 x5                    masked FALSE       x5       TRUE  TRUE
 x6                 untracked    NA     <NA>         NA    NA
-> track.options(writeToDisk=FALSE, pos=2)
-> assign("x3", 0, pos="testenv")
-> track.status(pos=2)
+> track.options(writeToDisk=FALSE)
+> x3 <- 0
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -68,9 +57,9 @@ x3         tracked  TRUE       x3       TRUE FALSE
 x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
-> track.save(pos=2)
+> track.save()
 [1] "x3"
-> track.status(pos=2)
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -79,8 +68,8 @@ x3         tracked  TRUE       x3       TRUE  TRUE
 x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
-> x3 <<- 1
-> track.status(pos=2)
+> x3 <- 1
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -89,21 +78,21 @@ x3         tracked  TRUE       x3       TRUE FALSE
 x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
-> track.unsaved(pos=2)
+> track.unsaved()
 [1] "x3"
-> tracked(pos=2)
+> tracked()
 [1] "x1" "x2" "x3"
-> untracked(pos=2)
+> untracked()
 [1] "x6"
-> untrackable(pos=2)
-[1] ".trackingEnv"     ".trackingFileMap" "uncoop"          
-> track.masked(pos=2)
+> untrackable()
+[1] ".trackingEnv"     ".trackingFileMap" "uncoop"
+> track.masked()
 [1] "x5"
-> track.orphaned(pos=2)
+> track.orphaned()
 [1] "x4"
-> track.save(x3, pos=2)
+> track.save(x3)
 [1] "x3"
-> track.status(pos=2)
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -113,24 +102,22 @@ x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
 > # Test forgetting an unsaved variable
-> find("x3")
-[1] "testenv"
 > x3
 [1] 1
-> x3 <<- 2
-> track.unsaved(pos=2)
+> x3 <- 2
+> track.unsaved()
 [1] "x3"
 > x3
 [1] 2
-> track.forget(x3, pos=2)
+> track.forget(x3)
 [1] "x3"
 > x3
 [1] 1
 > # Test untracking a variable
-> track.options(cache=FALSE, pos=2)
+> track.options(cache=FALSE)
 > x2
 [1] 456
-> track.status(pos=2)
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -139,11 +126,9 @@ x3         tracked FALSE       x3       TRUE  TRUE
 x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
-> bindingIsActive("x2", as.environment(2))
+> bindingIsActive("x2", globalenv())
 [1] TRUE
-> untrack(x2, pos=2)
-[1] "x2"
-> track.status(pos=2)
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -152,13 +137,11 @@ x3         tracked FALSE       x3       TRUE  TRUE
 x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
-> bindingIsActive("x2", as.environment("testenv"))
+> bindingIsActive("x2", globalenv())
 [1] FALSE
-> bindingIsActive("x3", as.environment("testenv"))
+> bindingIsActive("x3", globalenv())
 [1] TRUE
-> untrack(x3, keep.in.db=TRUE, pos=2)
-[1] "x3"
-> track.status(pos=2)
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -167,16 +150,16 @@ x3          masked FALSE       x3       TRUE  TRUE
 x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
-> bindingIsActive("x3", as.environment("testenv"))
+> bindingIsActive("x3", globalenv())
 [1] FALSE
 > # Try saving some objects to a file then loading them into the tracked environment
 > y1 <- 1
 > y2 <- "abc"
 > y3 <- list(2, "def")
-> save(list=c("y1", "y2", "y3"), file="tmp5y.rda")
+> save(list=c("y1", "y2", "y3"), file="tmp4y.rda")
 > remove(list=c("y1", "y2", "y3"))
-> track.options(list(writeToDisk=TRUE, cache=TRUE), pos=2)
-> track.status(pos=2)
+> track.options(list(writeToDisk=TRUE, cache=TRUE))
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -185,15 +168,15 @@ x3          masked FALSE       x3       TRUE  TRUE
 x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
-> track.load("tmp5y.rda", pos=2)
+> track.load("tmp4y.rda")
 $loaded
 [1] "y1" "y2" "y3"
 
 $skipped
 character(0)
 
-> unlink("tmp5y.rda")
-> track.status(pos=2)
+> unlink("tmp4y.rda")
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -218,14 +201,14 @@ y3         tracked FALSE       y3       TRUE  TRUE
 
 > # See if the protection mechanisms against overwriting vars in
 > # track.load work correctly.
-> assign("y4", 4, pos=2)
-> assign("y5", 5, pos=2)
-> save(list=c("y3", "y4", "y5"), file="tmp5y.rda", envir=as.environment(2))
-> remove(list=c("y4"), pos=2)
-> y3 <<- "new value"
+> y4 <- 4
+> y5 <- 5
+> save(list=c("y3", "y4", "y5"), file="tmp4y.rda")
+> remove(list=c("y4"))
+> y3 <- "new value"
 > y3
 [1] "new value"
-> track.load("tmp5y.rda", pos=2)
+> track.load("tmp4y.rda")
 $loaded
 [1] "y4"
 
@@ -233,12 +216,12 @@ $skipped
 [1] "y3" "y5"
 
 Warning message:
-In track.load("tmp5y.rda", pos = 2) :
-  skipping 2 variable(s) because these exist in <environment 'testenv'> and clobber=FALSE: 'y3''y5'
+In track.load("tmp4y.rda") :
+  skipping 2 variable(s) because these exist in <environment '.GlobalEnv'> and clobber=FALSE: 'y3''y5'
 
 > y3
 [1] "new value"
-> track.status(pos=2)
+> track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
@@ -252,7 +235,7 @@ y2         tracked  TRUE       y2       TRUE  TRUE
 y3         tracked  TRUE       y3       TRUE  TRUE
 y4         tracked FALSE       y4       TRUE  TRUE
 y5       untracked    NA     <NA>         NA    NA
-> track.load("tmp5y.rda", clobber=TRUE, pos=2)
+> track.load("tmp4y.rda", clobber=TRUE)
 $loaded
 [1] "y3" "y4" "y5"
 
@@ -260,8 +243,8 @@ $skipped
 character(0)
 
 Warning message:
-In track.load("tmp5y.rda", clobber = TRUE, pos = 2) :
-  clobbering 3 existing variable(s) in <environment 'testenv'> and clobber=FALSE: 'y3''y4''y5'
+In track.load("tmp4y.rda", clobber = TRUE) :
+  clobbering 3 existing variable(s) in <environment '.GlobalEnv'> and clobber=FALSE: 'y3''y4''y5'
 
 > y3
 [[1]]
@@ -274,13 +257,7 @@ In track.load("tmp5y.rda", clobber = TRUE, pos = 2) :
 [1] 4
 > y5
 [1] 5
-> find("y3")
-[1] "testenv"
-> find("y4")
-[1] "testenv"
-> find("y5")
-[1] "testenv"
-> track.stop(pos=2)
-> unlink("tmp5", recursive=TRUE)
+> track.stop()
+> unlink("tmp4", recursive=TRUE)
 > remove(list=ls(all=TRUE))
-> 
+>

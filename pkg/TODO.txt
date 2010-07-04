@@ -1,0 +1,4 @@
+* change tests over to use auto=TRUE (the default), or duplicate for that case
+* add tests to testFollowObjs.Rout.save with recordAccesses=FALSE, and separately
+  with maintainSummary=FALSE
+

@@ -1,0 +1,41 @@
+
+
+> library(trackObjs)
+> # Set the locale used by order() so that track.status() & track.summary() put
+> # rows in the same order on different systems (so that the test output matches).
+> invisible(Sys.setlocale("LC_COLLATE", "C"))
+> trackObjs:::create.fake.Sys.time(0)
+> unlink("tmp11", recursive=TRUE)
+> track.start("tmp11")
+> x <- 33
+> X <- array(1:24, dim=2:4)
+> Y <- list(a=1:3,b=2)
+> X[2] <- -1
+> track.summary(time=0, access=1, size=FALSE)
+    class    mode  extent length TA TW
+X   array numeric [2x3x4]     24  2  3
+Y    list    list   [[2]]      2  0  1
+x numeric numeric     [1]      1  0  1
+> y1 <- 2
+> y2 <- 3
+> track.summary(time=0, access=1, size=FALSE)
+     class    mode  extent length TA TW
+X    array numeric [2x3x4]     24  2  3
+Y     list    list   [[2]]      2  0  1
+x  numeric numeric     [1]      1  0  1
+y1 numeric numeric     [1]      1  0  1
+y2 numeric numeric     [1]      1  0  1
+> track.summary(X, size=FALSE)
+  class    mode  extent length            modified TA TW
+X array numeric [2x3x4]     24 2001-01-01 09:00:08  2  3
+> track.summary(list=c("x", "X"), size=FALSE)
+    class    mode  extent length            modified TA TW
+X   array numeric [2x3x4]     24 2001-01-01 09:00:08  2  3
+x numeric numeric     [1]      1 2001-01-01 09:00:02  0  1
+> track.summary(pattern="[xY]", size=FALSE)
+    class    mode extent length            modified TA TW
+Y    list    list  [[2]]      2 2001-01-01 09:00:04  0  1
+x numeric numeric    [1]      1 2001-01-01 09:00:02  0  1
+> track.stop()
+> unlink("tmp11", recursive=TRUE)
+>

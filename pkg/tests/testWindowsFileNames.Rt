@@ -8,16 +8,15 @@
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp10", recursive=TRUE)
-> track.start("tmp10", auto=FALSE)
-> track(x <- 1)
-> track(prn <- 2)
-> track(nul <- 3)
-> track(com7 <- 4)
-> track(com0 <- 5)
-> track(com10 <- 6)
-> track(com1.2.3 <- 7)
+> track.start("tmp10")
+> x <- 1
+> prn <- 2
+> nul <- 3
+> com7 <- 4
+> com0 <- 5
+> com10 <- 6
+> com1.2.3 <- 7
 > X <- array(1:24, dim=2:4)
-> track(X)
 > track.status(tracked=TRUE)
           Status InMem FileBase FileExists Saved
 X        tracked FALSE       _5       TRUE  TRUE
@@ -39,7 +38,7 @@ nul      numeric numeric     [1]      1  0  1
 prn      numeric numeric     [1]      1  0  1
 x        numeric numeric     [1]      1  0  1
 > track.stop()
-> track.start("tmp10", auto=FALSE)
+> track.start("tmp10")
 > x
 [1] 1
 > prn
@@ -101,4 +100,4 @@ prn      numeric numeric     [1]      1  1  1
 x        numeric numeric     [1]      1  1  1
 > track.stop()
 > unlink("tmp10", recursive=TRUE)
-> 
+>

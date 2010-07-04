@@ -7,18 +7,17 @@
 > options(width=100)
 > trackObjs:::create.fake.Sys.time(0)
 > unlink("tmp8", recursive=TRUE)
-> track.start("tmp8", auto=FALSE)
-> track(x <- 33)
+> track.start("tmp8")
+> x <- 33
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE
 > X <- array(1:24, dim=2:4)
-> track(X)
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved
 X tracked FALSE       _1       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
-> track(Y <- list(a=1:3,b=2))
+> Y <- list(a=1:3,b=2)
 > X[2] <- -1
 > track.summary(time=0, size=FALSE, access=1) # omit the 'size' column: it varies by machine
     class    mode  extent length TA TW
@@ -70,4 +69,4 @@ Y    list    list   [[2]]      2 2001-01-01 09:00:14 2001-01-01 09:00:04 2001-01
 x numeric numeric     [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:02 2001-01-01 09:00:02  0  2
 > track.stop()
 > unlink("tmp8", recursive=TRUE)
-> 
+>

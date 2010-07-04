@@ -7,8 +7,8 @@
 > options(width=120)
 > options(error=function() NULL)
 > unlink("tmp6", recursive=TRUE)
-> track.start("tmp6", auto=FALSE)
-> track(x <- 33)
+> track.start("tmp6")
+> x <- 33
 > X <- array(1:24, dim=2:4)
 > track.status()
      Status InMem FileBase FileExists Saved
@@ -71,7 +71,6 @@ $autoTrackExclude
 $clobberVars
 [1] ".Random.seed"
 
-> track(X)
 > # see the effect of the changed options on the status of X (not saved to disk)
 > track.status()
    Status InMem FileBase FileExists Saved
@@ -89,7 +88,7 @@ x tracked FALSE        x       TRUE  TRUE
 X tracked FALSE       _1       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
 > track.stop()
-> track.start("tmp6", auto=FALSE)
+> track.start("tmp6")
 > # note that options previously changed are back at defaults (because default
 > # to track.options() is save=FALSE
 > track.options(c("cache", "writeToDisk"))
@@ -108,7 +107,7 @@ $writeToDisk
 [1] FALSE
 
 > track.stop()
-> track.start("tmp6", auto=FALSE)
+> track.start("tmp6")
 > # now options previously changed are remembered (because track.options(..., save=TRUE) was used)
 > track.options(c("cache", "writeToDisk"))
 $cache
@@ -118,4 +117,4 @@ $writeToDisk
 [1] FALSE
 
 > track.stop()
-> 
+>
