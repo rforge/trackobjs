@@ -1,33 +1,35 @@
-		CHANGES in trackObjs version 0.9-0 (2010-06-15)
+                CHANGES in trackObjs version 0.9-0 (2010-06-15)
 ENHANCEMENTS
     o   Major improvement in user level functionality: added
         ability to auto-track new and deleted variables using
         task callbacks (on by default).  This means that all
         the user has to do to track all created objects (and
-        keep up with deletions) is to issue the command
+        keep up with deletions) is to issue the command once
         track.start() to start tracking.
+    o   made 'rdatadir' the default directory for storing
+        R objects
     o   add two new option components:
            - autoTrackExclude: vector of regexps specifying vars
                not to track automatically
            - clobberVars: vector of variable names that can be
                silently clobbered when attaching a tracking db.
-	       The default is ".Random.seed".
-               (to avoid annoying errors/messages about variables
-                .Random.seed)
+               The default is ".Random.seed", to avoid annoying
+               errors/messages about the variable .Random.seed
+               (which can be created by various functions).
     o   change track(x <- value) so that if x already exists, or
         is already tracked, x still gets the new value
 
-		CHANGES in trackObjs version 0.8-6 (2009-11-03)
+                CHANGES in trackObjs version 0.8-6 (2009-11-03)
 ENHANCEMENTS
     o   Fix documentation links so that they pass the stricter
         tests in R CMD check.
 
-		CHANGES in trackObjs version 0.8-3 (2009-02-20)
+                CHANGES in trackObjs version 0.8-3 (2009-02-20)
 BUG FIXES
-    o	Make each test use a unique tracking database so that
-    	tests don't interfere with each other when run in parallel.
+    o   Make each test use a unique tracking database so that
+        tests don't interfere with each other when run in parallel.
 
-		CHANGES in trackObjs version 0.8-0
+                CHANGES in trackObjs version 0.8-0
 BUG FIXES
     o   Fixed faulty detection of conflicting existing objects
         when starting to track to an existing directory.
