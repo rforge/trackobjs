@@ -2,6 +2,8 @@
 
 > # Test the various functions that show and change object status,
 > # and functions that load saved objects into tracking databases.
+> # These tests are not as effective with auto=TRUE -- the better
+> # tests are in testObjStatusAutoFalse1.Rt.
 > library(trackObjs)
 > # Set the locale used by order() so that track.status() & track.summary() put
 > # rows in the same order on different systems (so that the test output matches).
@@ -30,9 +32,9 @@ x2         tracked  TRUE       x2       TRUE  TRUE
 x3         tracked  TRUE       x3       TRUE  TRUE
 x4         tracked  TRUE       x4       TRUE  TRUE
 x5         tracked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
-> remove(list=c("x4", "x5"))
-> x5 <- "not tracked"
+x6         tracked  TRUE       x6       TRUE  TRUE
+> # trick to make x5 not an active binding
+> {remove(list=c("x4", "x5")) ; x5 <- "not tracked"}
 > track.flush(x2)
 [1] "x2"
 > track.status(reserved=TRUE)
@@ -43,9 +45,8 @@ uncoop           untrackable    NA     <NA>         NA    NA
 x1                   tracked  TRUE       x1       TRUE  TRUE
 x2                   tracked FALSE       x2       TRUE  TRUE
 x3                   tracked  TRUE       x3       TRUE  TRUE
-x4                  orphaned  TRUE       x4       TRUE  TRUE
 x5                    masked  TRUE       x5       TRUE  TRUE
-x6                 untracked    NA     <NA>         NA    NA
+x6                   tracked  TRUE       x6       TRUE  TRUE
 > track.options(writeToDisk=FALSE)
 > x3 <- 0
 > track.status()
@@ -54,9 +55,8 @@ uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
 x2         tracked FALSE       x2       TRUE  TRUE
 x3         tracked  TRUE       x3       TRUE FALSE
-x4        orphaned  TRUE       x4       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 > track.save()
 [1] "x3"
 > track.status()
@@ -65,9 +65,8 @@ uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
 x2         tracked FALSE       x2       TRUE  TRUE
 x3         tracked  TRUE       x3       TRUE  TRUE
-x4        orphaned  TRUE       x4       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 > x3 <- 1
 > track.status()
             Status InMem FileBase FileExists Saved
@@ -75,21 +74,20 @@ uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
 x2         tracked FALSE       x2       TRUE  TRUE
 x3         tracked  TRUE       x3       TRUE FALSE
-x4        orphaned  TRUE       x4       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 > track.unsaved()
 [1] "x3"
 > tracked()
-[1] "x1" "x2" "x3"
+[1] "x1" "x2" "x3" "x6"
 > untracked()
-[1] "x6"
+character(0)
 > untrackable()
-[1] ".trackingEnv"     ".trackingFileMap" "uncoop"
+[1] ".trackingEnv"     ".trackingFileMap" "uncoop"          
 > track.masked()
 [1] "x5"
 > track.orphaned()
-[1] "x4"
+character(0)
 > track.save(x3)
 [1] "x3"
 > track.status()
@@ -98,9 +96,8 @@ uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
 x2         tracked FALSE       x2       TRUE  TRUE
 x3         tracked  TRUE       x3       TRUE  TRUE
-x4        orphaned  TRUE       x4       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 > # Test forgetting an unsaved variable
 > x3
 [1] 1
@@ -113,7 +110,7 @@ x6       untracked    NA     <NA>         NA    NA
 [1] "x3"
 > x3
 [1] 1
-> # Test untracking a variable
+> # Test untracking a variable (doesn't really work with auto=TRUE)
 > track.options(cache=FALSE)
 > x2
 [1] 456
@@ -123,35 +120,32 @@ uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
 x2         tracked FALSE       x2       TRUE  TRUE
 x3         tracked  TRUE       x3       TRUE  TRUE
-x4        orphaned  TRUE       x4       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 > bindingIsActive("x2", globalenv())
 [1] TRUE
 > track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
-x2       untracked    NA     <NA>         NA    NA
+x2         tracked FALSE       x2       TRUE  TRUE
 x3         tracked  TRUE       x3       TRUE  TRUE
-x4        orphaned  TRUE       x4       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 > bindingIsActive("x2", globalenv())
-[1] FALSE
+[1] TRUE
 > bindingIsActive("x3", globalenv())
 [1] TRUE
 > track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
-x2       untracked    NA     <NA>         NA    NA
-x3          masked FALSE       x3       TRUE  TRUE
-x4        orphaned  TRUE       x4       TRUE  TRUE
+x2         tracked FALSE       x2       TRUE  TRUE
+x3         tracked  TRUE       x3       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 > bindingIsActive("x3", globalenv())
-[1] FALSE
+[1] TRUE
 > # Try saving some objects to a file then loading them into the tracked environment
 > y1 <- 1
 > y2 <- "abc"
@@ -163,11 +157,10 @@ x6       untracked    NA     <NA>         NA    NA
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
-x2       untracked    NA     <NA>         NA    NA
-x3          masked FALSE       x3       TRUE  TRUE
-x4        orphaned  TRUE       x4       TRUE  TRUE
+x2         tracked FALSE       x2       TRUE  TRUE
+x3         tracked  TRUE       x3       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 > track.load("tmp3y.rda")
 $loaded
 [1] "y1" "y2" "y3"
@@ -180,11 +173,10 @@ character(0)
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
-x2       untracked    NA     <NA>         NA    NA
-x3          masked FALSE       x3       TRUE  TRUE
-x4        orphaned  TRUE       x4       TRUE  TRUE
+x2         tracked FALSE       x2       TRUE  TRUE
+x3         tracked  TRUE       x3       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 y1         tracked FALSE       y1       TRUE  TRUE
 y2         tracked FALSE       y2       TRUE  TRUE
 y3         tracked FALSE       y3       TRUE  TRUE
@@ -225,16 +217,15 @@ In track.load("tmp3y.rda") :
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked  TRUE       x1       TRUE  TRUE
-x2       untracked    NA     <NA>         NA    NA
-x3          masked FALSE       x3       TRUE  TRUE
-x4        orphaned  TRUE       x4       TRUE  TRUE
+x2         tracked FALSE       x2       TRUE  TRUE
+x3         tracked  TRUE       x3       TRUE  TRUE
 x5          masked  TRUE       x5       TRUE  TRUE
-x6       untracked    NA     <NA>         NA    NA
+x6         tracked  TRUE       x6       TRUE  TRUE
 y1         tracked  TRUE       y1       TRUE  TRUE
 y2         tracked  TRUE       y2       TRUE  TRUE
 y3         tracked  TRUE       y3       TRUE  TRUE
 y4         tracked FALSE       y4       TRUE  TRUE
-y5       untracked    NA     <NA>         NA    NA
+y5         tracked  TRUE       y5       TRUE  TRUE
 > track.load("tmp3y.rda", clobber=TRUE)
 $loaded
 [1] "y3" "y4" "y5"
@@ -260,5 +251,6 @@ In track.load("tmp3y.rda", clobber = TRUE) :
 > track.stop()
 > unlink("tmp3", recursive=TRUE)
 > remove(list=ls(all=TRUE))
->
->
+> 
+> 
+> 

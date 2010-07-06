@@ -68,6 +68,12 @@ $debug
 $autoTrackExclude
 [1] "^\\.track"  "^.required"
 
+$autoTrackFullSyncWait
+[1] 300
+
+$autoTrackLastFullSync
+[1] -1
+
 $clobberVars
 [1] ".Random.seed"
 
@@ -117,4 +123,5 @@ $writeToDisk
 [1] FALSE
 
 > track.stop()
->
+> 
+> 

@@ -319,7 +319,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     }
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
     if (auto) {
-        addTaskCallback(track.sync.callback, data=envir)
+        addTaskCallback(track.sync.callback, data=envir, name=paste("track.auto:", envname(envir), sep=""))
         assign(".trackAuto", TRUE, envir=trackingEnv)
     }
     return(invisible(NULL))
@@ -391,9 +391,10 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
     if (length(list)) {
         alreadyTracked <- objIsTracked(list, envir, trackingEnv)
         if (any(alreadyTracked)) {
-            warning("the following objects are already tracked: ",
-                paste("'", list[which(alreadyTracked)[seq(len=min(3,sum(alreadyTracked)))]], "'", sep="", collapse=", "),
-                if (sum(alreadyTracked) > 3) ", ...")
+            # this is a pretty useless warning, so skip it
+            # warning("the following objects are already tracked: ",
+            #          paste("'", list[which(alreadyTracked)[seq(len=min(3,sum(alreadyTracked)))]], "'", sep="", collapse=", "),
+            #                if (sum(alreadyTracked) > 3) ", ...")
             list <- list[!alreadyTracked]
         }
     }

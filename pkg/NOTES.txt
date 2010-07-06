@@ -1,7 +1,61 @@
-todo: change existing tests to use auto=FALSE and add tests for the default auto=TRUE
-todo: add tests for existing x in track(x <- value)
+> for (i in 1:1000) assign(paste("a", i, sep=""), i)
+> date(); for (i in 1:1000) assign(paste("b", i, sep=""), i); date()
+[1] "Sun Jul 04 18:01:24 2010"
+[1] "Sun Jul 04 18:02:39 2010"
+> 
+> x <- ls()
+> system.time(sapply(x, bindingIsActive, globalenv()))
+   user  system elapsed 
+   0.11    0.00    0.11 
+> date(); for (i in 1:1000) assign(paste("c", i, sep=""), i); date()
+[1] "Sun Jul 04 18:10:34 2010"
+[1] "Sun Jul 04 18:12:31 2010"
+> date()
+[1] "Sun Jul 04 18:12:31 2010"
+> date(); for (i in 1:1000) assign(paste("d", i, sep=""), i); date()
+[1] "Sun Jul 04 18:12:31 2010"
+[1] "Sun Jul 04 18:15:07 2010"
+> date()
+[1] "Sun Jul 04 18:15:07 2010"
+> date(); for (i in 1:1000) assign(paste("e", i, sep=""), i); date()
+[1] "Sun Jul 04 18:15:07 2010"
+[1] "Sun Jul 04 18:18:54 2010"
+> date()
+[1] "Sun Jul 04 18:18:54 2010"
+> system.time(sapply(x, bindingIsActive, globalenv()))
+   user  system elapsed 
+   0.19    0.00    0.19 
+> x <- ls()
+> length(x)
+[1] 5019
+> system.time(sapply(x, bindingIsActive, globalenv()))
+   user  system elapsed 
+   0.33    0.00    0.32 
+> date(); for (i in 1:1000) assign(paste("f", i, sep=""), i); date()
+[1] "Sun Jul 04 18:21:54 2010"
+[1] "Sun Jul 04 18:28:20 2010"
+> date(); for (i in 1:1000) assign(paste("g", i, sep=""), i); date()
+[1] "Sun Jul 04 18:28:20 2010"
+[1] "Sun Jul 04 18:41:20 2010"
+> date(); for (i in 1:1000) assign(paste("h", i, sep=""), i); date()
+[1] "Sun Jul 04 18:41:20 2010"
+[1] "Sun Jul 04 18:56:05 2010"
+> date(); for (i in 1:1000) assign(paste("i", i, sep=""), i); date()
+[1] "Sun Jul 04 18:56:05 2010"
+[1] "Sun Jul 04 19:11:51 2010"
+> date(); for (i in 1:1000) assign(paste("j", i, sep=""), i); date()
+[1] "Sun Jul 04 19:11:51 2010"
+[1] "Sun Jul 04 19:28:34 2010"
+> x <- ls()
+> system.time(sapply(x, bindingIsActive, globalenv()))
+   user  system elapsed 
+   0.64    0.00    0.64 
+> 
+
 todo: make track.stop() more versatile -- keep variables (with or without deleting files)
-todo: document track.sync()
+doing: change existing tests to use auto=FALSE and add tests for the default auto=TRUE
+done: add tests for existing x in track(x <- value)
+done: document track.sync()
 
 done: explain defaults of functions better in track.manage.Rd
 

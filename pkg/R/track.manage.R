@@ -65,12 +65,12 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     for (objname in list) {
         fileMapChanged <- FALSE
         objSummaryChanged <- FALSE
-        # if (!exists(objname, envir=envir, inherits=FALSE)) { # don't use exists() because it 
+        # if (!exists(objname, envir=envir, inherits=FALSE)) { # don't use exists() because it ...
         if (!force && !is.element(objname, all.objs)) {
             warning("'", objname, "' does not exist in ", envname(envir))
             next
         }
-        if (is.element(op, c("untrack", "lift")) && !bindingIsActive(objname, envir)) {
+        if (is.element(op, c("untrack", "lift")) && !force && !bindingIsActive(objname, envir)) {
             warning("cannot ", op, " tracked var '", objname, "' because it is not a properly tracked variable (not an active binding in ", envname(envir), ")")
             next
         }
@@ -117,7 +117,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
             stop("what ", op, "???")
         }
         ##
-        ## Second task is to modify trackingEnv if necessary
+        ## Second task is to remove files and modify trackingEnv if necessary
         ##
         if (is.element(op, c("remove", "untrack"))) {
             fileMap <- fileMap[-fileMapPos]

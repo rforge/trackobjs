@@ -3,7 +3,7 @@
 > # Test of following object updates correctly though multiple
 > # track.start/track.stop, with many different combinations
 > # of options settings, and with auto=TRUE.
->
+> 
 > x <- 1
 > Y <- x + 1
 > z <- Y + x
@@ -17,7 +17,7 @@
 > c(x, Y, z)
 [1] 12  7 19
 > remove(list=c("x", "Y", "z"))
->
+> 
 > library(trackObjs)
 > # Set the locale used by order() so that track.status() & track.summary() put
 > # rows in the same order on different systems (so that the test output matches).
@@ -33,7 +33,9 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > z <- Y + x
-> x <- 2
+> track(x <- 2)
+> x
+[1] 2
 > z <- z + x
 > Y <- x + 1
 > z <- Y + x
@@ -47,7 +49,7 @@ character(0)
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop()
->
+> 
 > # standard options, intersperse detach/attach
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", cache=TRUE)
@@ -85,6 +87,12 @@ $debug
 $autoTrackExclude
 [1] "^\\.track"  "^.required"
 
+$autoTrackFullSyncWait
+[1] 300
+
+$autoTrackLastFullSync
+[1] -1
+
 $clobberVars
 [1] ".Random.seed"
 
@@ -121,6 +129,12 @@ $debug
 
 $autoTrackExclude
 [1] "^\\.track"  "^.required"
+
+$autoTrackFullSyncWait
+[1] 300
+
+$autoTrackLastFullSync
+[1] -1
 
 $clobberVars
 [1] ".Random.seed"
@@ -163,7 +177,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop()
->
+> 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", options=list(cache=FALSE, writeToDisk=TRUE, alwaysSaveSummary=TRUE))
@@ -201,6 +215,12 @@ $debug
 $autoTrackExclude
 [1] "^\\.track"  "^.required"
 
+$autoTrackFullSyncWait
+[1] 300
+
+$autoTrackLastFullSync
+[1] -1
+
 $clobberVars
 [1] ".Random.seed"
 
@@ -242,7 +262,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop()
->
+> 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", options=list(cache=TRUE, writeToDisk=FALSE, alwaysSaveSummary=TRUE))
@@ -284,7 +304,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop()
->
+> 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", options=list(cache=FALSE, writeToDisk=FALSE, alwaysSaveSummary=TRUE))
@@ -326,7 +346,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop()
->
+> 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", options=list(cache=TRUE, writeToDisk=TRUE, alwaysSaveSummary=FALSE))
@@ -368,7 +388,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop()
->
+> 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", options=list(cache=FALSE, writeToDisk=TRUE, alwaysSaveSummary=FALSE))
@@ -410,7 +430,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop()
->
+> 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", options=list(cache=TRUE, writeToDisk=FALSE, alwaysSaveSummary=FALSE))
@@ -452,7 +472,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop()
->
+> 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", options=list(cache=FALSE, writeToDisk=FALSE, alwaysSaveSummary=FALSE))
@@ -495,7 +515,7 @@ x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop()
 > unlink("tmp2", recursive=TRUE)
->
+> 
 > # TODO: try with recordAccesses=FALSE, and separately with maintainSummary=FALSE
 > # ... still to construct these tests ...
 >

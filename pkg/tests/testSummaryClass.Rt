@@ -24,4 +24,4 @@ fit                  glm,lm    list   [[30]]     30 2001-01-01 09:00:10  0  1
 tt           POSIXt,POSIXct numeric      [1]      1 2001-01-01 09:00:07  0  1
 > track.stop()
 > unlink("tmp9", recursive=TRUE)
->
+> 
