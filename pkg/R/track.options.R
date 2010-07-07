@@ -20,9 +20,8 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, tra
     ##   autoTrackExclude: vector of strings: regular expressions describing which variables not
     ##      to auto-track (default "^\\.track", "^.required$")
     ##   autoTrackFullSyncWait: wait this many seconds between doing a full sync
-    ##   autoTrackLastFullSync: the time in seconds of the last full sync (as from proc.time()[3])
     ##   clobberVars: vector of string specifying variables to be clobbered silently when attaching a tracking db
-    trackingEnvSupplied <- !missing(trackingEnv)
+    trackingEnvSupplied <- !missing(trackingEnv) && !is.null(trackingEnv)
     if (only.preprocess) {
         currentOptions <- old.options
     } else {
@@ -85,16 +84,17 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, tra
     optionNames <- c("cache", "writeToDisk", "maintainSummary", "alwaysSaveSummary",
                      "useDisk", "recordAccesses", "summaryTimes", "summaryAccess",
                      "RDataSuffix", "debug", "autoTrackExclude",
-                     "autoTrackFullSyncWait", "autoTrackLastFullSync", "clobberVars")
+                     "autoTrackFullSyncWait", "clobberVars")
     if (!is.null(names(values))) {
         ## Attempt to set some of the options (including saving to file)
         ## and return the old values.
         ## First retrieve the old values
         query.values <- names(values)
         set.values <- TRUE
-        # can't supply trackingEnv and set option values because we wouldn't know where to write the file
-        if (trackingEnvSupplied)
-            stop("cannot supply trackingEnv and set option values")
+        ## No longer a problem:
+        ## can't supply trackingEnv and set option values because we wouldn't know where to write the file
+        ## if (trackingEnvSupplied)
+        ##    stop("cannot supply trackingEnv and set option values")
     } else if (save) {
         query.values <- optionNames
         set.values <- TRUE
@@ -126,8 +126,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, tra
                                   alwaysSaveSummary=FALSE, useDisk=TRUE, recordAccesses=TRUE,
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
                                   debug=0, autoTrackExclude=c("^\\.track", "^.required"),
-                                  autoTrackFullSyncWait=300, autoTrackLastFullSync=-1,
-                                  clobberVars=".Random.seed"))
+                                  autoTrackFullSyncWait=300, clobberVars=".Random.seed"))
         currentOptions <- c(currentOptions, repaired)
     }
     option.values <- currentOptions[query.values]
@@ -158,8 +157,6 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, tra
             else if (opt=="autoTrackExclude" && !is.character(values[[opt]]))
                 values[[opt]] <- as.character(values[[opt]])
             else if (opt=="autoTrackFullSyncWait" && !is.numeric(values[[opt]]))
-                values[[opt]] <- as.numeric(values[[opt]])
-            else if (opt=="autoTrackLastFullSync" && !is.numeric(values[[opt]]))
                 values[[opt]] <- as.numeric(values[[opt]])
             else if (opt=="clobberVars" && !is.character(values[[opt]]))
                 values[[opt]] <- as.character(values[[opt]])

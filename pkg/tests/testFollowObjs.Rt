@@ -90,9 +90,6 @@ $autoTrackExclude
 $autoTrackFullSyncWait
 [1] 300
 
-$autoTrackLastFullSync
-[1] -1
-
 $clobberVars
 [1] ".Random.seed"
 
@@ -132,9 +129,6 @@ $autoTrackExclude
 
 $autoTrackFullSyncWait
 [1] 300
-
-$autoTrackLastFullSync
-[1] -1
 
 $clobberVars
 [1] ".Random.seed"
@@ -217,9 +211,6 @@ $autoTrackExclude
 
 $autoTrackFullSyncWait
 [1] 300
-
-$autoTrackLastFullSync
-[1] -1
 
 $clobberVars
 [1] ".Random.seed"

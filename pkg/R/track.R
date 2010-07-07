@@ -320,7 +320,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
     if (auto) {
         addTaskCallback(track.sync.callback, data=envir, name=paste("track.auto:", envname(envir), sep=""))
-        assign(".trackAuto", TRUE, envir=trackingEnv)
+        assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
     }
     return(invisible(NULL))
 }

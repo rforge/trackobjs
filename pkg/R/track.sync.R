@@ -17,6 +17,7 @@ track.sync <- function(pos=1, envir=as.environment(pos), trackingEnv=getTracking
     ## Do check for untrackable objects (isReservedName())
 
     opt <- track.options(trackingEnv=trackingEnv)
+    autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
     fileMap <- getFileMapObj(trackingEnv)
     all.objs <- .Internal(ls(envir, TRUE))
     untracked <- setdiff(all.objs, names(fileMap))
@@ -45,11 +46,12 @@ track.sync <- function(pos=1, envir=as.environment(pos), trackingEnv=getTracking
             cat("track.sync: no deleted variables\n")
     if (length(deleted))
         track.remove(list=deleted, envir=envir, force=TRUE)
-    now <- proc.time()[3]
+    now <- as.numeric(proc.time()[3])
+    doFull <- FALSE
     if (forceFull || opt$autoTrackFullSyncWait==0) {
         doFull <- TRUE
     } else if (opt$autoTrackFullSyncWait>0) {
-        if (opt$autoTrackLastFullSync < 0 || now - opt$autoTrackLastFullSync >= opt$autoTrackFullSyncWait)
+        if (autoTrack$last < 0 || now - autoTrack$last >= opt$autoTrackFullSyncWait)
             doFull <- TRUE
     }
     if (doFull) {
@@ -94,7 +96,7 @@ track.sync <- function(pos=1, envir=as.environment(pos), trackingEnv=getTracking
                 }
             }
         }
-        track.options(autoTrackLastFullSync=now)
+        assign(".trackAuto", list(on=TRUE, last=now), envir=trackingEnv)
     }
     return(invisible(list(new=untracked, removed=deleted)))
 }
@@ -103,19 +105,19 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ## To automatically track new and deleted objects, do
     ##   addTaskCallback(track.sync.callback, data=globalenv())
     ## and
-    ##   assign(".trackAuto", TRUE, envir=globalenv())
+    ##   assign(".trackAuto", list(on=TRUE, last=-1), envir=globalenv())
     trackingEnv <- getTrackingEnv(data, stop.on.not.tracked = FALSE)
     ## trackingEnv will be missing on the callback following the completion
     ## of the command track.stop()
     if (is.null(trackingEnv))
         return(FALSE)
-    keep.auto.tracking <- mget(".trackAuto", envir=trackingEnv, ifnotfound=FALSE)[[1]]
+    autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
     ## This is the easist way to remove the callback when it is no longer wanted,
     ## otherwise we have the problem of identifying the appropriate callback
-    if (!isTRUE(keep.auto.tracking))
+    if (!isTRUE(autoTrack$on))
         return(FALSE)
     ## Don't repeat the work an explicit call to track.sync()
-    if (as.character(expr[[1]]) == "track.sync")
+    if (is.call(expr) && as.character(expr[[1]]) == "track.sync")
         return(TRUE)
     track.sync(envir=data, trackingEnv=trackingEnv, forceFull=FALSE)
     return(TRUE) # to keep this callback active

@@ -31,4 +31,5 @@ track.auto(auto = NULL, pos = 1, envir = as.environment(pos))
 \link{track.start}
 }
 \examples{
-\keyword{ misc }
+}
+\keyword{ data }

@@ -1,4 +1,5 @@
-* add argument to track.stop() to keep variables
+* write .Last function that will call track.sync(force=TRUE)
+* add argument to track.stop() to keep variables (do via track.remove/track.lift?)
 * add track.auto() function to control use of auto-tracking (turn on and off, show status)
 * figure out what to do about the case of {rm(x); x <- 1} when auto=TRUE -- this results in x not having an active binding, i.e., it is masked -- maybe detect this by a cleanup on exit function, and/or by running a more general check every 5 mins
 * change tests over to use auto=TRUE (the default), or duplicate for that case
