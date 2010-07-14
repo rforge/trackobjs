@@ -1,7 +1,7 @@
 \name{track.setup}
 \alias{track.start}
 \alias{track.stop}
-\alias{track.restart}
+\alias{track.rescan}
 \alias{env.is.tracked}
 \alias{tracked.envs}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -16,7 +16,7 @@ track.start(dir="rdatadir", pos = 1, envir = as.environment(pos), create = TRUE,
 track.stop(pos = 1, envir = as.environment(pos), all=FALSE, stop.on.error=FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
 tracked.envs(envirs=search())
-track.restart(pos = 1, envir = as.environment(pos), forget.modified = FALSE)
+track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE)
 }
 
 \arguments{
@@ -58,7 +58,7 @@ track.restart(pos = 1, envir = as.environment(pos), forget.modified = FALSE)
     \item{\code{track.stop}:}{ stop tracking \code{envir}.  Tracked
       variables will become unavailable (any unsaved values will be
       saved to files first.)}
-    \item{\code{track.restart}:}{ Rescan the tracking dir, so that if anything has changed there,
+    \item{\code{track.rescan}:}{ Rescan the tracking dir, so that if anything has changed there,
 the current variables on file will be used instead of any cached
 in memory.
 If we have some modified variables cached in memory but not saved
@@ -71,7 +71,7 @@ available.
 }
 }
 \value{
-    \item{track.start, track.stop, track.restart:}{all return \code{invisible(NULL)} (this
+    \item{track.start, track.stop, track.rescan:}{all return \code{invisible(NULL)} (this
       may change if it becomes clear what useful return values would be)}
     \item{env.is.tracked:}{returns \code{TRUE} or \code{FALSE}}
     \item{tracked.envs:}{with no arguments, it returns the names of

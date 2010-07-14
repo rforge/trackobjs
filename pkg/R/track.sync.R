@@ -13,7 +13,7 @@ track.sync <- function(pos=1, envir=as.environment(pos), trackingEnv=getTracking
 
     ## Want to use this function as a top-level callback to automatically
     ## track new objects and removed deleted objects, so want it to be fast.
-    
+
     ## Do check for untrackable objects (isReservedName())
 
     opt <- track.options(trackingEnv=trackingEnv)
@@ -29,7 +29,7 @@ track.sync <- function(pos=1, envir=as.environment(pos), trackingEnv=getTracking
     if (opt$debug > 0 && any(activeBindings))
         cat("track.sync: cannot track variables that have active bindings: ", paste(untracked[activeBindings], collapse=", "), "\n", sep="")
     untracked <- untracked[!activeBindings]
-    for (re in opt$autoTrackExclude)
+    for (re in opt$autoTrackExcludePattern)
         untracked <- grep(re, untracked, invert=TRUE, value=TRUE)
     deleted <- setdiff(names(fileMap), all.objs)
     if (opt$debug > 0)
@@ -64,7 +64,7 @@ track.sync <- function(pos=1, envir=as.environment(pos), trackingEnv=getTracking
         if (length(tracked)) {
             retrack <- tracked[!sapply(tracked, bindingIsActive, envir)]
             if (length(retrack))
-                for (re in opt$autoTrackExclude)
+                for (re in opt$autoTrackExcludePattern)
                     retrack <- grep(re, retrack, invert=TRUE, value=TRUE)
             if (length(retrack)) {
                 for (objname in retrack) {

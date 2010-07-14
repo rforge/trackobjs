@@ -40,7 +40,7 @@
 ##   track.flush(var, list, all): write unsaved variables to disk, and remove from memory
 ##   track.save(var, list, all, book): write unsaved variables to disk
 ##   track.forget(var, list, all): delete cached versions without saving to file
-##   track.restart(): reload info from disk (forget all cached vars, might remove some no-longer existing tracked vars)
+##   track.rescan(): reload info from disk (forget all cached vars, might remove some no-longer existing tracked vars)
 ##   track.rebuild(dir=trackingDir)
 ##
 ## Don't need to use delayedAssign if use makeActiveBinding
@@ -382,7 +382,7 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
     } else if (is.null(list)) {
         list <- untracked(envir=envir, pattern=pattern, glob=glob)
         if (isTRUE(exclude))
-            exclude <- opt$autoTrackExclude
+            exclude <- opt$autoTrackExcludePattern
         if (identical(exclude, FALSE))
             exclude <- NULL
         for (re in exclude)
@@ -509,7 +509,7 @@ summaryRow <- function(name, sumRow=NULL, obj=NULL, file=NULL, change=FALSE, tim
         sumRow$created <- times$ctime
         sumRow$accessed <- times$atime
     }
-    
+
     return(sumRow)
 }
 
@@ -959,7 +959,7 @@ track.load <- function(files, pos=1, envir=as.environment(pos), list=NULL, patte
             makeActiveBinding(objName, env=envir, fun=f)
         }
         all.loaded <- c(all.loaded, list)
-        all.skipped <- c(all.skipped, setdiff(load.res, list)) 
+        all.skipped <- c(all.skipped, setdiff(load.res, list))
     }
     if (any(!is.element(all.wanted, all.loaded)))
         warning("the following requested objects were not found: ", paste(setdiff(all.wanted, all.loaded), collapse=", "))

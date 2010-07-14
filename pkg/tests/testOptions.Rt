@@ -65,8 +65,11 @@ $RDataSuffix
 $debug
 [1] 0
 
-$autoTrackExclude
-[1] "^\\.track"  "^.required"
+$autoTrackExcludePattern
+[1] "^\\.track"    "^\\.required"
+
+$autoTrackExcludeClass
+[1] "RODBC"
 
 $autoTrackFullSyncWait
 [1] 300

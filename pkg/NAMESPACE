@@ -19,6 +19,6 @@ export(track.start,
        track.flush,
        track.save,
        track.forget,
-       track.restart,
+       track.rescan,
        track.load,
        track.rebuild)

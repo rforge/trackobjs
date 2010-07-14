@@ -46,7 +46,7 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
   \item{all}{If \code{TRUE}, operate upon all elegible variables}
   \item{exclude}{Controls exclusion of particular variables by pattern
   matching against a vector of regular expressions in the
-  \code{autoTrackExclude} option value.  If \code{exclude==TRUE} (the default),
+  \code{autoTrackExcludePattern} option value.  If \code{exclude==TRUE} (the default),
   exclude variables that match. If \code{exclude==FALSE}, ignore the
   exclusion patterns.}
   \item{keep.in.db}{If \code{TRUE}, the variable is left in the
@@ -68,7 +68,7 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
   \item \code{untrack}: stop tracking the specified variables, leaving the object in \code{envir} so that it can
     still be used.  If \code{keep.in.db=TRUE}, the variable is left
     in the tracking environment (but is masked), if
-    \code{keep.in.db=FALSE} (the default), 
+    \code{keep.in.db=FALSE} (the default),
     all trace of the variable is completely removed from the tracking
     environment.
   \item \code{track.remove}: completely remove all
@@ -78,14 +78,14 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
   \item \code{track.forget}: delete cached
   versions without saving to file (file version will be retrieved next
   time the variable is accessed)
-  \item \code{track.restart}: reload variable
+  \item \code{track.rescan}: reload variable
   values from disk (can forget all cached vars, remove no-longer existing tracked vars)
   \item \code{track.load}: load variables from a
   saved RData file into the tracking session - if \code{list} is
   supplied, only these variables are loaded in.  Already existing
   variables will be skipped and not overwritten unless \code{clobber=TRUE} is supplied.
 }
-  The variables to be acted upon are specified either 
+  The variables to be acted upon are specified either
   in \code{expr} (a variable name, unquoted) or \code{list} (character
   vector containing names of variables), or by regular expression \code{pattern}
   or shell pattern \code{glob}.  If no specification is given, all
@@ -97,14 +97,14 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
 
     \item{track:}{a character vector containing the names of
       objects added to the tracking environment}
-    \item{untrack, track.remove, track.save, track.flush, track.forget, track.restart:}{a
+    \item{untrack, track.remove, track.save, track.flush, track.forget, track.rescan:}{a
       character vector containing the names of
       objects in the tracking environment that were acted upon}
     \item{track.load:}{a list with two components:
       \itemize{
-	\item{\code{loaded}:}{names of objects that were loaded from \code{file}}
-	\item{\code{skipped}:}{names of objects in \code{file} that
-	  were not loaded}
+        \item{\code{loaded}:}{names of objects that were loaded from \code{file}}
+        \item{\code{skipped}:}{names of objects in \code{file} that
+          were not loaded}
     }
   }
 }

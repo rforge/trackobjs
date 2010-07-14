@@ -31,5 +31,10 @@ track.auto(auto = NULL, pos = 1, envir = as.environment(pos))
 \link{track.start}
 }
 \examples{
+\dontrun{
+track.auto() # query the status of auto-tracking
+track.auto(FALSE) # turn auto-tracking off
+track.auto(TRUE) # turn auto-tracking on
+}
 }
 \keyword{ data }

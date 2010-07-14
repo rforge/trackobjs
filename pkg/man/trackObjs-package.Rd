@@ -9,7 +9,7 @@ Overview of trackObjs package
 
   TODO: add an end-of-task call back handler so that we can
   automatically save newly created variables (or newly deleted ones) at
-  the end of a top-level expression.  http://developer.r-project.org/TaskHandlers.pdf
+  the end of a top-level expression.
 
 The trackObjs package sets up a link between R objects in memory and
 files on disk so that objects are automatically resaved to files when
@@ -22,10 +22,12 @@ Each object is stored in a separate RData file using the standard
 format as used by \code{save()}, so that objects can be manually
 picked out of or added to the trackObjs database if needed.
 
-Tracking works by replacing a tracked variable by an 'activeBinding',
-which when accessed looks up information in an associated 'tracking
-environment' and reads or writes the corresponding RData file and/or
-gets or assigns the variable in the tracking environment.
+Tracking works by replacing a tracked variable by an
+\code{activeBinding}, which when accessed looks up information in an
+associated 'tracking environment' and reads or writes the corresponding
+RData file and/or gets or assigns the variable in the tracking
+environment.  A callback for the end-of-top-level-task handles newly
+created or deleted variables.
 
 }
 \details{
@@ -103,7 +105,7 @@ There are several points to note:
   \item When tracking is stopped, all
   tracked variables are saved on disk and will be no longer accessible
   until tracking is started again.
-  \item The objects are stored each in their own file in the 
+  \item The objects are stored each in their own file in the
   tracking dir, in the
   format used by \code{save()}/\code{load()} (RData files).
 }
@@ -112,7 +114,7 @@ There are several points to note:
 \section{List of basic functions and common calling patterns}{
 
   Six functions cover the majority of common usage of the trackObjs package:
-  
+
 \itemize{
   \item \code{\link{track.start}(dir=...)}: start tracking
   the global environment, with files saved in \code{dir}
@@ -157,7 +159,7 @@ tracking environments and databases that have become inconsistent or incomplete
 (this may result from resource limitiations, e.g., being unable to
 write a save file due to lack of disk space, or from manual tinkering,
 e.g., dropping a new save file into a tracking directory.)
-  
+
 The functions that can be used to set up and take down tracking are:
 \itemize{
   \item \code{\link{track.start}(dir=...)}: start tracking,
@@ -225,7 +227,7 @@ Functions for managing tracking and tracked variables:
   \item \code{\link{track.forget}()}: delete cached
   versions without saving to file (file version will be retrieved next
   time the variable is accessed)
-  \item \code{\link{track.restart}()}: reload variable
+  \item \code{\link{track.rescan}()}: reload variable
   values from disk (can forget all cached vars, remove no-longer existing tracked vars)
   \item \code{\link{track.load}()}: load variables from a
   saved RData file into the tracking session
@@ -267,6 +269,13 @@ functions (in 'base' package).
 
 Inspriation from the packages \code{\link[g.data:g.data.save]{g.data}} and
 \code{\link[filehash:dbLoad]{filehash}}.
+
+Description of the facility
+(\code{\link[base:addTaskCallback]{addTaskCallback}}) for adding a
+callback function that is called at the end of each top-level task (each
+time R returns to the prompt after completing a command):
+\url{http://developer.r-project.org/TaskHandlers.pdf}.
+
 }
 \keyword{ package }
 \keyword{ data }

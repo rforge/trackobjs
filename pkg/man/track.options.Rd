@@ -8,6 +8,7 @@
 }
 \usage{
 track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
+        clear=FALSE, delete=FALSE,
         trackingEnv, only.preprocess = FALSE, old.options = list())
 }
 
@@ -23,6 +24,15 @@ track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
   \item{save}{If \code{TRUE}, current options are saved to disk and will
     be used in future.  Note that all current options settings are saved,
     not just the new settings made in this call.}
+  \item{clear}{If \code{TRUE}, and the option can have multiple values
+  (e.g., \code{autoTrackExcludeClass}),
+  the current values are cleared prior to using the supplied values.  The
+  default behavior, with \code{clear=FALSE} and \code{delete=FALSE} is
+  to add supplied values to multi-valued options, and to replace the
+  value for single-valued options. }
+  \item{delete}{If \code{TRUE}, and the option can have multiple values,
+  the supplied values are removed from the current values (if they are not in
+  the current values, they are silently ignored.)}
   \item{trackingEnv}{ The hidden environment in which tracked objects
     are stored.  It is not necessary to supply this in normal use. }
   \item{only.preprocess}{ If \code{TRUE}, process any options
@@ -44,6 +54,10 @@ track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
     \item{recordAccesses:}{logical (default TRUE) if TRUE, record
       counts and times for access ("get") operations on tracked variables}
     \item{maintainSummary:}{logical (default TRUE) if TRUE, record time & number of accesses}
+    \item{autoTrackExcludePattern:}{character vector (default \code{c("^\\.track", "^\\.required")}) variables
+  whose name matches any of these regular expressions are not auto-tracked}
+    \item{autoTrackExcludeClass:}{character vector (default \code{"RODBC"}) variables
+  whose classes is in this vector are not auto-tracked}
     \item{alwaysSaveSummary:}{logical (default TRUE) if TRUE, always save
     the summary on any change}
     \item{RDataSuffix:}{character (default \code{"rda"}) suffix to use for files

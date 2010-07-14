@@ -1,4 +1,4 @@
-track.restart <- function(pos=1, envir=as.environment(pos), forget.modified=FALSE) {
+track.rescan <- function(pos=1, envir=as.environment(pos), forget.modified=FALSE) {
     ## Rescan the tracking dir, so that if anything has changed there,
     ## the current variables on file will be used instead of any cached
     ## in memory.
