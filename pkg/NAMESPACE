@@ -1,5 +1,7 @@
 export(track.start,
        track.attach,
+       track.detach,
+       track.auto,
        track.dir,
        track.stop,
        track.sync,
