@@ -1,3 +1,4 @@
+* add tests for track.attach()
 * write .Last function that will call track.sync(force=TRUE)
 * add argument to track.stop() to keep variables (do via track.remove/track.lift?)
 * add track.auto() function to control use of auto-tracking (turn on and off, show status)

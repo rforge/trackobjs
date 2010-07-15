@@ -21,6 +21,8 @@ ENHANCEMENTS
     o   change track(x <- value) so that if x already exists, or
         is already tracked, x still gets the new value
     o   renamed track.restart() to track.rescan()
+    o   added new function track.attach() to attach an existing
+        data directory to the search path.
 
                 CHANGES in trackObjs version 0.8-6 (2009-11-03)
 ENHANCEMENTS
