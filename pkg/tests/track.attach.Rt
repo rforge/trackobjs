@@ -7,6 +7,13 @@
 [1] TRUE
 > assign("x", 1, pos=2)
 > assign("y", 2, pos=2)
+> assign("z", 3, pos=2)
+> track.status(pos=2)
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked FALSE        z       TRUE  TRUE
+> remove(list="z", pos=2)
 > track.status(pos=2)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE

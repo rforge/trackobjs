@@ -7,10 +7,6 @@ Overview of trackObjs package
 }
 \description{
 
-  TODO: add an end-of-task call back handler so that we can
-  automatically save newly created variables (or newly deleted ones) at
-  the end of a top-level expression.
-
 The trackObjs package sets up a link between R objects in memory and
 files on disk so that objects are automatically resaved to files when
 they are changed.  R objects in files are read in on demand and do not
@@ -35,7 +31,7 @@ There are three main reasons to use the \code{trackObjs} package:
 \itemize{
   \item conveniently handle many moderately-large objects that would
   collectively exhaust memory or be inconvenient to manage in
-  files by manually using \code{save()} and \code{load()}
+  files by manually using \code{save()}, \code{load()}, and/or \code{save.image()}.
   \item keep track of creation and modification times on objects
   \item get fast summaries of basic characteristics of objects - class,
   size, dimension, etc.
@@ -97,11 +93,10 @@ There are several points to note:
   \item The global environment is the default environment for tracking
   -- it is possible to track variables in other environments, but that
   environment must be supplied as an argument to the track functions.
-  \item Vars must be explicitly \code{track()}ed - newly created objects
-  are not tracked.  (This is not a "feature", but there is currently no way of
-  automatically tracking newly created objects -- this is on the
-  wishlist.)  Thus, it is possible
-  for variables in a tracked environment to either tracked or untracked.
+  \item By default, newly created or deleted variables are automatically
+  added to or removed from the tracking database.  This feature can be
+  disabled by supplying \code{auto=FALSE} to \code{track.start()}, or by
+  calling \code{track.auto(FALSE)}.
   \item When tracking is stopped, all
   tracked variables are saved on disk and will be no longer accessible
   until tracking is started again.
@@ -113,14 +108,32 @@ There are several points to note:
 
 \section{List of basic functions and common calling patterns}{
 
-  Six functions cover the majority of common usage of the trackObjs package:
-
+For straightforward use of the trackObjs package, only a single
+call to \code{track.start()} need be made to start automatically tracking the global
+environment.  If it is desired to save untrackable variables at the end
+of the session, \code{track.stop()} should be called before calling
+\code{save.image()} or \code{q('yes')}.  The basic functions used in
+automatic tracking are as follows:
 \itemize{
   \item \code{\link{track.start}(dir=...)}: start tracking
-  the global environment, with files saved in \code{dir}
+  the global environment, with files saved in \code{dir} (the default is \code{rdatadir}).
+  \item \code{\link{track.summary}()}: print a summary of
+  the basic characteristics of tracked variables: name, class, extent,
+  and creation, modification and access times.
   \item \code{\link{track.stop}()}: stop tracking
   (any unsaved tracked variables are saved to disk and all tracked variables
   become unavailable until tracking starts again)
+  \item \code{\link{track.attach}(dir=..., pos=)}: attach an existing
+  tracking database to the search list at the specified position.
+  Changes to variables in the attached environment will be automatically
+  saved to the database.
+}
+
+For the non-automatic mode, four other functions cover the majority of common usage:
+
+\itemize{
+  \item \code{\link{track.start}(dir=..., auto=TRUE/FALSE)}: start tracking
+  the global environment, with files saved in \code{dir}
   \item \code{\link{track}(x)}: start tracking \code{x} -
   \code{x} in the global environment is replaced by an active binding
   and \code{x} is saved in its corresponding file in the tracking
@@ -135,9 +148,6 @@ There are several points to note:
   \item \code{\link{untrack}(all=TRUE)}: stop tracking all
   variables in the global environment (but tracking is still set up)
   \item \code{\link{untrack}(list=...)}: stop tracking specified variables
-  \item \code{\link{track.summary}()}: print a summary of
-  the basic characteristics of tracked variables: name, class, extent,
-  and creation, modification and access times.
   \item \code{\link{track.remove}(x)}: completely remove all
   traces of \code{x} from the global environment, tracking environment
   and tracking directory.   Note that if variable \code{x} in the global
