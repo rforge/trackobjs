@@ -307,9 +307,9 @@ getTrackingDir <- function(trackingEnv) {
     return(dir)
 }
 
-setTrackingEnv <- function(trackedEnv, trackingEnv) {
+setTrackingEnv <- function(trackedEnv, trackingEnv, readonly=FALSE) {
     ## This function should remove the tracking env when trackingEnv=NULL
-    if (is.null(trackingEnv)) {
+    if (is.null(trackingEnv) && !readonly) {
         if (exists(".trackingEnv", envir=trackedEnv, inherits=FALSE))
             remove(list=".trackingEnv", envir=trackedEnv)
     } else {
@@ -396,11 +396,11 @@ getUnsavedObj <- function(trackingEnv, notfound=character(0))
 envname <- function(envir) {
     # Produce a 1-line name for the environment.
     # Use the name it has on the search() list, if possible.
-    i <- which(sapply(seq(len=length(search())), function(i) identical(as.environment(i), envir)))
-    if (length(i))
-        return(paste("<environment '", search()[i], "'>", sep=""))
-    else
-        return(capture.output(print(envir))[1])
+    # This is simpler now that R ha the environmentName() function
+    n <- environmentName(envir)
+    if (n!="")
+        return(paste("<env ", n, ">", sep=""))
+    return(capture.output(print(envir))[1])
 }
 
 notyetdone <- function(msg) cat("Not yet done: ", msg, "\n", sep="")
@@ -413,26 +413,6 @@ track.dir <- function(pos=1, envir=as.environment(pos), data=FALSE) {
     if (data)
         dir <- getDataDir(dir)
     return(dir)
-}
-
-track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.error=FALSE) {
-    ## Detach a tracking env -- should call track.flush first.
-    if (all) {
-        env.names <- tracked.envs()
-        for (e.name in env.names)
-            if (stop.on.error)
-                track.stop(envir=as.environment(e.name))
-            else
-                try(track.stop(envir=as.environment(e.name)))
-    } else {
-        tracked.vars <- tracked(envir=envir)
-        track.flush(envir=envir)
-        remove(list=tracked.vars, envir=envir)
-        setTrackingEnv(envir, NULL)
-        if (exists(".trackAuto", envir=envir, inherits=FALSE))
-            remove(list=".trackAuto", envir=envir)
-    }
-    return(invisible(NULL))
 }
 
 isSimpleName <- function(objname) {
@@ -463,6 +443,8 @@ makeObjFileName <- function(objname, fileNames) {
 }
 
 setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackingEnv=trackingEnv), times=NULL) {
+    if (opt$readonly)
+        stop("variable '", objName, "' cannot be changed -- it is in a readonly tracking environment")
     ## Set the tracked var, and write it to disk if required
     if (opt$debug)
         cat("setting tracked var '", objName, "' in ", envname(trackingEnv), "\n", sep="")

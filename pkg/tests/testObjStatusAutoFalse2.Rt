@@ -91,7 +91,7 @@ x6       untracked    NA     <NA>         NA    NA
 > untracked()
 [1] "x6"
 > untrackable()
-[1] ".trackingEnv"     ".trackingFileMap" "uncoop"
+[1] ".trackingEnv"     ".trackingFileMap" "uncoop"          
 > track.masked()
 [1] "x5"
 > track.orphaned()
@@ -227,7 +227,7 @@ $skipped
 
 Warning message:
 In track.load("tmp12y.rda") :
-  skipping 2 variable(s) because these exist in <environment '.GlobalEnv'> and clobber=FALSE: 'y3''y5'
+  skipping 2 variable(s) because these exist in <env R_GlobalEnv> and clobber=FALSE: 'y3''y5'
 
 > y3
 [1] "new value"
@@ -254,7 +254,7 @@ character(0)
 
 Warning message:
 In track.load("tmp12y.rda", clobber = TRUE) :
-  clobbering 3 existing variable(s) in <environment '.GlobalEnv'> and clobber=FALSE: 'y3''y4''y5'
+  clobbering 3 existing variable(s) in <env R_GlobalEnv> and clobber=FALSE: 'y3''y4''y5'
 
 > y3
 [[1]]

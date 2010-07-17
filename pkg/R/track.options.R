@@ -17,6 +17,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     ##   alwaysSaveSummary: logical (default TRUE) if TRUE, always save the summary on any change
     ##   RDataSuffix: character (default "rda")
     ##   debug: integer (default 0) if > 0, print some diagnostic debugging messages
+    ##   readonly: logical (default FALSE for track.start(), TRUE for track.attach())
     ##   autoTrackExcludePattern: vector of strings: regular expressions describing which variables not
     ##      to auto-track (default "^\\.track", "^.required$")
     ##   autoTrackExcludeClass: vector of strings: class names for objects that should
@@ -86,7 +87,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     optionNames <- c("cache", "writeToDisk", "maintainSummary", "alwaysSaveSummary",
                      "useDisk", "recordAccesses", "summaryTimes", "summaryAccess",
                      "RDataSuffix", "debug", "autoTrackExcludePattern", "autoTrackExcludeClass",
-                     "autoTrackFullSyncWait", "clobberVars")
+                     "autoTrackFullSyncWait", "clobberVars", "readonly")
     if (!is.null(names(values))) {
         ## Attempt to set some of the options (including saving to file)
         ## and return the old values.
@@ -124,7 +125,8 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     if (length(need.value)) {
         names(need.value) <- need.value
         repaired <- lapply(need.value, function(x)
-                           switch(x, cache=FALSE, writeToDisk=TRUE, maintainSummary=TRUE,
+                           switch(x, cache=FALSE, readonly=FALSE,
+                                  writeToDisk=TRUE, maintainSummary=TRUE,
                                   alwaysSaveSummary=FALSE, useDisk=TRUE, recordAccesses=TRUE,
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
                                   debug=0, autoTrackExcludePattern=c("^\\.track", "^\\.required"),
@@ -138,6 +140,9 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
         for (opt in names(values)) {
            single <- TRUE
             if (opt=="cache") {
+                if (!is.logical(values[[opt]]))
+                    values[[opt]] <- as.logical(values[[opt]])
+            } else if (opt=="readonly") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
             } else if (opt=="writeToDisk") {
@@ -194,6 +199,8 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
 
         if (only.preprocess)
             return(new.values)
+        if (!new.values$readonly && environmentIsLocked(envir))
+            stop("cannot make a readonly tracked environment writable (because cannot unlock a locked environment) -- to make it writeable, use track.detach() followed by track.attach(readonly=FALSE)")
         assign(".trackingOptions", new.values, envir=trackingEnv)
     }
     if (save && !only.preprocess && !identical(currentOptions$useDisk, FALSE)) {

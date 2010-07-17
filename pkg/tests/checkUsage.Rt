@@ -2,5 +2,6 @@
 
 > library(trackObjs)
 > library(codetools)
+> # run codetools code quality checking
 > checkUsagePackage("trackObjs")
 > 

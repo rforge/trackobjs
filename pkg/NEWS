@@ -1,14 +1,19 @@
-                CHANGES in trackObjs version 0.9-2 (2010-07-15)
+                CHANGES in trackObjs version 0.9-3 (2010-07-17)
 ENHANCEMENTS
     o   Major improvement in user level functionality: added
         ability to auto-track new and deleted variables using
         task callbacks (on by default).  This means that all
         the user has to do to track all created objects (and
-        keep up with deletions) is to issue the command once
-        track.start() to start tracking.
+        keep up with deletions) is to issue the command
+        track.start() once to start tracking.
     o   made 'rdatadir' the default directory for storing
         R objects
-    o   add three new option components:
+    o   added new function track.attach() to attach an existing
+        db of objects to the search path.  Has a readonly
+        mode that prevents changing any files on disk.
+    o   add four new option components:
+           - readonly: logical value indicating whether the
+               environment is readonly
            - autoTrackExcludePattern: vector of regexps specifying
                vars not to track automatically
            - autoTrackExcludeClass: vector of class names for
@@ -21,8 +26,6 @@ ENHANCEMENTS
     o   change track(x <- value) so that if x already exists, or
         is already tracked, x still gets the new value
     o   renamed track.restart() to track.rescan()
-    o   added new function track.attach() to attach an existing
-        data directory to the search path.
 
                 CHANGES in trackObjs version 0.8-6 (2009-11-03)
 ENHANCEMENTS

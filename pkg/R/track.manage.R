@@ -162,9 +162,9 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     }
     save1.res <- save2.res <- NULL
     ## Note that we never write the "unsaved" list out to a file -- it just stays in memory
-    if (needSaveFileMap || resave)
+    if ((needSaveFileMap || resave) && !opt$readonly)
         writeFileMapFile(fileMap, trackingEnv, dataDir, FALSE)
-    if (needSaveObjSummary || resave) {
+    if ((needSaveObjSummary || resave) && !opt$readonly) {
         assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
         save2.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))))
         if (!is(save2.res, "try-error"))

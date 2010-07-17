@@ -1,6 +1,7 @@
+> invisible(if (file.exists("tmp14")) unlink("tmp14", recursive=TRUE))
 > dir.create("tmp14")
 > cat("", file="tmp14/filemap.txt")
-> track.attach("tmp14", name="track:tmp14")
+> track.attach("tmp14", name="track:tmp14", readonly=FALSE)
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -25,7 +26,7 @@ y numeric numeric    [1]      1   32  0  1
 > track.detach(pos=2)
 > is.element("track:tmp14", search())
 [1] FALSE
-> track.attach("tmp14", name="track:tmp14")
+> track.attach("tmp14", name="track:tmp14", readonly=FALSE, pos=2)
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -38,7 +39,35 @@ y tracked FALSE        y       TRUE  TRUE
     class    mode extent length size TA TW
 x numeric numeric    [1]      1   32  0  1
 y numeric numeric    [1]      1   32  0  1
+> track.detach(pos=2)
+> is.element("track:tmp14", search())
+[1] FALSE
+> options(error=function() NULL)
+> track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
+> search()[1:2]
+[1] ".GlobalEnv"  "track:tmp14"
+> is.element("track:tmp14", search())
+[1] TRUE
+> track.status(pos=2)
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+> track.summary(pos=2, time=0)
+    class    mode extent length size TA TW
+x numeric numeric    [1]      1   32  0  1
+y numeric numeric    [1]      1   32  0  1
+> assign("x", 123, pos=2)
+Error in setTrackedVar("x", v, <environment>) : 
+  variable 'x' cannot be changed -- it is in a readonly tracking environment
+> assign("z", 123, pos=2)
+Error in assign("z", 123, pos = 2) : 
+  cannot add bindings to a locked environment
+> remove(list="y", pos=2)
+Error in remove(list = "y", pos = 2) : 
+  cannot remove bindings from a locked environment
 > track.detach(2)
 > is.element("track:tmp14", search())
 [1] FALSE
+> 
+> invisible(if (file.exists("tmp14")) unlink("tmp14", recursive=TRUE))
 > 

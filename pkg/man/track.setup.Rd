@@ -12,8 +12,9 @@
 \usage{
 track.start(dir="rdatadir", pos = 1, envir = as.environment(pos), create = TRUE,
         clobber = c("no", "files", "variables"), cache=NULL, options=NULL,
-        RDataSuffix=NULL, auto = NULL)
-track.stop(pos = 1, envir = as.environment(pos), all=FALSE, stop.on.error=FALSE)
+        RDataSuffix=NULL, auto = NULL, readonly = FALSE)
+track.stop(pos = 1, envir = as.environment(pos), all=FALSE,
+        stop.on.error=FALSE, keepVars = FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
 tracked.envs(envirs=search())
 track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE)
@@ -42,8 +43,17 @@ track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE)
   callback).  If \code{auto==NULL}, take the value from
   \code{getOptions("global.track.options")$autoTrack}, and if that is
   \code{NULL}, use \code{TRUE}}
+  \item{readonly}{
+    Logical flag indicating whether the tracking db should be attached in
+    a readonly mode.  The global environment (\code{pos=1} in the search
+    path) cannot be tracked in a readonly mode.
+  }
   \item{stop.on.error}{If \code{FALSE}, failures to unlink a tracking
     environment are ignored, though a warning message is printed}
+  \item{keepVars}{If \code{FALSE}, all tracked variables are removed and
+    will be no longer accessible.  If \code{TRUE}, tracked variables will
+    be left as ordinary variables in the environment, as well as remaining
+    in files.}
   \item{envirs}{A list or vector of objects that can be interpreted as
     environments by \code{as.environment}}
   \item{forget.modified}{ If \code{TRUE}, discard copies that are
@@ -55,10 +65,12 @@ track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE)
     \item{\code{track.start}:}{ start tracking \code{envir}.  If the
       tracking directory already exists, objects in it will be made
       accessible, otherwise it will be created (unless \code{create=FALSE}).}
-    \item{\code{track.stop}:}{ stop tracking \code{envir}.  Tracked
-      variables will become unavailable (any unsaved values will be
-      saved to files first.)}
-    \item{\code{track.rescan}:}{ Rescan the tracking dir, so that if anything has changed there,
+
+    \item{\code{track.stop}:}{ stop tracking \code{envir}.  Unsaved
+      values will be saved to files first.  Tracked variables will
+      become unavailable unless \code{keepVars=TRUE} is supplied. }
+
+\item{\code{track.rescan}:}{ Rescan the tracking dir, so that if anything has changed there,
 the current variables on file will be used instead of any cached
 in memory.
 If we have some modified variables cached in memory but not saved

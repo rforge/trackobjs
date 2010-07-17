@@ -209,7 +209,7 @@ $skipped
 
 Warning message:
 In track.load("tmp3y.rda") :
-  skipping 2 variable(s) because these exist in <environment '.GlobalEnv'> and clobber=FALSE: 'y3''y5'
+  skipping 2 variable(s) because these exist in <env R_GlobalEnv> and clobber=FALSE: 'y3''y5'
 
 > y3
 [1] "new value"
@@ -235,7 +235,7 @@ character(0)
 
 Warning message:
 In track.load("tmp3y.rda", clobber = TRUE) :
-  clobbering 3 existing variable(s) in <environment '.GlobalEnv'> and clobber=FALSE: 'y3''y4''y5'
+  clobbering 3 existing variable(s) in <env R_GlobalEnv> and clobber=FALSE: 'y3''y4''y5'
 
 > y3
 [[1]]

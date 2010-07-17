@@ -231,6 +231,8 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
 
     if (activeTracking) {
         opt <- track.options(trackingEnv=trackingEnv)
+        if (opt$readonly)
+            stop("cannot rebuild a readonly tracking environment")
         if (opt$RDataSuffix != suffix) {
             if (fix) {
                 cat("Changing RDataSuffix saved in options to '", suffix, "'")
@@ -441,7 +443,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             fileSummary <- summarySkel[0,]
         else
             cat("Using tracking summary read from file.\n")
-            
+
         objs <- ls(all=T, envir=tmpenv)
         if (length(objs))
             remove(list=objs, envir=tmpenv)

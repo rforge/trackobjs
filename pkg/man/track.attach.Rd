@@ -10,7 +10,7 @@
   new environment attached at \code{pos} on the search path.
 }
 \usage{
-track.attach(dir, pos = 2, name = NULL)
+track.attach(dir, pos = 2, name = NULL, readonly = TRUE)
 track.detach(pos = NULL, name = NULL)
 }
 \arguments{
@@ -24,11 +24,18 @@ track.detach(pos = NULL, name = NULL)
 \item{name}{
   The name to use on the search path for the new environment.
 }
+\item{readonly}{
+  Logical flag indicating whether the tracking db should be attached in
+  a readonly mode.  The global environment (\code{pos=1} in the search
+  path) cannot be tracked in a readonly mode.
+}
 }
 \details{
   \code{track.attach} attaches a new environment to the search path at the specified
   position and variables in the tracking database are made available in
-  it through lazy loading.
+  it through lazy loading.  Using \code{readonly==TRUE} ensure that no
+  changes at all are made to the tracking database, and the environment
+  is locked to ensure that variables cannot be created or deleted.
 
   \code{track.detach} syncs all variables to files and detaches the
   environment from the search list.

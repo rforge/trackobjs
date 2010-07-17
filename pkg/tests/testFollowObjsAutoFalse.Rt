@@ -97,6 +97,9 @@ $autoTrackFullSyncWait
 $clobberVars
 [1] ".Random.seed"
 
+$readonly
+[1] FALSE
+
 > track.options()
 $cache
 [1] TRUE
@@ -139,6 +142,9 @@ $autoTrackFullSyncWait
 
 $clobberVars
 [1] ".Random.seed"
+
+$readonly
+[1] FALSE
 
 > find("x")
 character(0)
@@ -225,6 +231,9 @@ $autoTrackFullSyncWait
 
 $clobberVars
 [1] ".Random.seed"
+
+$readonly
+[1] FALSE
 
 > find("x")
 character(0)

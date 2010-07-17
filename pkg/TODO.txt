@@ -1,7 +1,13 @@
-* write .Last function that will call track.sync(force=TRUE), track.stop(), and that will call save.image() after detaching() the tracking dir.
-* add argument to track.stop() to keep variables (do via track.remove/track.lift?)
+* in track.sync() handle the case \code{master="files"} and where objects are cached and where an underlying file is changed.
+
+* check if track.sync(master="file") is the same as track.rescan()
+* write .Last function that will call track.sync(force=TRUE), track.stop(), and that will call save.image() after detaching() the tracking dir. (.Last gets called before save.image() in the Windows GUI)
 * add tests to testFollowObjs.Rout.save with recordAccesses=FALSE, and separately
   with maintainSummary=FALSE
+* add argument to track.stop() to keep variables in R (do via track.remove/track.lift?)
+* DONE: add a read-only mode, and make that the default for track.attach()
+* DONE: think about using lockEnvironment/lockBinding for a readonly tracking enviornment -- disadvantage is that it is a lot of work to change between readonly=TRUE and readonly=FALSE (solution was to just use lockEnvironment())
+* DONE: write tests for track.attach(readonly=TRUE/FALSE)
 * DONE: add docs to trackObjs-package.Rd to emphasize simple usage.
 * DONE: add tests for track.attach()
 * DONE: add track.auto() function to control use of auto-tracking (turn on and off, show status)

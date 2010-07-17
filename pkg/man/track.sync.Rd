@@ -11,12 +11,20 @@
   \code{track.start(..., auto = TRUE)}.
 }
 \usage{
-track.sync(pos = 1, envir = as.environment(pos),
-           trackingEnv = getTrackingEnv(envir), forceFull = TRUE)
+track.sync(pos = 1, master=c("envir", "files"), envir = as.environment(pos),
+           trackingEnv = getTrackingEnv(envir), forceFull = TRUE, dryRun=FALSE)
 }
 \arguments{
   \item{pos}{ The search path position of the environment being tracked
     (default is 1 for the global environment)}
+  \item{master}{ What to treat as the master for the synchronization.
+    Must be supplied (to avoid accidents with mis-remembering the default.)
+    When \code{master="envir"}, changes are propagated from the
+    R environment to the file system.
+    When \code{master="files"}, the R environment is made to reflect the
+    file system (differences could result from changes to the R
+    environment, or from changes to the file system, e.g., by another R
+    process changing the database).}
   \item{envir}{ The environment being tracked.  This is an alternate way
     (to the use of \code{pos=})
   of specifying the environment being tracked, but should be rarely needed.}
@@ -24,6 +32,10 @@ track.sync(pos = 1, envir = as.environment(pos),
   \item{forceFull}{If \code{TRUE}, do a full check, which involves
     checking that all apparently tracked variables do in fact have an
     active binding.}
+  \item{dryRun}{If \code{TRUE}, no changes are made to either the file
+    system or to the R environment, but changes that would be made are
+    printed out.  Note that a change to a file for a tracked variable
+    will not be detect.}
 }
 \details{
     Synchronizing the tracking database with the contents of the
@@ -34,7 +46,11 @@ track.sync(pos = 1, envir = as.environment(pos),
       delete them from the tracking database
       \item check that all apparently tracked variables do in fact have an
     active binding
-    }
+  }
+
+  Currently, this function will not correctly handle the case where
+  \code{master="files"} and where objects are cached and an underlying
+  file is changed.
 }
 \value{
   Returns an invisible list with the following components:

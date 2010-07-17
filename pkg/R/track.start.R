@@ -1,6 +1,7 @@
 track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                         create=TRUE, clobber=c("no", "files", "variables"),
-                        cache=NULL, options=NULL, RDataSuffix=NULL, auto=NULL) {
+                        cache=NULL, options=NULL, RDataSuffix=NULL, auto=NULL,
+                        readonly=FALSE) {
     ## Start tracking the specified environment to a directory
     clobber <- match.arg(clobber)
     if (env.is.tracked(envir))
@@ -124,6 +125,8 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         old.options <- gopt
     }
     opt <- track.options(options, envir=NULL, only.preprocess=TRUE, old.options=old.options)
+    if (!is.null(readonly))
+        opt$readonly <- readonly
     assign(".trackingOptions", opt, envir=trackingEnv)
     fileMapPath <- file.path(dataDir, "filemap.txt")
     fileMapCreated <- FALSE
@@ -180,7 +183,11 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                          " (try track.start(..., clobber='files') or track.start(..., clobber='vars') to clobber one or the other")
                 } else if (clobber=="files") {
                     file.names <- fileMap[match(alreadyExists, names(fileMap))]
-                    file.remove(file.path(dataDir, paste(file.names, opt$RDataSuffix, sep=".")))
+                    if (opt$readonly) {
+                        warning("will not clobber files corresponding to existing variables because readonly=TRUE: ", paste(alreadyExists, collapse=", "))
+                    } else {
+                        file.remove(file.path(dataDir, paste(file.names, opt$RDataSuffix, sep=".")))
+                    }
                 } else if (clobber=="variables") {
                     remove(list=alreadyExists, envir=envir)
                 }
@@ -208,14 +215,16 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         }
     }
     ## Do we need to save the fileMap ? (only if changed)
-    if (fileMapCreated)
+    if (fileMapCreated && !opt$readonly)
         writeFileMapFile(fileMap, trackingEnv, dataDir, TRUE)
     ## We always need to save the summary...
     assign(".trackingSummary", objSummary, envir=trackingEnv)
     assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-    save.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=objSummaryPath))
-    if (is(save.res, "try-error"))
-        stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again")
+    if (!opt$readonly) {
+        save.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=objSummaryPath))
+        if (is(save.res, "try-error"))
+            stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again")
+    }
     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     if (dir!=dataDir && !file.exists(dfn)) {
         ## Only use a "DESCRIPTION" file when we use a 'data' subdirectory
@@ -242,6 +251,8 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         addTaskCallback(track.sync.callback, data=envir, name=paste("track.auto:", envname(envir), sep=""))
         assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
     }
+    if (opt$readonly && environmentName(envir) != "R_GlobalEnv")
+        lockEnvironment(envir)
     return(invisible(NULL))
 }
 
