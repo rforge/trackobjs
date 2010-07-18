@@ -45,6 +45,11 @@ track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
 \details{
   Valid option names and values are as follows:
   \describe{
+    \item{readonly:}{logical (default TRUE for \code{track.attach()} and FALSE
+  for \code{track.start()}) should any changes be allowed to the files?
+  Note that this option is a function of how a tracking database is
+  accessed -- it is not a property of the database itself.  To
+  unconditionally protect a tracking database from modification, use file permissions.}
     \item{summaryTimes:}{logical, or integer value 0,1,2,3}
     \item{summaryAccess:}{logical, or integer value 0,1,2,3,4}
     \item{cache:}{logical (default TRUE) (keep written objects in memory?)}
