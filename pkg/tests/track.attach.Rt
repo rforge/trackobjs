@@ -26,6 +26,9 @@ y numeric numeric    [1]      1   32  0  1
 > track.detach(pos=2)
 > is.element("track:tmp14", search())
 [1] FALSE
+> # Get modification times of the files
+> mtime1 <- file.info(file.path("tmp14",list.files("tmp14",all=T,pattern=".(rda|txt)$")))[,c("size","mtime")]
+> Sys.sleep(2) # give some time for at a one second difference to show up
 > track.attach("tmp14", name="track:tmp14", readonly=FALSE, pos=2)
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
@@ -42,7 +45,13 @@ y numeric numeric    [1]      1   32  0  1
 > track.detach(pos=2)
 > is.element("track:tmp14", search())
 [1] FALSE
+> # This was not a readonly attachment, so we expect mtime difference in .trackingSummary.rda
+> mtime2 <- file.info(file.path("tmp14",list.files("tmp14",all=T,pattern=".(rda|txt)$")))[,c("size","mtime")]
+> identical(mtime1, mtime2)
+#@ignore-output doesn't matter if this test fails
+[1] FALSE
 > options(error=function() NULL)
+> Sys.sleep(2) # give some time for at a one second difference to show up
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
@@ -68,6 +77,9 @@ Error in remove(list = "y", pos = 2) :
 > track.detach(2)
 > is.element("track:tmp14", search())
 [1] FALSE
-> 
+> # No files should be modified
+> mtime3 <- file.info(file.path("tmp14",list.files("tmp14",all=T,pattern=".(rda|txt)$")))[,c("size","mtime")]
+> identical(mtime2, mtime3)
+[1] TRUE
 > invisible(if (file.exists("tmp14")) unlink("tmp14", recursive=TRUE))
 > 
