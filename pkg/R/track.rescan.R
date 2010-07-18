@@ -20,11 +20,12 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forget.modified=FALSE
     # Check that there won't be any obvious problems reattaching -- check that
     # no variables are masked, etc.  If new variables have been added, these might
     # prevent restarting if there are name conflicts, but there's not much we can do
-    # about that except try and file.
+    # about that except try and fail.
     status <- track.status(envir=envir, tracked=TRUE)
     if (any(is.element(status$status, c("untrackable", "masked"))))
         stop("will not be able to reattach tracking env because some vars are untrackable or masked (look at output of track.status(envir, tracked=TRUE))")
+    readonly <- track.options("readonly")
     track.stop(envir=envir)
-    track.start(dir=dir, envir=envir, create=FALSE)
+    track.start(dir=dir, envir=envir, create=FALSE, readonly=readonly)
     return(invisible(NULL))
 }
