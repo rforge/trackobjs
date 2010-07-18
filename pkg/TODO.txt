@@ -1,6 +1,5 @@
 * in track.sync() handle the case \code{master="files"} and where objects are cached and where an underlying file is changed.
-
-* check if track.sync(master="file") is the same as track.rescan()
+* check if track.sync(master="file") is the same as track.rescan() - no it isn't
 * write .Last function that will call track.sync(force=TRUE), track.stop(), and that will call save.image() after detaching() the tracking dir. (.Last gets called before save.image() in the Windows GUI)
 * add tests to testFollowObjs.Rout.save with recordAccesses=FALSE, and separately
   with maintainSummary=FALSE
