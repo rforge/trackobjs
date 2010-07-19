@@ -125,5 +125,49 @@ $cache
 $writeToDisk
 [1] FALSE
 
+> # Test how multi-value options are handled
+> track.options("autoTrackExcludePattern")
+$autoTrackExcludePattern
+[1] "^\\.track"    "^\\.required"
+
+> track.options(autoTrackExcludePattern="pattern")
+> track.options("autoTrackExcludePattern")
+$autoTrackExcludePattern
+[1] "^\\.track"    "^\\.required" "pattern"     
+
+> track.options("autoTrackExcludeClass")
+$autoTrackExcludeClass
+[1] "RODBC"
+
+> track.options("autoTrackExcludeClass"="someclass")
+> track.options("autoTrackExcludeClass")
+$autoTrackExcludeClass
+[1] "RODBC"     "someclass"
+
+> track.options("autoTrackExcludeClass"="someclass", delete=T)
+> track.options("autoTrackExcludeClass")
+$autoTrackExcludeClass
+[1] "RODBC"
+
+> track.options("autoTrackExcludeClass"="someclass", clear=T)
+> track.options("autoTrackExcludeClass")
+$autoTrackExcludeClass
+[1] "someclass"
+
+> track.options("autoTrackExcludeClass"="RODBC")
+> track.options("autoTrackExcludeClass")
+$autoTrackExcludeClass
+[1] "someclass" "RODBC"    
+
+> track.options("autoTrackExcludeClass"="RODBC")
+> track.options("autoTrackExcludeClass")
+$autoTrackExcludeClass
+[1] "someclass" "RODBC"    
+
+> track.options("autoTrackExcludeClass"="someclass", delete=T)
+> track.options("autoTrackExcludeClass")
+$autoTrackExcludeClass
+[1] "RODBC"
+
 > track.stop()
 > 

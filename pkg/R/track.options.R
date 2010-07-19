@@ -138,7 +138,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     if (set.values) {
         new.values <- currentOptions
         for (opt in names(values)) {
-           single <- TRUE
+            single <- TRUE
             if (opt=="cache") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
@@ -189,13 +189,14 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
                 stop("cannot set option ", opt, " to an NA value")
             if (single && length(values[[opt]])!=1)
                 stop("option ", opt, " must have a value of length 1")
+            ## Now, how we put the value in depends on whethr it can have single or multiple values
+            if (single || clear)
+                new.values[[opt]] <- values[[opt]]
+            else if (delete)
+                new.values[[opt]] <- setdiff(new.values[[opt]], values[[opt]])
+            else
+                new.values[[opt]] <- unique(c(new.values[[opt]], values[[opt]]))
         }
-        if (single || clear)
-            new.values[names(values)] <- values
-        else if (delete)
-            new.values[names(values)] <- setdiff(new.values[names(values)], values)
-        else
-            new.values[names(values)] <- unique(c(new.values[names(values)], values))
 
         if (only.preprocess)
             return(new.values)
