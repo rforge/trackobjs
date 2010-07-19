@@ -442,7 +442,7 @@ makeObjFileName <- function(objname, fileNames) {
     return(file)
 }
 
-setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackingEnv=trackingEnv), times=NULL) {
+setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackingEnv=trackingEnv), times=NULL, file=NULL) {
     if (opt$readonly)
         stop("variable '", objName, "' cannot be changed -- it is in a readonly tracking environment")
     ## Set the tracked var, and write it to disk if required
@@ -459,18 +459,20 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
         if (!file.exists(d))
             dir.create(d)
     ## Work out the name of the file to use for this var
-    fileMap <- getFileMapObj(trackingEnv)
-    fileMapChanged <- FALSE
-    isNew <- FALSE
-    if (is.na(file <- fileMap[match(objName, names(fileMap))])) {
-        file <- makeObjFileName(objName, fileMap)
-        fileMap[objName] <- file
-        fileMapChanged <- TRUE
-        isNew <- TRUE
-    }
-    if (fileMapChanged) {
-        ##  always write a changed file map back out to disk
-        writeFileMapFile(fileMap, trackingEnv=trackingEnv, dataDir=getDataDir(dir))
+    if (is.null(file)) {
+        fileMap <- getFileMapObj(trackingEnv)
+        fileMapChanged <- FALSE
+        isNew <- FALSE
+        if (is.na(file <- fileMap[match(objName, names(fileMap))])) {
+            file <- makeObjFileName(objName, fileMap)
+            fileMap[objName] <- file
+            fileMapChanged <- TRUE
+            isNew <- TRUE
+        }
+        if (fileMapChanged) {
+            ##  always write a changed file map back out to disk
+            writeFileMapFile(fileMap, trackingEnv=trackingEnv, dataDir=getDataDir(dir))
+        }
     }
     fullFile <- NULL
     if (opt$writeToDisk) {

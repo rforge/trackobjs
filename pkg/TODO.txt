@@ -1,3 +1,29 @@
+* in track.start(), when clobbering files, make sure current var binding is not active, and that var is trackable
+* add tests for track.start(clobber="vars") and track.start(clobber="files")
+* in track.stop(), replace .Last active binding by its value (otherwise get an error when trying to run it?)
+* in track.start(), need to check that files exist before clobbering vars, had this situation
+> track.status()
+                    Status InMem    FileBase FileExists Saved
+.Last              tracked FALSE          _2      FALSE  TRUE
+always.stop        tracked FALSE always.stop       TRUE  TRUE
+f                  tracked FALSE           f       TRUE  TRUE
+fred               tracked FALSE        fred       TRUE  TRUE
+mtime              tracked FALSE       mtime      FALSE  TRUE
+mtime2             tracked FALSE      mtime2       TRUE  TRUE
+mtime3             tracked FALSE      mtime3       TRUE  TRUE
+ScripTests.pkg.dir tracked FALSE          _1       TRUE  TRUE
+x                  tracked FALSE           x       TRUE  TRUE
+z                  tracked FALSE           z       TRUE  TRUE
+> mtime
+Error in getTrackedVar("mtime", <environment>) :
+  file 'C:/tplate/R/rforge/trackobjs/rdatadir/mtime.rda' does not exist (for obj 'mtime')
+
+Enter a frame number, or 0 to exit
+
+1: function (v)
+2: getTrackedVar("mtime", <environment>)
+
+
 * in track.sync() handle the case \code{master="files"} and where objects are cached and where an underlying file is changed.
 * check if track.sync(master="file") is the same as track.rescan() - no it isn't
 * write .Last function that will call track.sync(force=TRUE), track.stop(), and that will call save.image() after detaching() the tracking dir. (.Last gets called before save.image() in the Windows GUI)

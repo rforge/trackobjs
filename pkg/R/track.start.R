@@ -182,11 +182,17 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                          if (length(alreadyExists)>3) ", ...",
                          " (try track.start(..., clobber='files') or track.start(..., clobber='vars') to clobber one or the other")
                 } else if (clobber=="files") {
-                    file.names <- fileMap[match(alreadyExists, names(fileMap))]
                     if (opt$readonly) {
                         warning("will not clobber files corresponding to existing variables because readonly=TRUE: ", paste(alreadyExists, collapse=", "))
                     } else {
-                        file.remove(file.path(dataDir, paste(file.names, opt$RDataSuffix, sep=".")))
+                        for (varName in alreadyExists) {
+                            file <- fileMap[match(varName, names(fileMap))]
+                            file.remove(file.path(dataDir, paste(file, opt$RDataSuffix, sep=".")))
+                            value <- get(varName, envir=envir, inherits=FALSE)
+                            setTrackedVar(varName, value, trackingEnv, opt=replace(opt, "maintainSummary", FALSE), file=file)
+                            remove(list=varName, envir=envir, inherits=FALSE)
+
+                        }
                     }
                 } else if (clobber=="variables") {
                     remove(list=alreadyExists, envir=envir)
