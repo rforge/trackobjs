@@ -38,12 +38,13 @@ There are three main reasons to use the \code{trackObjs} package:
 }
 
 There is an option to control whether tracked objects are cached in
-memory as well as being stored on disk.  By default, objects are
-not cached.  To save time when working with collections of objects that
-will all fit in memory, turn on
-caching with
-\code{\link{track.options}(cache=TRUE)}, or start
-tracking with \code{\link{track.start}(..., cache=TRUE)}.
+memory as well as being stored on disk.  By default, objects are not
+cached.  To save time when working with collections of objects that will
+all fit in memory, turn on caching with
+\code{\link{track.options}(cache=TRUE)}, or start tracking with
+\code{\link{track.start}(..., cache=TRUE)}.  A possible future
+improvement is to allow conditional and/or intelligent caching of
+objects.
 
 Here is a brief example of tracking some variables in the global environment:
 
@@ -255,6 +256,22 @@ Design and internals of tracking:
   \item \code{\link{track.design}}
 }
 }
+\note{
+  Some special kinds of objects don't work properly if referenced as
+  active bindings and/or stored in a save file.  One example is RODBC
+  connections.  To make it easy to work with such objects, two ways of
+  excluding variables from automatic tracking are provided: the
+  \code{autoTrackExcludePattern} option (a vector regular expressions:
+  variables whose name match one of these will not be tracked); and the
+  \code{autoTrackExcludeClass} option (a vector of class names:
+  variables whose class matches one of these will not be tracked).  New
+  values can be added to these options as follows:
+  \preformatted{
+track.options(autoTrackExcludePattern="regexp")
+track.options(autoTrackExcludeClass="classname")
+}
+  }
+
 
 \author{Tony Plate <tplate@acm.org>}
 \references{
