@@ -163,6 +163,12 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         ## stored in the tracking dir and variables in envir
         if (file.exists(fileMapPath)) {
             fileMap <- readFileMapFile(trackingEnv, dataDir, TRUE)
+            if (length(fileMap)) {
+                fileExists <- file.exists(file.path(dataDir, paste(fileMap, sep=".", opt$RDataSuffix)))
+                if (any(!fileExists))
+                    stop("missing files for some variables in the fileMap (use track.rebuild() to repair): ",
+                         paste(names(fileMap)[!fileExists], collapse=", "))
+            }
             alreadyExists <- logical(0)
             if (length(fileMap))
                 alreadyExists <- sapply(names(fileMap), exists, envir=envir, inherits=FALSE)

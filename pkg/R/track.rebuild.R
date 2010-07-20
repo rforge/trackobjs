@@ -541,7 +541,10 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         } else if (!file.exists(file.path(dataDir, objFile))) {
             cat("Object '", (if (!is.na(objName)) objName  else "(unknown)") , "'",
                 " is not stored on file ('", abbrevWD(file.path(dataDir, objFile)), "')",
-                " and is not cached -- forgetting about it\n")
+                " and is not cached -- forgetting about it\n", sep="")
+            i <- match(objName, names(fileMap))
+            if (!is.na(i))
+                fileMap <- fileMap[-i]
         } else {
             if (verbose > 1)
                 cat("Loading file '", abbrevWD(file.path(dataDir, objFile)), "' for ",
@@ -783,6 +786,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
     if (length(masked))
         res$masked <- masked
     if (dry.run) {
+        cat("Run with dry.run=FALSE to actually make changes\n")
         return(res)
     } else {
         if (activeTracking) {

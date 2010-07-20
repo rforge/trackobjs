@@ -81,5 +81,27 @@ Error in remove(list = "y", pos = 2) :
 > mtime3 <- file.info(file.path("tmp14",list.files("tmp14",all=T,pattern=".(rda|txt)$")))[,c("size","mtime")]
 > identical(mtime2, mtime3)
 [1] TRUE
+> 
+> # Damage the tracking database and see if track.rebuild()
+> # can repair it.
+> file.remove("tmp14/y.rda")
+[1] TRUE
+> track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
+Error in track.start(trackingDir, pos = pos, readonly = readonly) : 
+  missing files for some variables in the fileMap (use track.rebuild() to repair): y
+> track.rebuild(dir="tmp14", level='all', dry.run=FALSE)
+Rebuilding an inactive tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Using tracking summary read from file.
+Cannot find some objects in the fileMap: no file on disk, and object is not in the tracking environment:
+  filename
+y    y.rda
+loaded 'x'
+Object 'y' is not stored on file ('./tmp14/y.rda') and is not cached -- forgetting about it
+> track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
+> track.status(pos=2)
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+> track.detach(pos=2)
 > invisible(if (file.exists("tmp14")) unlink("tmp14", recursive=TRUE))
 > 

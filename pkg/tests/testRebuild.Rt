@@ -275,6 +275,7 @@ Would save object 'X4' to './tmp7/_4.rda'
 Loading file './tmp7/def.rda' for object 'def' ... loaded 'def'
 New file map has 9 newly constructed entries and uses 4 old entries
 New summary has 9 newly constructed entries and uses 1 recovered and 3 old entries
+Run with dry.run=FALSE to actually make changes
 > res$fileMap
      X     X4     X5     X6      Y    abc    def      x     x1   x1.1     x2     x3      z 
   "_1"   "_4"   "_3"   "_6"   "_2"  "abc"  "def"    "x"   "x1" "x1.1"   "x2"   "x3"    "z" 
@@ -531,6 +532,7 @@ New summary has 4 newly constructed entries and uses 3 recovered and 8 old entri
 Would rebuild 4 missing active bindings: aa, bb, cc, x1.1
 1 tracked vars are masked by non-active bindings -- to fix, please manually remove these vars from the tracked environment before re-running track.rebuild()
 The masked vars are: Y
+Run with dry.run=FALSE to actually make changes
 > res$fileMap
      X     X4     X5     X6      Y     aa    abc     bb     cc    def      x     x1   x1.1     x2     x3 
   "_3"   "_2"   "_1"   "_6"   "_4"   "aa"  "abc"   "bb"   "cc"  "def"    "x"   "x1" "x1.1"   "x2"   "x3" 
