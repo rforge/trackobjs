@@ -11,14 +11,16 @@
   \code{track.start(..., auto = TRUE)}.
 }
 \usage{
-track.sync(pos = 1, master=c("envir", "files"), envir = as.environment(pos),
+track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(pos),
            trackingEnv = getTrackingEnv(envir), forceFull = TRUE, dryRun=FALSE)
 }
 \arguments{
   \item{pos}{ The search path position of the environment being tracked
     (default is 1 for the global environment)}
   \item{master}{ What to treat as the master for the synchronization.
-    Must be supplied (to avoid accidents with mis-remembering the default.)
+    For a readonly tracked environment, the default \code{auto} will
+    default to \code{"files"} (the only sensible interpretation).
+    Otherwise, must be supplied (to avoid accidents with users mis-remembering the default.)
     When \code{master="envir"}, changes are propagated from the
     R environment to the file system.
     When \code{master="files"}, the R environment is made to reflect the

@@ -12,12 +12,12 @@
 \usage{
 track.start(dir="rdatadir", pos = 1, envir = as.environment(pos), create = TRUE,
         clobber = c("no", "files", "variables"), cache=NULL, options=NULL,
-        RDataSuffix=NULL, auto = NULL, readonly = FALSE)
+        RDataSuffix=NULL, auto = NULL, readonly = FALSE, lockEnv = FALSE)
 track.stop(pos = 1, envir = as.environment(pos), all=FALSE,
         stop.on.error=FALSE, keepVars = FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
 tracked.envs(envirs=search())
-track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE)
+track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE, level = c("high", "low"), dryRun = FALSE)
 }
 
 \arguments{
@@ -58,7 +58,19 @@ track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE)
     environments by \code{as.environment}}
   \item{forget.modified}{ If \code{TRUE}, discard copies that are
     modified and in memory }
-  \item{RDataSuffix}{The suffix to use for \code{RData} files.  This should not normally need to be specified.}
+  \item{RDataSuffix}{The suffix to use for \code{RData} files.  This
+    should not normally need to be specified.}
+
+  \item{lockEnv}{Should the environment be locked for a readonly
+  tracking environment? The default is \code{FALSE} because locking the
+  environment is irreversible, and it prevents rescanning or caching
+  (because can't delete or add bindings)}
+
+\item{level}{Should the rescan be done at a high or low level: a high
+  level just stops tracking and restarts it; a low level tries to
+  individually bring the environment in line with the file database.}
+  \item{dryRun}{If \code{TRUE}, no changes are actualy made, but
+  messages are printed describing what changes would be made.}
 }
 \details{
   \describe{

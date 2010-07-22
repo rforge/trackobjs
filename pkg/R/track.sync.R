@@ -1,11 +1,15 @@
-track.sync <- function(pos=1, master=c("envir", "files"), envir=as.environment(pos), trackingEnv=getTrackingEnv(envir), forceFull=TRUE, dryRun=FALSE) {
-    ## Sync up the tracking database with the contents of the environment
+track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.environment(pos), trackingEnv=getTrackingEnv(envir), forceFull=TRUE, dryRun=FALSE) {
+    ## With master="envir", sync the tracking database to the contents of the R environment
     ## This involves 3 things
     ##   (1) start tracking new untracked variables
-    ##   (2) for objects that have disappeared from the environment, delete them from
-    ##       the tracking database
+    ##   (2) for objects that have disappeared from the environment,
+    ##       delete them from the tracking database
     ##   (3) check that all variables are activeBindings (to catch cases where
-    ##       {rm(x); assign("x", value)} is performed, which leaves
+    ##       {rm(x); assign("x", value)} is performed, which leaves tracked
+    ##       variables without an active binding.) This is only done as part "full"
+    ##
+    ## With master="files", sync the R environment to the tracking database in the filesystem,
+    ## which is the job of track.rescan(), so call that.
 
     ## Could call untracked() and track.orphaned() to find these, but faster
     ## to do ls() on the environment, and look at the tracking file map,
@@ -16,13 +20,20 @@ track.sync <- function(pos=1, master=c("envir", "files"), envir=as.environment(p
 
     ## Do check for untrackable objects (isReservedName())
 
-    if (missing(master))
-        stop("must supply argument master=")
-    master <- match.arg(master)
     opt <- track.options(trackingEnv=trackingEnv)
-    if (opt$readonly && !forceFull)
+    verbose <- dryRun || opt$debug > 0
+    master <- match.arg(master)
+    if (master=="auto")
+        if (opt$readonly)
+            master <- "envir"
+        else
+            stop("must supply argument master='files' or master='envir' when tracking db is attached with readonly=FALSE")
+    if (master=="files")
+        return(track.rescan(envir=envir, forget.modified=TRUE, level="low"))
+    if (opt$readonly && master=="envir" && !forceFull) {
         return(list(new=character(0), deleted=character(0)))
-    if (master=="files" && opt$readonly) {
+    }
+    if (master=="envir" && opt$readonly) {
         warning("readonly=TRUE will prevent writing anything to files, but will show what will happen")
         dryRun <- TRUE
     }
@@ -31,17 +42,17 @@ track.sync <- function(pos=1, master=c("envir", "files"), envir=as.environment(p
     all.objs <- .Internal(ls(envir, TRUE))
     untracked <- setdiff(all.objs, names(fileMap))
     reserved <- isReservedName(untracked)
-    if ((opt$debug > 0 || dryRun) && any(reserved))
+    if (verbose && any(reserved))
         cat("track.sync: cannot track variables with reserved names: ", paste(untracked[reserved], collapse=", "), "\n", sep="")
     untracked <- untracked[!reserved]
     activeBindings <- sapply(untracked, bindingIsActive, envir)
-    if ((opt$debug > 0 || dryRun) && any(activeBindings))
+    if (verbose && any(activeBindings))
         cat("track.sync: cannot track variables that have active bindings: ", paste(untracked[activeBindings], collapse=", "), "\n", sep="")
     untracked <- untracked[!activeBindings]
     if (length(opt$autoTrackExcludeClass)) {
         excludedClass <- sapply(untracked, function(o) any(is.element(class(get(o, envir=envir, inherits=FALSE)), opt$autoTrackExcludeClass)))
         if (any(excludedClass)) {
-            if (opt$debug > 0 || dryRun)
+            if (verbose)
                 cat("track.sync: not tracking variables from excluded classes: ",
                     paste(untracked[excludedClass], collapse=", "), "\n", sep="")
             untracked <- untracked[!excludedClass]
@@ -51,48 +62,27 @@ track.sync <- function(pos=1, master=c("envir", "files"), envir=as.environment(p
         untracked <- grep(re, untracked, invert=TRUE, value=TRUE)
     deleted <- setdiff(names(fileMap), all.objs)
     if (length(untracked)) {
-        if (master=="envir") {
-            if (dryRun) {
-                cat("track.sync(dryRun): would track ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
-            } else {
-                if (opt$debug > 0)
-                    cat("track.sync: tracking ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
-                track(list=untracked, envir=envir)
-            }
+        if (dryRun) {
+            cat("track.sync(dryRun): would track ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
         } else {
-            if (dryRun) {
-                cat("track.sync(dryRun): would delete ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
-            } else {
-                if (opt$debug > 0)
-                    cat("track.sync: deleting ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
-                remove(list=untracked, envir=envir)
-            }
+            if (opt$debug > 0)
+                cat("track.sync: tracking ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
+            track(list=untracked, envir=envir)
         }
     } else {
-        if (opt$debug > 0 || dryRun)
+        if (verbose)
             cat("track.sync: no untracked variables\n")
     }
-    restore <- character(0)
     if (length(deleted)) {
-        if (master=="envir") {
-            if (dryRun) {
-                cat("track.sync(dryRun): would remove ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
-            } else {
-                if (opt$debug > 0)
-                    cat("track.sync: removing ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
-                track.remove(list=deleted, envir=envir, force=TRUE)
-            }
+        if (dryRun) {
+            cat("track.sync(dryRun): would remove ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
         } else {
-            if (dryRun) {
-                cat("track.sync(dryRun): would restore ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
-            } else {
-                if (opt$debug > 0)
-                    cat("track.sync: restoring ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
-                restore <- deleted
-            }
+            if (opt$debug > 0)
+                cat("track.sync: removing ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
+            track.remove(list=deleted, envir=envir, force=TRUE)
         }
     } else {
-        if (opt$debug > 0 || dryRun)
+        if (verbose)
             cat("track.sync: no deleted variables\n")
     }
     now <- as.numeric(proc.time()[3])
@@ -108,7 +98,7 @@ track.sync <- function(pos=1, master=c("envir", "files"), envir=as.environment(p
         # find the vars that look like they are tracked but don't have active bindings
         tracked <- intersect(names(fileMap), all.objs)
         reserved <- isReservedName(tracked)
-        if ((opt$debug > 0 || dryRun) && any(reserved))
+        if (verbose && any(reserved))
             cat("track.sync: cannot track variables with reserved names: ", paste(tracked[reserved], collapse=", "), "\n", sep="")
         tracked <- tracked[!reserved]
         if (length(tracked)) {
@@ -118,36 +108,25 @@ track.sync <- function(pos=1, master=c("envir", "files"), envir=as.environment(p
     if (length(retrack))
         for (re in opt$autoTrackExcludePattern)
             retrack <- grep(re, retrack, invert=TRUE, value=TRUE)
-    if (length(restore))
-        for (re in opt$autoTrackExcludePattern)
-            restore <- grep(re, restore, invert=TRUE, value=TRUE)
-    retrack.restore <- c(retrack, restore)
 
-    # have two possible things to do for each variable: retrack or restore, with master=file or envir
-    #   action=retrack, master=envir: get obj from envir, store in file, create active binding
-    #   action=retrack, master=file:  remove current obj from envir, create active binding
-    #   action=restore, master=envir: not possible (this would have been delete variables)
-    #   action=restore, master=file:  create active binding
-    for (i in seq(along=retrack.restore)) {
-        action <- if (i <= length(retrack)) "restore" else "retrack"
-        objname <- retrack.restore[i]
-        if (action=="retrack") {
-            objval <- get(objname, envir=envir, inherits=FALSE)
-            if (any(is.element(class(objval), opt$autoTrackExcludeClass))) {
-                if (opt$debug > 0 || dryRun)
-                    cat("track.sync", if (dryRun) "(dryRun)", ": var is from excluded class, not tracking: ", objname, "\n", sep="")
-                next
-            }
+    ## Deal with untracked objects in the tracked env.
+    ## Need to write these to files, and replace with active bindings.
+    for (objname in retrack) {
+        ## get obj from envir, store in file, create active binding
+        objval <- get(objname, envir=envir, inherits=FALSE)
+        if (any(is.element(class(objval), opt$autoTrackExcludeClass))) {
+            if (verbose)
+                cat("track.sync", if (dryRun) "(dryRun)", ": var is from excluded class, not tracking: ", objname, "\n", sep="")
+            next
         }
-        if (opt$debug > 0 || dryRun)
-            cat("track.sync", if (dryRun) "(dryRun)", ": ", action, "ing var: ", objname, "\n", sep="")
+        if (verbose)
+            cat("track.sync: retracking var: ", objname, "\n", sep="")
         if (dryRun)
             next
-        if (action=="retrack") {
-            remove(list=objname, envir=envir)
-            if (master=="envir")
-                setTrackedVar(objname, objval, trackingEnv, opt)
-        }
+        ## Use setTrackedVar to write the object to disk (or merely cache
+        ## it in trackingEnv, depending on settings in opt)
+        setTrackedVar(objname, objval, trackingEnv, opt, doAssign=FALSE)
+        remove(list=objname, envir=envir)
         f <- substitute(function(v) {
             if (missing(v))
                 getTrackedVar(x, envir)
@@ -169,7 +148,7 @@ track.sync <- function(pos=1, master=c("envir", "files"), envir=as.environment(p
         environment(f) <- parent.env(environment(f))
         makeActiveBinding(objname, env=envir, fun=f)
     }
-    if (doFull) {
+    if (doFull & !dryRun) {
         ## save the time that we did this full sync
         assign(".trackAuto", list(on=TRUE, last=now), envir=trackingEnv)
     }
