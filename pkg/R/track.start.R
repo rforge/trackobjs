@@ -1,7 +1,7 @@
 track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                         create=TRUE, clobber=c("no", "files", "variables"),
                         cache=NULL, options=NULL, RDataSuffix=NULL, auto=NULL,
-                        readonly=FALSE) {
+                        readonly=FALSE, lockEnv=FALSE) {
     ## Start tracking the specified environment to a directory
     clobber <- match.arg(clobber)
     if (env.is.tracked(envir))
@@ -144,7 +144,8 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         assign(".trackingSummary", objSummary, envir=trackingEnv)
     } else {
         ## Try to read the summary first, because if there is a problem with fileMap,
-        ## we may want to erase the summary
+        ## we may want to erase the summary (though the code doesn't currently
+        ## do that.)
         tmpenv <- new.env(parent=emptyenv())
         if (file.exists(objSummaryPath)) {
             load.res <- try(load(objSummaryPath, envir=tmpenv), silent=TRUE)
@@ -263,7 +264,9 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         addTaskCallback(track.sync.callback, data=envir, name=paste("track.auto:", envname(envir), sep=""))
         assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
     }
-    if (opt$readonly && environmentName(envir) != "R_GlobalEnv")
+    ## Note that locking the environment is irreversible, and it prevents
+    ## syncing to disk or caching (because can't delete or add bindings)
+    if (lockEnv && opt$readonly && environmentName(envir) != "R_GlobalEnv")
         lockEnvironment(envir)
     return(invisible(NULL))
 }
