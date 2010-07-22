@@ -10,7 +10,7 @@
   new environment attached at \code{pos} on the search path.
 }
 \usage{
-track.attach(dir, pos = 2, name = NULL, readonly = TRUE)
+track.attach(dir, pos = 2, name = NULL, readonly = TRUE, lockEnv = FALSE)
 track.detach(pos = NULL, name = NULL)
 }
 \arguments{
@@ -29,6 +29,10 @@ track.detach(pos = NULL, name = NULL)
   a readonly mode.  The global environment (\code{pos=1} in the search
   path) cannot be tracked in a readonly mode.
 }
+  \item{lockEnv}{Should the environment be locked for a readonly
+  tracking environment? The default is \code{FALSE} because locking the
+  environment is irreversible, and it prevents rescanning or caching
+  (because can't delete or add bindings)}
 }
 \details{
   \code{track.attach} attaches a new environment to the search path at the specified

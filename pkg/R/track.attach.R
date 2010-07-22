@@ -1,4 +1,4 @@
-track.attach <- function(dir, pos=2, name=NULL, readonly=TRUE) {
+track.attach <- function(dir, pos=2, name=NULL, readonly=TRUE, lockEnv=FALSE) {
     if (pos < 2)
         stop("pos must be >= 2")
     if (!file.exists(dir))
@@ -18,5 +18,5 @@ track.attach <- function(dir, pos=2, name=NULL, readonly=TRUE) {
     if (is.null(name))
         name <- getAbsolutePath(dir)
     attach(what=NULL, pos=pos, name=name)
-    return(track.start(trackingDir, pos=pos, readonly=readonly))
+    return(track.start(trackingDir, pos=pos, readonly=readonly, lockEnv=lockEnv))
 }

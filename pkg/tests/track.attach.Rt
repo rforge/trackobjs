@@ -52,7 +52,7 @@ y numeric numeric    [1]      1   32  0  1
 [1] FALSE
 > options(error=function() NULL)
 > Sys.sleep(2) # give some time for at a one second difference to show up
-> track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
+> track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2, lockEnv=TRUE)
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -87,7 +87,7 @@ Error in remove(list = "y", pos = 2) :
 > file.remove("tmp14/y.rda")
 [1] TRUE
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
-Error in track.start(trackingDir, pos = pos, readonly = readonly) : 
+Error in track.start(trackingDir, pos = pos, readonly = readonly, lockEnv = lockEnv) : 
   missing files for some variables in the fileMap (use track.rebuild() to repair): y
 > track.rebuild(dir="tmp14", level='all', dry.run=FALSE)
 Rebuilding an inactive tracking database
