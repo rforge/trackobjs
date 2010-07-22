@@ -1,5 +1,6 @@
 * in track.start(), when clobbering files, make sure current var binding is not active, and that var is trackable
 * add tests for track.start(clobber="vars") and track.start(clobber="files")
+* add tests for track.rescan(level="low") with changed file db (based on code in track.attach.Rt)
 * in track.stop(), replace .Last active binding by its value (otherwise get an error when trying to run it?)
 * in track.start(), need to check that files exist before clobbering vars, had this situation
 > track.status()
