@@ -396,7 +396,7 @@ getUnsavedObj <- function(trackingEnv, notfound=character(0))
 envname <- function(envir) {
     # Produce a 1-line name for the environment.
     # Use the name it has on the search() list, if possible.
-    # This is simpler now that R ha the environmentName() function
+    # This is simpler now that R has the environmentName() function
     n <- environmentName(envir)
     if (n!="")
         return(paste("<env ", n, ">", sep=""))
@@ -442,17 +442,18 @@ makeObjFileName <- function(objname, fileNames) {
     return(file)
 }
 
-setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackingEnv=trackingEnv), times=NULL, file=NULL) {
+setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackingEnv=trackingEnv), times=NULL, file=NULL, doAssign=TRUE) {
     if (opt$readonly)
         stop("variable '", objName, "' cannot be changed -- it is in a readonly tracking environment")
     ## Set the tracked var, and write it to disk if required
     if (opt$debug)
         cat("setting tracked var '", objName, "' in ", envname(trackingEnv), "\n", sep="")
-    ## need to assign it, because save() requires an object in an env.
-    ## Maybe we could skip this step when cache=FALSE, but
+    ## Need to assign it, because save() requires an object in an env.
+    ## Maybe we could skip this step when cache=FALSE, but then
     ## we'll probably need more special case coding for the save().
     ## robustness: what to do if the assign fails?
-    assign(objName, value, envir=trackingEnv)
+    if (doAssign)
+        assign(objName, value, envir=trackingEnv)
     ## Find the directory where we are saving, and create subdirs if necessary
     dir <- getTrackingDir(trackingEnv)
     for (d in c(dir, getDataDir(dir)))
