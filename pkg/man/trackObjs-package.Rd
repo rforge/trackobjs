@@ -25,6 +25,19 @@ RData file and/or gets or assigns the variable in the tracking
 environment.  A callback for the end-of-top-level-task handles newly
 created or deleted variables.
 
+Tracking is not particularly suitable for storing objects that contain
+environments, because those environments will be fully written out in
+the saved file (whereas, in memory, the environments are references.)  The results of
+some modeling functions are like this, e.g., \code{lm} stores several
+references to the environment that contains the data.  When such objects
+are \code{save}'ed, the environment containing the data, and all the
+other objects in that environment, are saved in the same file.  To work
+with large data objects and modeling functions, consider creating a
+tracking database that contains the data objects, and then attaching
+this at pos=2 in the R session where the modeling is conducted, and
+don't use tracking for that session.  Alternatively, use modeling
+functions that don't store references to environments.
+
 }
 \details{
 There are three main reasons to use the \code{trackObjs} package:
