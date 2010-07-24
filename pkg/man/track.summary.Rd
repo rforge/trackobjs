@@ -42,7 +42,7 @@ track.summary(expr, pos = 1, envir = as.environment(pos), list = NULL, pattern =
   The data frame has one row for each
   object (rownames are the object names) and some of the following columns:
 
-    \item{class:}{(character) from \code{class()} (if \code{class(obj)} 
+    \item{class:}{(character) from \code{class()} (if \code{class(obj)}
       has more than one component, all components are appended separated
       by commas, if \code{class(obj)} returns a zero-length result, the
     value is \code{"?"})}
@@ -69,7 +69,7 @@ track.summary(expr, pos = 1, envir = as.environment(pos), list = NULL, pattern =
 
   Which columns are present depends on the arguments \code{times},
   \code{access}, and \code{size}.
-  
+
   The reason for the \code{class} column containing all classes of the
   object separated by commas is that extracting the most informative
   class label is not simple, for example, the class of an object
@@ -99,7 +99,7 @@ track.summary(time=0, access=1, size=FALSE)
 track.summary(X)
 track.summary(list=c("x", "X"))
 track.summary(pattern="[xX]")
-track.stop()
+track.stop(pos=1)
 unlink("tmp1", recursive=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

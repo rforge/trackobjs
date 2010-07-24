@@ -267,7 +267,7 @@ In track.load("tmp11y.rda", clobber = TRUE) :
 [1] 4
 > y5
 [1] 5
-> track.stop()
+> track.stop(pos=1)
 > unlink("tmp11", recursive=TRUE)
 > remove(list=ls(all=TRUE))
 >

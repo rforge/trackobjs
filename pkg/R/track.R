@@ -86,7 +86,9 @@
 ##      files with names beginning with a '_'
 
 env.is.tracked <- function(pos=1, envir=as.environment(pos)) {
-    return(exists(".trackingEnv", envir=envir, inherits=FALSE))
+    # .trackingEnv could be present and NULL for a non-tracked environment
+    env <- mget(".trackingEnv", ifnotfound=list(NULL), envir=envir)[[1]]
+    return(!is.null(env))
 }
 
 getDataDir <- function(trackingDir) {
@@ -448,10 +450,11 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
     ## Set the tracked var, and write it to disk if required
     if (opt$debug)
         cat("setting tracked var '", objName, "' in ", envname(trackingEnv), "\n", sep="")
-    ## Need to assign it, because save() requires an object in an env.
-    ## Maybe we could skip this step when cache=FALSE, but then
-    ## we'll probably need more special case coding for the save().
-    ## robustness: what to do if the assign fails?
+    ## Need to assign it in the tracking env, because save() requires
+    ## an object in an env. Maybe we could skip this step when cache=FALSE,
+    ## but then we'd need to try to find it in its original location (if any).
+    ## Robustness: what to do if the assign fails?
+    ## In one use case, the var is already in the env, so don't need the assign.
     if (doAssign)
         assign(objName, value, envir=trackingEnv)
     ## Find the directory where we are saving, and create subdirs if necessary

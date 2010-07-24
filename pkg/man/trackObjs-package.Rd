@@ -64,7 +64,7 @@ z2 POSIXt,POSIXct numeric    [1]      1 2007-09-07 08:50:58  0  1
 > # (TA="total accesses", TW="total writes")
 > ls(all=TRUE)
 [1] "x"  "y"  "z1" "z2"
-> track.stop()              # Stop tracking
+> track.stop(pos=1)              # Stop tracking
 > ls(all=TRUE)
 character(0)
 >
@@ -78,7 +78,7 @@ x         numeric numeric    [1]      1 2007-09-07 08:50:58  0  1
 y          matrix numeric  [3x2]      6 2007-09-07 08:50:58  0  1
 z1           list    list  [[3]]      3 2007-09-07 08:50:58  0  1
 z2 POSIXt,POSIXct numeric    [1]      1 2007-09-07 08:50:58  0  1
-> track.stop()
+> track.stop(pos=1)
 >
 > # the files in the tracking directory:
 > list.files("tmp1", all=TRUE)

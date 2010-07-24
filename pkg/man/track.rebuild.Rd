@@ -88,7 +88,7 @@ abc <- "def"
 def <- list(1,2,3)
 invisible(Y); invisible(abc); invisible(abc); invisible(abc)
 track.summary()
-track.stop()
+track.stop(pos=1)
 # damage the database (remove the filemap)
 unlink("tmp1/filemap.txt")
 # and rebuild
@@ -96,7 +96,7 @@ track.rebuild(dir="tmp1", verbose=2, dry.run=FALSE, fix=TRUE)
 track.start("tmp1")
 track.summary()
 track.status()
-track.stop()
+track.stop(pos=1)
 unlink("tmp1", recursive=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -36,6 +36,6 @@ x numeric numeric     [1]      1 2001-01-01 09:00:02  0  1
     class    mode extent length            modified TA TW
 Y    list    list  [[2]]      2 2001-01-01 09:00:04  0  1
 x numeric numeric    [1]      1 2001-01-01 09:00:02  0  1
-> track.stop()
+> track.stop(pos=1)
 > unlink("tmp11", recursive=TRUE)
 >

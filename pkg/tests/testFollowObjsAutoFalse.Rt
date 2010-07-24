@@ -45,11 +45,11 @@ character(0)
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > 
 > # standard options, intersperse detach/attach
 > unlink("tmp2", recursive=TRUE)
@@ -155,27 +155,27 @@ character(0)
 > track(list=c("x", "Y", "z"))
 > x <- 1
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- 2
 > z <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
 > Y <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- z + Y
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
@@ -184,7 +184,7 @@ character(0)
 Y numeric numeric    [1]      1  7  1  0  5  4
 x numeric numeric    [1]      1  7  1  0  8  4
 z numeric numeric    [1]      1  7  1  0  4  5
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -244,27 +244,27 @@ character(0)
 > track(list=c("x", "Y", "z"))
 > x <- 1
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- 2
 > z <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
 > Y <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- z + Y
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
@@ -273,7 +273,7 @@ character(0)
 Y numeric numeric    [1]      1  7  1  0  5  4
 x numeric numeric    [1]      1  7  1  0  8  4
 z numeric numeric    [1]      1  7  1  0  4  5
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -287,27 +287,27 @@ character(0)
 > track(list=c("x", "Y", "z"))
 > x <- 1
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- 2
 > z <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
 > Y <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- z + Y
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
@@ -316,7 +316,7 @@ character(0)
 Y numeric numeric    [1]      1  7  1  0  5  4
 x numeric numeric    [1]      1  7  1  0  8  4
 z numeric numeric    [1]      1  7  1  0  4  5
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -330,27 +330,27 @@ character(0)
 > track(list=c("x", "Y", "z"))
 > x <- 1
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- 2
 > z <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
 > Y <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- z + Y
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
@@ -359,7 +359,7 @@ character(0)
 Y numeric numeric    [1]      1  7  1  0  5  4
 x numeric numeric    [1]      1  7  1  0  8  4
 z numeric numeric    [1]      1  7  1  0  4  5
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -373,27 +373,27 @@ character(0)
 > track(list=c("x", "Y", "z"))
 > x <- 1
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- 2
 > z <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
 > Y <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- z + Y
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
@@ -402,7 +402,7 @@ character(0)
 Y numeric numeric    [1]      1  7  1  0  5  4
 x numeric numeric    [1]      1  7  1  0  8  4
 z numeric numeric    [1]      1  7  1  0  4  5
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -416,27 +416,27 @@ character(0)
 > track(list=c("x", "Y", "z"))
 > x <- 1
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- 2
 > z <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
 > Y <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- z + Y
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
@@ -445,7 +445,7 @@ character(0)
 Y numeric numeric    [1]      1  7  1  0  5  4
 x numeric numeric    [1]      1  7  1  0  8  4
 z numeric numeric    [1]      1  7  1  0  4  5
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -459,27 +459,27 @@ character(0)
 > track(list=c("x", "Y", "z"))
 > x <- 1
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- 2
 > z <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
 > Y <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- z + Y
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
@@ -488,7 +488,7 @@ character(0)
 Y numeric numeric    [1]      1  7  1  0  5  4
 x numeric numeric    [1]      1  7  1  0  8  4
 z numeric numeric    [1]      1  7  1  0  4  5
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -502,27 +502,27 @@ character(0)
 > track(list=c("x", "Y", "z"))
 > x <- 1
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- 2
 > z <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > Y <- x + 1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > z <- Y + x
 > Y <- z + x
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > x <- z + Y
 > z <- x + Y
 > c(x, Y, z)
 [1] 12  7 19
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp2", auto=FALSE)
 > c(x, Y, z)
 [1] 12  7 19
@@ -531,7 +531,7 @@ character(0)
 Y numeric numeric    [1]      1  7  1  0  5  4
 x numeric numeric    [1]      1  7  1  0  8  4
 z numeric numeric    [1]      1  7  1  0  4  5
-> track.stop()
+> track.stop(pos=1)
 > unlink("tmp2", recursive=TRUE)
 > 
 > # TODO: try with recordAccesses=FALSE, and separately with maintainSummary=FALSE

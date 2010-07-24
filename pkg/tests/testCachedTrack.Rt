@@ -24,6 +24,6 @@ x tracked  TRUE        x       TRUE  TRUE
 X   array numeric [2x3x4]     24  2  3
 Y    list    list   [[2]]      2  0  1
 x numeric numeric     [1]      1  0  1
-> track.stop()
+> track.stop(pos=1)
 > unlink("tmp1", recursive=TRUE)
 > 

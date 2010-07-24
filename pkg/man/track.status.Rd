@@ -185,7 +185,7 @@ track.load("tmpy.rda", clobber=TRUE)
 y3
 y4
 y5
-track.stop()
+track.stop(pos=1)
 unlink("tmp1", recursive=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

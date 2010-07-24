@@ -37,7 +37,7 @@ com7     numeric numeric     [1]      1  0  1
 nul      numeric numeric     [1]      1  0  1
 prn      numeric numeric     [1]      1  0  1
 x        numeric numeric     [1]      1  0  1
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp10")
 > x
 [1] 1
@@ -98,6 +98,6 @@ com7     numeric numeric     [1]      1  1  1
 nul      numeric numeric     [1]      1  1  1
 prn      numeric numeric     [1]      1  1  1
 x        numeric numeric     [1]      1  1  1
-> track.stop()
+> track.stop(pos=1)
 > unlink("tmp10", recursive=TRUE)
 >

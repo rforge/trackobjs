@@ -265,7 +265,10 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
     }
     ## Note that locking the environment is irreversible, and it prevents
-    ## syncing to disk or caching (because can't delete or add bindings)
+    ## rescaning (because the main reason to do that would be to pick up
+    ## new variables and delete old ones).  Locking doesn't however prevent
+    ## caching, because caching uses the tracking env, not the tracked env,
+    ## and the tracking env is not locked.
     if (lockEnv && opt$readonly && environmentName(envir) != "R_GlobalEnv")
         lockEnvironment(envir)
     return(invisible(NULL))

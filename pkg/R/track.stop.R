@@ -1,4 +1,6 @@
 track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.error=FALSE, keepVars=FALSE) {
+    if (missing(pos) && missing(envir) && missing(all))
+        stop("must specify one of pos, envir, or all")
     ## Detach a tracking env -- should call track.flush first.
     if (all) {
         env.names <- tracked.envs()

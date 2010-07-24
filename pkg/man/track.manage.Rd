@@ -127,7 +127,7 @@ z3 <- 6
 untracked()
 track.summary(time=0, access=1, size=FALSE)
 ls(all=TRUE)
-track.stop()
+track.stop(pos=1)
 ls(all=TRUE)
 a <- 7
 b <- 8
@@ -138,7 +138,7 @@ track.summary(time=0, access=1, size=FALSE)
 track.load("ab.rda")
 track.summary(time=0, access=1, size=FALSE)
 track.status()
-track.stop()
+track.stop(pos=1)
 unlink("tmp1", recursive=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

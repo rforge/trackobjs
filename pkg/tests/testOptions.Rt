@@ -96,7 +96,7 @@ x tracked FALSE        x       TRUE  TRUE
    Status InMem FileBase FileExists Saved
 X tracked FALSE       _1       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp6")
 > # note that options previously changed are back at defaults (because default
 > # to track.options() is save=FALSE
@@ -115,7 +115,7 @@ $cache
 $writeToDisk
 [1] FALSE
 
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp6")
 > # now options previously changed are remembered (because track.options(..., save=TRUE) was used)
 > track.options(c("cache", "writeToDisk"))
@@ -169,5 +169,5 @@ $autoTrackExcludeClass
 $autoTrackExcludeClass
 [1] "RODBC"
 
-> track.stop()
+> track.stop(pos=1)
 > 

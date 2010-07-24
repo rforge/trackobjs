@@ -137,18 +137,18 @@ X[1,1,1] <- 0
 track.status()
 track.flush()
 track.status()
-track.stop()
+track.stop(pos=1)
 track.start("tmp1")
 # note that options previously changed are back at defaults (because default
 # to track.options() is save=FALSE
 track.options(c("cache", "writeToDisk"))
 track.options(cache=TRUE, writeToDisk=FALSE, save=TRUE) # change the options on disk
 track.options(c("cache", "writeToDisk"))
-track.stop()
+track.stop(pos=1)
 track.start("tmp1")
 # now options previously changed are remembered (because track.options(..., save=TRUE) was used)
 track.options(c("cache", "writeToDisk"))
-track.stop()
+track.stop(pos=1)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

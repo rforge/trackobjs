@@ -42,7 +42,7 @@ Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2
 abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14  3  1
 def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10  0  1
 x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
-> track.stop()
+> track.stop(pos=1)
 > # Rebuild the unlinked dir, and show the returned value
 > res <- track.rebuild(dir="tmp7", verbose=2, dry.run=FALSE)
 Rebuilding an inactive tracking database
@@ -94,7 +94,7 @@ Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2
 abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14 1  2  0  0  3  1
 def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10 1  2  0  0  0  1
 x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  2  0  0  0  1
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Test (3) rebuild a unlinked directory with filemap gone
 > unlink("tmp7/filemap.txt")
@@ -158,7 +158,7 @@ def   tracked FALSE      def       TRUE  TRUE
 res untracked    NA     <NA>         NA    NA
 x     tracked FALSE        x       TRUE  TRUE
 z     tracked FALSE        z       TRUE  TRUE
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Test (4) rebuild an unlinked directory with the filemap & summary missing entries
 > # First delete entries 2 & 3 from the filemap
@@ -208,7 +208,7 @@ abc character character     [1]      1 2001-01-01 11:00:03 2001-01-01 11:00:03 2
 def      list      list   [[3]]      3 2001-01-01 11:00:04 2001-01-01 11:00:04 2001-01-01 11:00:04  0  1
 x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
 z     numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08  0  1
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Test (5) rebuild an unlinked directory with the filemap & summary missing entries, & new .rda files
 > filemap <- readLines("tmp7/filemap.txt", -1)
@@ -368,7 +368,7 @@ x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:19 2001-01-01 12:00:19 
 x2     numeric   numeric     [1]      1 2001-01-01 12:00:21 2001-01-01 12:00:21 2001-01-01 12:00:21  0  1
 x3     numeric   numeric     [1]      1 2001-01-01 12:00:22 2001-01-01 12:00:22 2001-01-01 12:00:22  0  1
 z      numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08  0  1
-> track.stop()
+> track.stop(pos=1)
 > 
 > # Test (6) rebuild an unlinked directory with just new .rda files
 > ##################################################
@@ -435,7 +435,7 @@ x1   numeric numeric    [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-
 x1.1 numeric numeric    [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
 x2   numeric numeric    [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
 x3   numeric numeric    [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
-> track.stop()
+> track.stop(pos=1)
 > 
 > ###
 > # Test (7) rebuild an active directory with the filemap & summary
@@ -663,7 +663,7 @@ x1     tracked FALSE       x1       TRUE  TRUE
 x1.1   tracked FALSE     x1.1       TRUE  TRUE
 x2     tracked FALSE       x2       TRUE  TRUE
 x3     tracked FALSE       x3       TRUE  TRUE
-> track.stop()
+> track.stop(pos=1)
 > track.start("tmp7", auto=FALSE)
 > track.summary(time=3, size=FALSE, access=1)
          class      mode  extent length            modified             created            accessed TA TW
