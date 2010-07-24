@@ -18,5 +18,8 @@ track.info <- function(pos=1, envir=as.environment(pos), all=TRUE) {
     }
     return(cbind(res, data.frame(row.names=NULL, do.call("rbind", lapply(env.list,
            function(e) c(unlist(track.options(envir=e, c("readonly", "cache"))),
-                         dir=track.dir(envir=e)))))))
+                         auto=mget(".trackAuto", ifnotfound=list(list(on=FALSE)),
+                                   envir=getTrackingEnv(e))[[1]]$on,
+                         dir=track.dir(envir=e)
+                         ))))))
 }

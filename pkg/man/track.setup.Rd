@@ -12,7 +12,7 @@
 }
 \usage{
 track.start(dir="rdatadir", pos = 1, envir = as.environment(pos), create = TRUE,
-        clobber = c("no", "files", "variables"), cache=NULL, options=NULL,
+        clobber = c("no", "files", "variables", "vars", "var"), cache=NULL, options=NULL,
         RDataSuffix=NULL, auto = NULL, readonly = FALSE, lockEnv = FALSE)
 track.stop(pos = 1, envir = as.environment(pos), all=FALSE,
         stop.on.error=FALSE, keepVars = FALSE)
@@ -33,8 +33,9 @@ tracked.envs(envirs=search())
     doesn't exist }
   \item{clobber}{ Controls action taken when there are objects of the
     same name in the
-    tracking directory and in \code{envir}: \code{"no"} means stop; \code{"files"} means use the
-    version from the tracking directory; and \code{"variables"} means
+    tracking directory and in \code{envir}: \code{no} means stop; \code{files} means use the
+    version from the tracking directory; and \code{variables},
+  \code{vars} or \code{var} means
     use the version in \code{envir} (and overwrite the version in the
     tracking directory)}
   \item{cache}{ Should objects be keep cached in memory?  Default is \code{FALSE}.  This option is a shorthand way of supplying \code{options=list(cache=TRUE)}.}

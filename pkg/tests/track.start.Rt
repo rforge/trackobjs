@@ -1,0 +1,24 @@
+> # test clobbering of files vs vars
+> # test that track.sync can correctly pick up changes
+> options(error=function() NULL)
+> invisible(if (file.exists("tmp18")) unlink("tmp18", recursive=TRUE))
+> track.start(dir="tmp18")
+> x <- 1
+> y <- 2
+> track.stop(1)
+> x <- -1
+> track.start(dir="tmp18", clobber="var")
+> x
+[1] 1
+> y
+[1] 2
+> track.stop(1)
+> x <- -1
+> track.start(dir="tmp18", clobber="files")
+> x
+[1] -1
+> y
+[1] 2
+> track.stop(1)
+> unlink("tmp18", recursive=TRUE)
+> 

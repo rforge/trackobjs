@@ -1,0 +1,80 @@
+> # test that track.sync can correctly pick up changes
+> options(error=function() NULL)
+> invisible(if (file.exists("tmp17")) unlink("tmp17", recursive=TRUE))
+> track.start(dir="tmp17", auto=FALSE)
+> x <- 1
+> y <- 2
+> track.status()
+     Status InMem FileBase FileExists Saved
+x untracked    NA     <NA>         NA    NA
+y untracked    NA     <NA>         NA    NA
+> track.sync(master="envir")
+> track.status()
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+> # remove a var
+> remove("y")
+> track.status()
+    Status InMem FileBase FileExists Saved
+x  tracked FALSE        x       TRUE  TRUE
+y orphaned FALSE        y       TRUE  TRUE
+> track.sync(master="envir", full=FALSE, dryRun=TRUE)
+track.sync: no untracked variables
+track.sync(dryRun): would remove 1 deleted variables: y
+> track.status()
+    Status InMem FileBase FileExists Saved
+x  tracked FALSE        x       TRUE  TRUE
+y orphaned FALSE        y       TRUE  TRUE
+> track.sync(master="envir")
+> track.status()
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+> # add a var
+> z <- 3
+> track.status()
+     Status InMem FileBase FileExists Saved
+x   tracked FALSE        x       TRUE  TRUE
+z untracked    NA     <NA>         NA    NA
+> track.sync(master="envir", full=FALSE, dryRun=TRUE)
+track.sync(dryRun): would track 1 untracked variables: z
+track.sync: no deleted variables
+> track.status()
+     Status InMem FileBase FileExists Saved
+x   tracked FALSE        x       TRUE  TRUE
+z untracked    NA     <NA>         NA    NA
+> track.sync(master="envir")
+> track.status()
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+z tracked FALSE        z       TRUE  TRUE
+> # replace an active binding for a var by a non-active binding
+> {remove("x"); assign("x", 111, pos=1)}
+> track.status()
+   Status InMem FileBase FileExists Saved
+x  masked FALSE        x       TRUE  TRUE
+z tracked FALSE        z       TRUE  TRUE
+> track.sync(master="envir", full=FALSE, dryRun=TRUE)
+track.sync: no untracked variables
+track.sync: no deleted variables
+> track.status()
+   Status InMem FileBase FileExists Saved
+x  masked FALSE        x       TRUE  TRUE
+z tracked FALSE        z       TRUE  TRUE
+> track.sync(master="envir", full=TRUE, dryRun=TRUE)
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: retracking var: x
+> track.sync(master="envir", full=FALSE)
+> track.status()
+   Status InMem FileBase FileExists Saved
+x  masked FALSE        x       TRUE  TRUE
+z tracked FALSE        z       TRUE  TRUE
+> track.sync(master="envir", full=TRUE)
+> track.status()
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+z tracked FALSE        z       TRUE  TRUE
+> track.stop(1)
+> unlink("tmp17", recursive=TRUE)
+> 

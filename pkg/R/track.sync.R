@@ -1,4 +1,4 @@
-track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.environment(pos), trackingEnv=getTrackingEnv(envir), forceFull=TRUE, dryRun=FALSE) {
+track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.environment(pos), trackingEnv=getTrackingEnv(envir), full=TRUE, dryRun=FALSE) {
     ## With master="envir", sync the tracking database to the contents of the R environment
     ## This involves 3 things
     ##   (1) start tracking new untracked variables
@@ -30,7 +30,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             stop("must supply argument master='files' or master='envir' when tracking db is attached with readonly=FALSE")
     if (master=="files")
         return(track.rescan(envir=envir, forget.modified=TRUE, level="low"))
-    if (opt$readonly && master=="envir" && !forceFull) {
+    if (opt$readonly && master=="envir" && !isTRUE(full)) {
         return(list(new=character(0), deleted=character(0)))
     }
     if (master=="envir" && opt$readonly) {
@@ -42,7 +42,9 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     all.objs <- .Internal(ls(envir, TRUE))
     untracked <- setdiff(all.objs, names(fileMap))
     reserved <- isReservedName(untracked)
-    if (verbose && any(reserved))
+    ## .trackingEnv will always exist -- don't warn about it
+    warn.reserved <- setdiff(untracked[reserved], ".trackingEnv")
+    if (verbose && length(warn.reserved))
         cat("track.sync: cannot track variables with reserved names: ", paste(untracked[reserved], collapse=", "), "\n", sep="")
     untracked <- untracked[!reserved]
     activeBindings <- sapply(untracked, bindingIsActive, envir)
@@ -86,15 +88,18 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             cat("track.sync: no deleted variables\n")
     }
     now <- as.numeric(proc.time()[3])
-    doFull <- FALSE
-    if (forceFull || opt$autoTrackFullSyncWait==0) {
-        doFull <- TRUE
-    } else if (opt$autoTrackFullSyncWait>0) {
-        if (autoTrack$last < 0 || now - autoTrack$last >= opt$autoTrackFullSyncWait)
-            doFull <- TRUE
+    if (is.na(full)) {
+        if (opt$autoTrackFullSyncWait==0) {
+            full <- TRUE
+        } else if (opt$autoTrackFullSyncWait>0) {
+            if (autoTrack$last < 0 || now - autoTrack$last >= opt$autoTrackFullSyncWait)
+                full <- TRUE
+        }
+        if (is.na(full))
+            full <- FALSE
     }
     retrack <- character(0)
-    if (doFull) {
+    if (full) {
         # find the vars that look like they are tracked but don't have active bindings
         tracked <- intersect(names(fileMap), all.objs)
         reserved <- isReservedName(tracked)
@@ -124,8 +129,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         if (dryRun)
             next
         ## Use setTrackedVar to write the object to disk (or merely cache
-        ## it in trackingEnv, depending on settings in opt)
-        setTrackedVar(objname, objval, trackingEnv, opt, doAssign=FALSE)
+        ## it in trackingEnv, depending on settings in opt).
+        ## setTrackedVar() will assign it in the trackingEnv -- it currently
+        ## exists in 'envir'
+        setTrackedVar(objname, objval, trackingEnv, opt)
         remove(list=objname, envir=envir)
         f <- substitute(function(v) {
             if (missing(v))
@@ -148,7 +155,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         environment(f) <- parent.env(environment(f))
         makeActiveBinding(objname, env=envir, fun=f)
     }
-    if (doFull & !dryRun) {
+    if (full & !dryRun) {
         ## save the time that we did this full sync
         assign(".trackAuto", list(on=TRUE, last=now), envir=trackingEnv)
     }
@@ -173,6 +180,6 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ## Don't repeat the work an explicit call to track.sync()
     if (is.call(expr) && as.character(expr[[1]]) == "track.sync")
         return(TRUE)
-    track.sync(envir=data, trackingEnv=trackingEnv, forceFull=FALSE, master="envir")
+    track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir")
     return(TRUE) # to keep this callback active
 }

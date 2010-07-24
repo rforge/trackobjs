@@ -1,9 +1,10 @@
 track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
-                        create=TRUE, clobber=c("no", "files", "variables"),
+                        create=TRUE, clobber=c("no", "files", "variables", "vars", "var"),
                         cache=NULL, options=NULL, RDataSuffix=NULL, auto=NULL,
                         readonly=FALSE, lockEnv=FALSE) {
     ## Start tracking the specified environment to a directory
     clobber <- match.arg(clobber)
+    if (clobber=="vars" || clobber=="var") clobber <- "variables"
     if (env.is.tracked(envir))
         stop("env ", envname(envir), " is already tracked by dir '",
              get(".trackingDir", envir=getTrackingEnv(envir), inherits=FALSE), "'")
@@ -174,12 +175,22 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             if (length(fileMap))
                 alreadyExists <- sapply(names(fileMap), exists, envir=envir, inherits=FALSE)
             alreadyExists <- names(fileMap)[alreadyExists]
+            ## opt$clobberVars contains a vector of var names that it is
+            ## always OK to clobber.
             ## opt$clobberVars is processed before the clobber= argument
             clobberFirst <- intersect(opt$clobberVars, alreadyExists)
             if (length(clobberFirst)) {
                 alreadyExists <- setdiff(alreadyExists, clobberFirst)
                 remove(list=clobberFirst, envir=envir)
             }
+            i <- F
+            for (re in opt$autoTrackExcludePattern)
+                i <- i | grep(re, names(fileMap))
+            if (any(i))
+                warning("tracking db contains some vars that match the autoExclude pattern (this will be tracked, and continue to be tracked until removed): ", names(fileMap)[i])
+            i <- isReservedName(names(fileMap))
+            if (any(i))
+                warning("tracking db contains some vars that have reserved names (this shouldn't happen, and may affect the correct operation of tracking): ", names(fileMap)[i])
             if (length(alreadyExists)) {
                 if (clobber=="no") {
                     assign(".trackAlreadyExists", alreadyExists, envir=envir)
@@ -198,7 +209,6 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                             value <- get(varName, envir=envir, inherits=FALSE)
                             setTrackedVar(varName, value, trackingEnv, opt=replace(opt, "maintainSummary", FALSE), file=file)
                             remove(list=varName, envir=envir, inherits=FALSE)
-
                         }
                     }
                 } else if (clobber=="variables") {
@@ -215,7 +225,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                 fileMapCreated <- TRUE
                 assign(".trackingFileMap", fileMap, envir=trackingEnv)
             } else {
-                stop("tracking dir \"", dir, "\" has some data files in it, but has no filemap.txt file -- see ?track.rebuild")
+                stop("tracking dir \"", dir, "\" has some data files in it, but has no filemap.txt file -- use track.rebuild() to fix it")
             }
         }
         if (nrow(objSummary)) {

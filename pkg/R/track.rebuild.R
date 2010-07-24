@@ -1,4 +1,4 @@
-track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE, level=c("missing", "all"), trust=c("unspecified", "environment", "db"), verbose=1, RDataSuffix=NULL, dry.run=TRUE, replace.wd=TRUE, use.file.times=TRUE) {
+track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE, level=c("missing", "all"), trust=c("unspecified", "environment", "db"), verbose=1, RDataSuffix=NULL, dryRun=TRUE, replace.wd=TRUE, use.file.times=TRUE) {
     ## Rebuild the fileMap and/or the trackingSummary in the tracking dir.
     ## Those objects generally contain redundant information, but they can be
     ## expensive to rebuild, because rebuilding them requires reading every
@@ -22,7 +22,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
     ##     * unusable .rda files (multiple objects, illegal or duplicated names)
     ##       are moved to the 'quarantine' directory
     ##
-    ## If dry.run=TRUE, nothing should be changed (but if fix=TRUE, fixes
+    ## If dryRun=TRUE, nothing should be changed (but if fix=TRUE, fixes
     ## are reported but not made).
     ##
     ## This function is quite long and complex because it has to deal with
@@ -101,6 +101,8 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             path
     }
 
+    if (dryRun)
+        cat("dryRun=TRUE: no changes will be actually be made\n")
     trackingEnv <- NULL
     if (!is.null(dir)) {
         dir <- getAbsolutePath(dir)
@@ -236,7 +238,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         if (opt$RDataSuffix != suffix) {
             if (fix) {
                 cat("Changing RDataSuffix saved in options to '", suffix, "'")
-                if (dry.run)
+                if (dryRun)
                     opt$RDataSuffix <- suffix
                 else
                     opt <- track.options(list(RDataSuffix=suffix), trackingEnv=trackingEnv)
@@ -277,8 +279,8 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             cat("There are other ", length(files), " files in '", dataDir, "' that look like RDataFiles: ",
                 paste("'", files[seq(len=min(2, length(files)))], "'", collapse=", ", sep=""),
                 if (length(files)>2) "...", "\n", sep="")
-            if (!fix || dry.run) {
-                cat("Leaving these alone: call track.rebuild(..., fix=TRUE, dry.run=FALSE) to rename these with suffix '", suffix, "' or move them to quarantine\n", sep="")
+            if (!fix || dryRun) {
+                cat("Leaving these alone: call track.rebuild(..., fix=TRUE, dryRun=FALSE) to rename these with suffix '", suffix, "' or move them to quarantine\n", sep="")
             } else {
                 cat("Attempting to rename these files to use suffix '", suffix, "'\n", sep="")
                 for (f in files) {
@@ -558,7 +560,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             }
             ok <- TRUE
             fixable <- TRUE
-            if (dry.run) {
+            if (dryRun) {
                 moving.msg <- "would move"
                 rewriting.msg <- "rewrite"
             } else {
@@ -620,7 +622,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                 if (is.na(objName))
                     newFileMap <- setNamedElt(newFileMap, load.res, objFileBase)
             } else if (fix) {
-                if (!dry.run) {
+                if (!dryRun) {
                     if (!file.exists(quarantineDir))
                         dir.create(quarantineDir)
                     if (!file.rename(file.path(dataDir, objFile), file.path(quarantineDir, objFile)))
@@ -637,9 +639,9 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                             cat("Ignoring object with already-used name ('", load.res, "' in '", objFile, "'\n", sep="")
                         } else {
                             newFile <- file.path(dataDir, paste(newFileBase[i], suffix, sep="."))
-                            cat(if (dry.run) "Would save" else "Saving",
+                            cat(if (dryRun) "Would save" else "Saving",
                                 " object '", load.res[i], "' to '", abbrevWD(newFile), "'\n", sep="")
-                            if (!dry.run) {
+                            if (!dryRun) {
                                 save.res <- try(save(list=load.res[i], file=newFile, envir=tmpenv), silent=T)
                                 if (is(save.res, "try-error")) {
                                     cat("Could not save obj '", load.res[i], "' in file '", abbrevWD(newFile), "' (error was '",
@@ -648,7 +650,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                                     savedOk[i] <- TRUE
                                 }
                             } else {
-                                # dry.run: pretend that it was saved OK
+                                # dryRun: pretend that it was saved OK
                                 savedOk[i] <- TRUE
                             }
                         }
@@ -755,10 +757,10 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         visibleObjs <- intersect(visibleObjs, rownames(newSummary))
         missingBindings <- setdiff(rownames(newSummary), visibleObjs)
         if (length(missingBindings)) {
-            cat(if (dry.run) "Would rebuild " else "Rebuilding ",
+            cat(if (dryRun) "Would rebuild " else "Rebuilding ",
                 length(missingBindings), " missing active bindings: ",
                 paste(missingBindings, collapse=", "), "\n", sep="")
-            if (!dry.run) {
+            if (!dryRun) {
                 for (objName in missingBindings) {
                     f <- substitute(function(v) {
                         if (missing(v))
@@ -785,8 +787,8 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         res$unsaved <- unsaved
     if (length(masked))
         res$masked <- masked
-    if (dry.run) {
-        cat("Run with dry.run=FALSE to actually make changes\n")
+    if (dryRun) {
+        cat("Run with dryRun=FALSE to actually make changes\n")
         return(res)
     } else {
         if (activeTracking) {

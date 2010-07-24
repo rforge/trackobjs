@@ -121,13 +121,17 @@ automatic tracking are as follows:
   \item \code{\link{track.summary}()}: print a summary of
   the basic characteristics of tracked variables: name, class, extent,
   and creation, modification and access times.
-  \item \code{\link{track.stop}()}: stop tracking
-  (any unsaved tracked variables are saved to disk and all tracked variables
-  become unavailable until tracking starts again)
+  \item \code{\link{track.info}()}: print a summary of
+  which tracking databases are currently active.
+  \item \code{\link{track.stop}(pos=, all=)}: stop tracking.
+  Any unsaved tracked variables are saved to disk.  Unless
+  \code{keepVars=TRUE} is supplied, all tracked variables
+  become unavailable until tracking starts again.
   \item \code{\link{track.attach}(dir=..., pos=)}: attach an existing
-  tracking database to the search list at the specified position.
-  Changes to variables in the attached environment will be automatically
-  saved to the database.
+  tracking database to the search list at the specified position.  The
+  default when attaching at positions other than 1 is to use readonly
+  mode, but in non-readonly mode, changes to variables in the attached
+  environment will be automatically saved to the database.
 }
 
 For the non-automatic mode, four other functions cover the majority of common usage:
@@ -203,6 +207,8 @@ Functions for getting status of tracking and summaries of variables:
   \item \code{\link{track.status}()}: return a data frame
   containing information about the tracking status of variables: whether
   they are saved to disk or not, etc.
+  \item \code{\link{track.info}()}: return a data frame
+  containing information about which tracking dbs are currently active.
   \item \code{\link{env.is.tracked}()}: tell whether an
   environment is currently tracked
 }

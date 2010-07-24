@@ -453,8 +453,10 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
     ## Need to assign it in the tracking env, because save() requires
     ## an object in an env. Maybe we could skip this step when cache=FALSE,
     ## but then we'd need to try to find it in its original location (if any).
+    ## No longer true - could remove doAssign arg -- in one use case, the var
+    ## is already in the env, so don't need the assign.
+    ##
     ## Robustness: what to do if the assign fails?
-    ## In one use case, the var is already in the env, so don't need the assign.
     if (doAssign)
         assign(objName, value, envir=trackingEnv)
     ## Find the directory where we are saving, and create subdirs if necessary

@@ -12,7 +12,7 @@
 }
 \usage{
 track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(pos),
-           trackingEnv = getTrackingEnv(envir), forceFull = TRUE, dryRun=FALSE)
+           trackingEnv = getTrackingEnv(envir), full = TRUE, dryRun=FALSE)
 }
 \arguments{
   \item{pos}{ The search path position of the environment being tracked
@@ -31,9 +31,12 @@ track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(p
     (to the use of \code{pos=})
   of specifying the environment being tracked, but should be rarely needed.}
   \item{trackingEnv}{The environment that contains data for the tracking database.}
-  \item{forceFull}{If \code{TRUE}, do a full check, which involves
+  \item{full}{If \code{TRUE}, do a full check, which involves
     checking that all apparently tracked variables do in fact have an
-    active binding.}
+    active binding.  If \code{NA}, only do a full check if more than
+    \code{track.options("autoTrackFullSyncWait")} seconds have passed
+    since the last full check (because this check can be slow when there
+    are many variables in the environment.}
   \item{dryRun}{If \code{TRUE}, no changes are made to either the file
     system or to the R environment, but changes that would be made are
     printed out.  Note that a change to a file for a tracked variable

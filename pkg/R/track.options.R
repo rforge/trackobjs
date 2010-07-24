@@ -131,7 +131,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
                                   debug=0, autoTrackExcludePattern=c("^\\.track", "^\\.required"),
                                   autoTrackExcludeClass=c("RODBC"),
-                                  autoTrackFullSyncWait=300, clobberVars=".Random.seed"))
+                                  autoTrackFullSyncWait=15, clobberVars=".Random.seed"))
         currentOptions <- c(currentOptions, repaired)
     }
     option.values <- currentOptions[query.values]

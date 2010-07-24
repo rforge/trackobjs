@@ -14,7 +14,7 @@ track.detach <- function(pos=NULL, name=NULL) {
     trackingEnv <- getTrackingEnv(envir)
     opt <- track.options(trackingEnv=trackingEnv)
     if (!opt$readonly)
-        track.sync(pos=pos, forceFull=TRUE, master="envir")
+        track.sync(pos=pos, full=TRUE, master="envir")
     track.stop(pos=pos)
     detach(pos=pos, unload=TRUE)
     return(invisible(NULL))

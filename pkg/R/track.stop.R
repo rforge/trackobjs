@@ -12,21 +12,30 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
     } else {
         trackingEnv <- getTrackingEnv(envir)
         opt <- track.options(trackingEnv=trackingEnv)
-        if (opt$readonly && keepVars)
-            stop("cannot keep vars in a readonly tracking environment")
+        if (opt$readonly && keepVars && environmentIsLocked(envir))
+            stop("cannot keep vars in a locked readonly tracking environment")
+        ## remove the active bindings, and replace with ordinary variable if keepVars=TRUE
         tracked.vars <- tracked(envir=envir)
-        track.flush(envir=envir)
-        # remove the active bindings, and replace with ordinary variable if keepVars=TRUE
         if (!opt$readonly) {
+            auto <- mget(".trackAuto", ifnotfound=list(list(on=FALSE, last=-1)), envir=trackingEnv)[[1]]
+            if (auto$on)
+                track.sync(envir=envir, master="envir", full=TRUE, trackingEnv=trackingEnv)
+            track.flush(envir=envir)
+        }
+        if (keepVars) {
             for (var in tracked.vars) {
-                if (keepVars) {
-                    objVal <- getTrackedVar(var, trackingEnv=trackingEnv, opt=opt)
-                    remove(list=var, envir=envir)
-                    assign(var, objVal, envir=envir)
-                } else {
-                    remove(list=var, envir=envir)
-                }
+                objVal <- getTrackedVar(var, trackingEnv=trackingEnv, opt=opt)
+                remove(list=var, envir=envir)
+                assign(var, objVal, envir=envir)
             }
+        } else {
+            ## Can't remove the variables from a locked environment -- these
+            ## should all be active bindings.  This situation can arise when
+            ## a readonly tracking env is being detached, so we can hope that
+            ## the active bindings are garbage collected when the tracked
+            ## environment is removed from the search path.
+            if (!environmentIsLocked(envir))
+                remove(list=tracked.vars, envir=envir)
         }
         setTrackingEnv(envir, NULL, readonly=opt$readonly)
         if (exists(".trackAuto", envir=trackingEnv, inherits=FALSE))

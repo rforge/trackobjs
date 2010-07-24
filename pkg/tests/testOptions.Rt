@@ -72,7 +72,7 @@ $autoTrackExcludeClass
 [1] "RODBC"
 
 $autoTrackFullSyncWait
-[1] 300
+[1] 15
 
 $clobberVars
 [1] ".Random.seed"

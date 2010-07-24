@@ -89,7 +89,7 @@ Error in remove(list = "y", pos = 2) :
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
 Error in track.start(trackingDir, pos = pos, readonly = readonly, lockEnv = lockEnv) : 
   missing files for some variables in the fileMap (use track.rebuild() to repair): y
-> track.rebuild(dir="tmp14", level='all', dry.run=FALSE)
+> track.rebuild(dir="tmp14", level='all', dryRun=FALSE)
 Rebuilding an inactive tracking database
 Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
 Using tracking summary read from file.
