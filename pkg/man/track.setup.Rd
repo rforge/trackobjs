@@ -2,6 +2,7 @@
 \alias{track.start}
 \alias{track.stop}
 \alias{track.rescan}
+\alias{track.info}
 \alias{env.is.tracked}
 \alias{tracked.envs}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -15,9 +16,10 @@ track.start(dir="rdatadir", pos = 1, envir = as.environment(pos), create = TRUE,
         RDataSuffix=NULL, auto = NULL, readonly = FALSE, lockEnv = FALSE)
 track.stop(pos = 1, envir = as.environment(pos), all=FALSE,
         stop.on.error=FALSE, keepVars = FALSE)
+track.info(pos = 1, envir = as.environment(pos), all=TRUE)
+track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE, level = c("high", "low"), dryRun = FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
 tracked.envs(envirs=search())
-track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE, level = c("high", "low"), dryRun = FALSE)
 }
 
 \arguments{
@@ -80,7 +82,15 @@ track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE, leve
 
     \item{\code{track.stop}:}{ stop tracking \code{envir}.  Unsaved
       values will be saved to files first.  Tracked variables will
-      become unavailable unless \code{keepVars=TRUE} is supplied. }
+      become unavailable unless \code{keepVars=TRUE} is supplied. At
+      least one of \code{pos}, \code{envir}, or \code{all} must be
+      supplied to specify which environment to stop tracking (and there
+      is no default to avoid accidents with calling \code{track.stop()} prior
+      to quitting R, thinking that it will cleanup all tracked
+      environments).}
+
+    \item{\code{track.info}:}{ returns a dataframe of information about
+      environments currently tracked.}
 
 \item{\code{track.rescan}:}{ Rescan the tracking dir, so that if anything has changed there,
 the current variables on file will be used instead of any cached
@@ -117,12 +127,12 @@ track.summary(time=0, access=1, size=FALSE)
 env.is.tracked(pos=1)
 env.is.tracked(pos=2)
 ls(all=TRUE)
-track.stop()
+track.stop(pos=1)
 ls(all=TRUE)
 track.start("tmp1")
 ls(all=TRUE)
 track.summary(time=0, access=1, size=FALSE)
-track.stop()
+track.stop(pos=1)
 unlink("tmp1", recursive=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
