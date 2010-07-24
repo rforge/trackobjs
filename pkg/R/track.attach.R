@@ -1,8 +1,13 @@
-track.attach <- function(dir, pos=2, name=NULL, readonly=TRUE, lockEnv=FALSE) {
+track.attach <- function(dir, pos=2, name=NULL, readonly=TRUE, create=FALSE, lockEnv=FALSE) {
     if (pos < 2)
         stop("pos must be >= 2")
     if (!file.exists(dir))
-        stop("dir '", dir, "' does not exist")
+        if (create) {
+            dir.create(dir)
+            cat("", file=file.path(dir, "filemap.txt"))
+        } else {
+            stop("dir '", dir, "' does not exist")
+        }
     if (file.exists(file.path(dir, "filemap.txt"))) {
         trackingDir <- dir
         if (basename(dir)=="rdatadir")
