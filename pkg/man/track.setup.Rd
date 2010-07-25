@@ -3,6 +3,8 @@
 \alias{track.stop}
 \alias{track.rescan}
 \alias{track.info}
+\alias{track.Last.sys}
+\alias{.Last.sys}
 \alias{env.is.tracked}
 \alias{tracked.envs}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -13,13 +15,15 @@
 \usage{
 track.start(dir="rdatadir", pos = 1, envir = as.environment(pos), create = TRUE,
         clobber = c("no", "files", "variables", "vars", "var"), cache=NULL, options=NULL,
-        RDataSuffix=NULL, auto = NULL, readonly = FALSE, lockEnv = FALSE)
+        RDataSuffix=NULL, auto = NULL, readonly = FALSE, lockEnv = FALSE, check.Last=TRUE)
 track.stop(pos = 1, envir = as.environment(pos), all=FALSE,
         stop.on.error=FALSE, keepVars = FALSE)
 track.info(pos = 1, envir = as.environment(pos), all=TRUE)
 track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE, level = c("high", "low"), dryRun = FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
 tracked.envs(envirs=search())
+track.Last.sys()
+.Last.sys()
 }
 
 \arguments{
@@ -69,6 +73,11 @@ tracked.envs(envirs=search())
   environment is irreversible, and it prevents rescanning or caching
   (because can't delete or add bindings)}
 
+  \item{check.Last}{By default, a warning is issued if the \code{.Last.sys}
+  function in the \code{trackObjs} package is masked by any other
+  \code{.Last.sys} function.  Supplying \code{check.Last=FALSE}
+  inhibits this check and warning.}
+
 \item{level}{Should the rescan be done at a high or low level: a high
   level just stops tracking and restarts it; a low level tries to
   individually bring the environment in line with the file database.}
@@ -113,6 +122,18 @@ available.
       tracked environment that are on the search list.  If given an
       argument that is a vector of environments (or environment names),
       it returns the subset of that vector that are tracked environments.}
+    \item{track.Last.sys:}{calls \code{track.stop(all=TRUE)} to ensure
+      that all tracking information and objects are written to files,
+   and removes tracked variables from the environment.}
+    \item{.Last.sys:}{synonym for \code{track.Last.sys}; will be called
+      at the end of an R session, before the remaining variables in the
+      global environment are saved to \code{.RData}.  This function
+      exists in the \code{trackObjs} package, and will be called
+      automatically at the end of an R session provided it is not
+      masked.  The existence of \code{.Last.sys} in this location may
+      change in the future if a better way of doing this is found (e.g.,
+    it may be better to create \code{.Last.sys} or \code{.Last} in the
+    global env.}
 }
 \author{Tony Plate <tplate@acm.org>}
 \seealso{ \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }

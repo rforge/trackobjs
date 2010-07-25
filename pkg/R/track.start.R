@@ -1,7 +1,7 @@
 track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                         create=TRUE, clobber=c("no", "files", "variables", "vars", "var"),
                         cache=NULL, options=NULL, RDataSuffix=NULL, auto=NULL,
-                        readonly=FALSE, lockEnv=FALSE) {
+                        readonly=FALSE, lockEnv=FALSE, check.Last=TRUE) {
     ## Start tracking the specified environment to a directory
     clobber <- match.arg(clobber)
     if (clobber=="vars" || clobber=="var") clobber <- "variables"
@@ -273,6 +273,13 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     if (auto) {
         addTaskCallback(track.sync.callback, data=envir, name=paste("track.auto:", envname(envir), sep=""))
         assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
+    }
+    if (check.Last) {
+        if (length(i <- find(".Last.sys")) > 1)
+            if (i != find("track.start")[1])
+                warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs will is masked and will not run.  This may affect the saving of tracked environments.\n")
+            else
+                warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs masks others and they will not run\n")
     }
     ## Note that locking the environment is irreversible, and it prevents
     ## rescaning (because the main reason to do that would be to pick up

@@ -1,7 +1,7 @@
-* write .Last function that will call track.sync(force=TRUE), track.stop(), and that will call save.image() after detaching() the tracking dir. (.Last gets called before save.image() in the Windows GUI)
+* write .Last.sys function that will call track.stop() (which calls track.sync(full=TRUE) and track.flush())
 * add tests to testFollowObjs.Rout.save with recordAccesses=FALSE, and separately
   with maintainSummary=FALSE
-* add tests for track.start(clobber="vars") and track.start(clobber="files")
+* DONE: add tests for track.start(clobber="vars") and track.start(clobber="files")
 * DONE: in track.start(), when clobbering files, make sure current var binding is not active (actually, this doesn't matter no -- we remove all clobbered var bindings before reassinging), and that var is trackable -- now gives a warning for untrackable/reserved/excluded var names
 * DONE: in track.start(), need to check that files exist before clobbering vars, had this situation - now stop with an error message
 * DONE: in track.stop(), replace .Last active binding by its value? (otherwise get an error when trying to run it?) - no seems OK
