@@ -1,2 +1,2 @@
-library(ScripTests)
+library(scriptests)
 runScripTests()
