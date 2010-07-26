@@ -1,6 +1,6 @@
 Package: trackObjs
-Version: 0.9-3
-Date: 2010-07-04
+Version: 0.9-4
+Date: 2010-07-25
 Title: Track Objects
 Author: Tony Plate <tplate@acm.org>
 Maintainer: Tony Plate <tplate@acm.org>
@@ -12,4 +12,4 @@ Description: Automatically stores objects in files on disk so that
   to allow for fast summaries of objects.
 License: GPL
 Depends: R (>= 2.1.0)
-Suggests: ScripTests
+Suggests: scriptests
