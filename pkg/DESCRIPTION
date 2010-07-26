@@ -12,3 +12,4 @@ Description: Automatically stores objects in files on disk so that
   to allow for fast summaries of objects.
 License: GPL
 Depends: R (>= 2.1.0)
+Suggests: ScripTests
