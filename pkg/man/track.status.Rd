@@ -106,7 +106,7 @@ track.start("tmp1", cache=TRUE)
 # with the standard options, create a variable with each status:
 # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 # create some objects that are untrackable for various reasons
-makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), globalenv())
+makeActiveBinding("uncoop", function(v) {cat("I'm a binding that prints this message when accessed!\n"); "used to be a an active binding"}, globalenv())
 .trackingFileMap <- "aren't I a mischevious little object :-)"
 # .trackingEnv <- "Assigning me like this will break tracking!"
 uncoop

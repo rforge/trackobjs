@@ -40,7 +40,7 @@ functions that don't store references to environments.
 
 }
 \details{
-There are three main reasons to use the \code{trackObjs} package:
+There are four main reasons to use the \code{trackObjs} package:
 \itemize{
   \item conveniently handle many moderately-large objects that would
   collectively exhaust memory or be inconvenient to manage in
@@ -48,22 +48,29 @@ There are three main reasons to use the \code{trackObjs} package:
   \item keep track of creation and modification times on objects
   \item get fast summaries of basic characteristics of objects - class,
   size, dimension, etc.
+  \item have changed or newly created objects saved automatically at the
+  end of each top-level command, which ensures objects are preserved
+  in the event of accidental or abnormal termination of the R session,
+  and which also makes startup and saving much faster when many large
+  objects in the global environment must be loaded or saved.
 }
 
 There is an option to control whether tracked objects are cached in
-memory as well as being stored on disk.  By default, objects are not
-cached.  To save time when working with collections of objects that will
-all fit in memory, turn on caching with
-\code{\link{track.options}(cache=TRUE)}, or start tracking with
-\code{\link{track.start}(..., cache=TRUE)}.  A possible future
-improvement is to allow conditional and/or intelligent caching of
-objects.
+memory as well as being stored on disk.  By default, objects are cached
+in memory for the duration of a top-level task.  To save time when
+working with collections of objects that will all fit in memory, turn on
+caching with and turn off cache-flushing
+\code{\link{track.options}(cache=TRUE, cachePolicy="none")}, or start tracking with
+\code{\link{track.start}(..., cache=TRUE, cachePolicy="none")}.  A possible future
+improvement is to allow conditional and/or more intelligent caching of
+objects.  Some data that would be needed for this is already collected
+in access counts and times that are recorded in the tracking summary.
 
 Here is a brief example of tracking some variables in the global environment:
 
 \preformatted{
 > library(trackObjs)
-> track.start("tmp1")
+> track.start()
 > x <- 123                  # Variable 'x' is now tracked
 > y <- matrix(1:6, ncol=2)  # 'y' is assigned & tracked
 > z1 <- list("a", "b", "c")
@@ -82,7 +89,7 @@ z2 POSIXt,POSIXct numeric    [1]      1 2007-09-07 08:50:58  0  1
 character(0)
 >
 > # Restart using the tracking dir -- the variables reappear
-> track.start("tmp1") # Start using the tracking dir again
+> track.start() # Start using the same tracking dir again ("rdatadir")
 > ls(all=TRUE)
 [1] "x"  "y"  "z1" "z2"
 > track.summary(size=F)
@@ -94,7 +101,7 @@ z2 POSIXt,POSIXct numeric    [1]      1 2007-09-07 08:50:58  0  1
 > track.stop(pos=1)
 >
 > # the files in the tracking directory:
-> list.files("tmp1", all=TRUE)
+> list.files("rdatadir", all=TRUE)
 [1] "."                    ".."
 [3] "filemap.txt"          ".trackingSummary.rda"
 [5] "x.rda"                "y.rda"
@@ -126,7 +133,10 @@ For straightforward use of the trackObjs package, only a single
 call to \code{track.start()} need be made to start automatically tracking the global
 environment.  If it is desired to save untrackable variables at the end
 of the session, \code{track.stop()} should be called before calling
-\code{save.image()} or \code{q('yes')}.  The basic functions used in
+\code{save.image()} or \code{q('yes')}, because \code{track.stop()} will
+ensure that tracked variables are saved to disk and then remove them
+from the global environment, leaving \code{save.image()} to save only
+the untracked or untrackable variables.  The basic functions used in
 automatic tracking are as follows:
 \itemize{
   \item \code{\link{track.start}(dir=...)}: start tracking
@@ -145,6 +155,9 @@ automatic tracking are as follows:
   default when attaching at positions other than 1 is to use readonly
   mode, but in non-readonly mode, changes to variables in the attached
   environment will be automatically saved to the database.
+  \item \code{\link{track.rescan}(pos=)}: rescan a tracking directory
+  that was attached by \code{track.attach()} at a position other than 1,
+  and that is preferably readonly.
 }
 
 For the non-automatic mode, four other functions cover the majority of common usage:

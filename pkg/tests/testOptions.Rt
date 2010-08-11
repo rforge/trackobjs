@@ -14,21 +14,27 @@
    Status InMem FileBase FileExists Saved
 X tracked FALSE       _1       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
-> track.options(cache=TRUE, writeToDisk=FALSE) # change for just this session
+> track.options(cache=TRUE, writeToDisk=FALSE, cachePolicy="none") # change for just this session
 > # different ways of retrieving option values
-> track.options(c("cache", "writeToDisk"))
+> track.options(c("cache", "writeToDisk", "cachePolicy"))
 $cache
 [1] TRUE
 
 $writeToDisk
 [1] FALSE
 
-> track.options("cache", "writeToDisk")
+$cachePolicy
+[1] "none"
+
+> track.options("cache", "writeToDisk", "cachePolicy")
 $cache
 [1] TRUE
 
 $writeToDisk
 [1] FALSE
+
+$cachePolicy
+[1] "none"
 
 > track.options("cache")
 $cache
@@ -37,6 +43,9 @@ $cache
 > track.options()
 $cache
 [1] TRUE
+
+$cachePolicy
+[1] "none"
 
 $writeToDisk
 [1] FALSE
@@ -100,30 +109,39 @@ x tracked FALSE        x       TRUE  TRUE
 > track.start("tmp6")
 > # note that options previously changed are back at defaults (because default
 > # to track.options() is save=FALSE
-> track.options(c("cache", "writeToDisk"))
+> track.options(c("cache", "writeToDisk", "cachePolicy"))
 $cache
-[1] FALSE
+[1] TRUE
 
 $writeToDisk
 [1] TRUE
+
+$cachePolicy
+[1] "withinTask"
 
 > track.options(cache=TRUE, writeToDisk=FALSE, save=TRUE) # change the options on disk
-> track.options(c("cache", "writeToDisk"))
+> track.options(c("cache", "writeToDisk", "cachePolicy"))
 $cache
 [1] TRUE
 
 $writeToDisk
 [1] FALSE
+
+$cachePolicy
+[1] "withinTask"
 
 > track.stop(pos=1)
 > track.start("tmp6")
 > # now options previously changed are remembered (because track.options(..., save=TRUE) was used)
-> track.options(c("cache", "writeToDisk"))
+> track.options(c("cache", "writeToDisk", "cachePolicy"))
 $cache
 [1] TRUE
 
 $writeToDisk
 [1] FALSE
+
+$cachePolicy
+[1] "withinTask"
 
 > # Test how multi-value options are handled
 > track.options("autoTrackExcludePattern")

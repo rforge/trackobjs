@@ -10,6 +10,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     ##   summaryTimes: logical, or integer value 0,1,2,3
     ##   summaryAccess: logical, or integer value 0,1,2,3,4
     ##   cache: logical (default TRUE) (keep written objects in memory?)
+    ##   cachePolicy: char vector (default "withinTask") (when to keep objects in memory)
     ##   writeToDisk: logical (default TRUE) (always write changed objects to disk?)
     ##   useDisk: logical (default TRUE) if FALSE, don't write anything
     ##   recordAccesses: logical (default TRUE) if TRUE, record time & number of get()'s
@@ -84,7 +85,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
         values <- list()
     if (length(values)==1 && is.list(values[[1]]))
         values <- values[[1]]
-    optionNames <- c("cache", "writeToDisk", "maintainSummary", "alwaysSaveSummary",
+    optionNames <- c("cache", "cachePolicy", "writeToDisk", "maintainSummary", "alwaysSaveSummary",
                      "useDisk", "recordAccesses", "summaryTimes", "summaryAccess",
                      "RDataSuffix", "debug", "autoTrackExcludePattern", "autoTrackExcludeClass",
                      "autoTrackFullSyncWait", "clobberVars", "readonly")
@@ -125,9 +126,10 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     if (length(need.value)) {
         names(need.value) <- need.value
         repaired <- lapply(need.value, function(x)
-                           switch(x, cache=FALSE, readonly=FALSE,
-                                  writeToDisk=TRUE, maintainSummary=TRUE,
-                                  alwaysSaveSummary=FALSE, useDisk=TRUE, recordAccesses=TRUE,
+                           switch(x, cache=TRUE, cachePolicy="withinTask",
+                                  readonly=FALSE, writeToDisk=TRUE,
+                                  maintainSummary=TRUE, alwaysSaveSummary=FALSE,
+                                  useDisk=TRUE, recordAccesses=TRUE,
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
                                   debug=0, autoTrackExcludePattern=c("^\\.track", "^\\.required"),
                                   autoTrackExcludeClass=c("RODBC"),
@@ -142,6 +144,9 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
             if (opt=="cache") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
+            } else if (opt=="cachePolicy") {
+                if (!is.character(values[[opt]]))
+                    values[[opt]] <- as.character(values[[opt]])
             } else if (opt=="readonly") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
@@ -180,6 +185,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
                 if (!is.numeric(values[[opt]]))
                     values[[opt]] <- as.numeric(values[[opt]])
             } else if (opt=="clobberVars") {
+                single <- FALSE
                 if (!is.character(values[[opt]]))
                     values[[opt]] <- as.character(values[[opt]])
             } else {

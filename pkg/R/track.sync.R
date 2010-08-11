@@ -1,4 +1,4 @@
-track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.environment(pos), trackingEnv=getTrackingEnv(envir), full=TRUE, dryRun=FALSE) {
+track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.environment(pos), trackingEnv=getTrackingEnv(envir), full=TRUE, dryRun=FALSE, taskEnd=FALSE) {
     ## With master="envir", sync the tracking database to the contents of the R environment
     ## This involves 3 things
     ##   (1) start tracking new untracked variables
@@ -29,7 +29,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         else
             stop("must supply argument master='files' or master='envir' when tracking db is attached with readonly=FALSE")
     if (master=="files")
-        return(track.rescan(envir=envir, forget.modified=TRUE, level="low"))
+        return(track.rescan(envir=envir, forgetModified=TRUE, level="low"))
     if (opt$readonly && master=="envir" && !isTRUE(full)) {
         return(list(new=character(0), deleted=character(0)))
     }
@@ -159,6 +159,12 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ## save the time that we did this full sync
         assign(".trackAuto", list(on=TRUE, last=now), envir=trackingEnv)
     }
+    if (taskEnd && opt$cachePolicy=="withinTask") {
+        if (dryRun)
+            cat("track.sync(dryRun): Would flush all vars\n")
+        else
+            track.flush(envir=envir, all=TRUE)
+    }
     return(invisible(list(new=untracked, removed=deleted)))
 }
 
@@ -180,6 +186,6 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ## Don't repeat the work an explicit call to track.sync()
     if (is.call(expr) && as.character(expr[[1]]) == "track.sync")
         return(TRUE)
-    track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir")
+    track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir", taskEnd=TRUE)
     return(TRUE) # to keep this callback active
 }

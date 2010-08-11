@@ -10,7 +10,7 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp3", recursive=TRUE)
 > remove(list=ls(all=TRUE))
-> track.start("tmp3", cache=TRUE)
+> track.start("tmp3", cache=TRUE, cachePolicy="none")
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > # create some objects that are untrackable for various reasons

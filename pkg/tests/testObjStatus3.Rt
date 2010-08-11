@@ -13,7 +13,7 @@
 > unlink("tmp5", recursive=TRUE)
 > attach(NULL, name="testenv")
 > remove(list=ls(all=TRUE))
-> track.start("tmp5", pos=2, cache=FALSE)
+> track.start("tmp5", pos=2, cache=FALSE, cachePolicy="none")
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), as.environment("testenv"))

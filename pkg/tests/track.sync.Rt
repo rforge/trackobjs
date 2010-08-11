@@ -1,7 +1,7 @@
 > # test that track.sync can correctly pick up changes
 > options(error=function() NULL)
 > invisible(if (file.exists("tmp17")) unlink("tmp17", recursive=TRUE))
-> track.start(dir="tmp17", auto=FALSE)
+> track.start(dir="tmp17", auto=FALSE, cache=FALSE)
 > x <- 1
 > y <- 2
 > track.status()

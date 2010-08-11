@@ -12,14 +12,26 @@
 \description{
   Functions to setup and stop tracking.
 }
+\section{Simple Usage}{
+These functions have many arguments providing much control over
+tracking, but the arguments used in simple usage are:
+  \preformatted{
+track.start()
+track.start(dir = "rdatadir")
+track.stop(pos = 1, all = FALSE)
+track.rescan(pos = 1)
+track.info()
+}
+}
 \usage{
 track.start(dir="rdatadir", pos = 1, envir = as.environment(pos), create = TRUE,
-        clobber = c("no", "files", "variables", "vars", "var"), cache=NULL, options=NULL,
-        RDataSuffix=NULL, auto = NULL, readonly = FALSE, lockEnv = FALSE, check.Last=TRUE)
-track.stop(pos = 1, envir = as.environment(pos), all=FALSE,
-        stop.on.error=FALSE, keepVars = FALSE)
+        clobber = c("no", "files", "variables", "vars", "var"),
+        cache = NULL, cachePolicy = NULL, options = NULL,
+        RDataSuffix = NULL, auto = NULL, readonly = FALSE, lockEnv = FALSE, check.Last = TRUE)
+track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
+        stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE)
 track.info(pos = 1, envir = as.environment(pos), all=TRUE)
-track.rescan(pos = 1, envir = as.environment(pos), forget.modified = FALSE, level = c("high", "low"), dryRun = FALSE)
+track.rescan(pos = 1, envir = as.environment(pos), forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
 tracked.envs(envirs=search())
 track.Last.sys()
@@ -42,7 +54,10 @@ track.Last.sys()
   \code{vars} or \code{var} means
     use the version in \code{envir} (and overwrite the version in the
     tracking directory)}
-  \item{cache}{ Should objects be keep cached in memory?  Default is \code{FALSE}.  This option is a shorthand way of supplying \code{options=list(cache=TRUE)}.}
+  \item{cache}{ Should objects be keep cached in memory?  Default is \code{TRUE}.  This option is a shorthand way of supplying \code{options=list(cache=...)}.}
+  \item{cachePolicy}{ Policy for keeping cached objects in memory.
+  Default is \code{withinTask}, for which cached objects are removed
+  from memory at the end of a top-level task.  This option is a shorthand way of supplying \code{options=list(cachePolicy=...)}.}
   \item{options}{ Option values (as a list) to be used for this tracking database.  See \code{track.options()}.}
   \item{all}{If \code{TRUE}, all tracked environment are unlinked}
   \item{auto}{If \code{TRUE}, automatically track new variables and
@@ -63,7 +78,7 @@ track.Last.sys()
     in files.}
   \item{envirs}{A list or vector of objects that can be interpreted as
     environments by \code{as.environment}}
-  \item{forget.modified}{ If \code{TRUE}, discard copies that are
+  \item{forgetModified}{ If \code{TRUE}, discard copies that are
     modified and in memory }
   \item{RDataSuffix}{The suffix to use for \code{RData} files.  This
     should not normally need to be specified.}
@@ -83,6 +98,9 @@ track.Last.sys()
   individually bring the environment in line with the file database.}
   \item{dryRun}{If \code{TRUE}, no changes are actualy made, but
   messages are printed describing what changes would be made.}
+  \item{sessionEnd}{If \code{TRUE}, this is a call at the end of a
+    session and no recovery from errors is possible -- just try to
+    as best as can to save objects as appropriate.}
 }
 \details{
   \describe{
@@ -107,7 +125,7 @@ the current variables on file will be used instead of any cached
 in memory.
 If we have some modified variables cached in memory but not saved
 to disk, this function will stop with an error unless
-\code{forget.modified==TRUE}.
+\code{forgetModified==TRUE}.
 Variables that have disappeared from the tracking dir will disappear
 from visibility, and variables added to the tracking dir will become
 available.

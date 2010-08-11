@@ -3,6 +3,7 @@
 > invisible(if (file.exists("tmp16")) unlink("tmp15", recursive=TRUE))
 > # Create one db
 > track.attach("tmp15", pos=2, name="track:tmp15", readonly=FALSE, create=TRUE)
+Attaching to tracking db in 'track:tmp15'
 > assign("x", 1, pos=2)
 > assign("z", 3, pos=2)
 > track.status(pos=2)
@@ -13,6 +14,7 @@ z tracked FALSE        z       TRUE  TRUE
 > 
 > # Create the second db
 > track.attach("tmp16", pos=2, name="track:tmp16", readonly=FALSE, create=TRUE)
+Attaching to tracking db in 'track:tmp16'
 > assign("x", 11, pos=2)
 > assign("y", 12, pos=2)
 > track.status(pos=2)

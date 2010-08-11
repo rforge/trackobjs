@@ -57,6 +57,9 @@ character(0)
 $cache
 [1] TRUE
 
+$cachePolicy
+[1] "withinTask"
+
 $writeToDisk
 [1] TRUE
 
@@ -102,6 +105,9 @@ $readonly
 > track.options()
 $cache
 [1] TRUE
+
+$cachePolicy
+[1] "withinTask"
 
 $writeToDisk
 [1] TRUE
@@ -190,6 +196,9 @@ z numeric numeric    [1]      1  6  1  0  4  4
 > track.options()
 $cache
 [1] FALSE
+
+$cachePolicy
+[1] "withinTask"
 
 $writeToDisk
 [1] TRUE

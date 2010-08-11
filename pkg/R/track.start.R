@@ -1,6 +1,7 @@
 track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                         create=TRUE, clobber=c("no", "files", "variables", "vars", "var"),
-                        cache=NULL, options=NULL, RDataSuffix=NULL, auto=NULL,
+                        cache=NULL, cachePolicy=NULL,
+                        options=NULL, RDataSuffix=NULL, auto=NULL,
                         readonly=FALSE, lockEnv=FALSE, check.Last=TRUE) {
     ## Start tracking the specified environment to a directory
     clobber <- match.arg(clobber)
@@ -19,6 +20,37 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     ## Create the tracking env, but don't assign it to envir until all is OK
     trackingEnv <- new.env(hash=TRUE, parent=emptyenv())
     assign(".trackingDir", dir, envir=trackingEnv)
+    track.stop.finalizer <- function(trackingEnv) {
+        if (exists(".trackFinished", envir=trackingEnv, inherits=FALSE))
+            return(NULL)
+        if (!exists(".trackingEnv", env=envir, inherits=FALSE)) {
+            # This used to happen under some circumstances when the finalizer is
+            # called after tracking has stopped, but the check for ".trackFinished"
+            # fixed that.
+            cat("Bogus call to track.stop reg.finalizer for", envname(trackingEnv),
+                ": no .trackingEnv in", envname(envir), "\n")
+            return(NULL)
+        }
+        if (!identical(trackingEnv, get(".trackingEnv", env=envir, inherits=FALSE))) {
+            cat("Bogus call to track.stop reg.finalizer for", envname(trackingEnv),
+                ": .trackingEnv in", envname(envir), "is different:",
+                envname(get(".trackingEnv", env=envir, inherits=FALSE)), "\n")
+            return(NULL)
+        }
+        ## cat("Valid call to track.stop reg.finalizer for", envname(trackingEnv),
+        ##         "on", envname(envir), "\n")
+        ## if (interactive()) browser()
+        ## Seems to sometimes be called when not appropriate, so don't
+        ## do anything drastic -- just flush.
+        ## Example is the track.load() commands in track.status.Rd
+        track.flush(envir=envir)
+    }
+    if (!readonly) {
+        ## cat("Installing reg.finalizer for trackingEnv", envname(trackingEnv), "on", envname(envir), "\n")
+        reg.finalizer(trackingEnv, track.stop.finalizer, onexit=TRUE)
+    }
+    ## Set up a finalizer to be run when the tracking env is garbage collected
+    ## OR at the end of the session
     dataDir <- getDataDir(dir)
     ## The trickiest option to work out is the RData file suffix, because
     ## we have to know it to find a saved .trackingOptions object, but this
@@ -100,6 +132,14 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         else
             stop("'cache' argument must be TRUE or FALSE")
     }
+    if (!is.null(cachePolicy)) {
+        if (is.null(options))
+            options <- list()
+        if (is.element(cachePolicy, c("withinTask", "none")))
+            options$cachePolicy <- cachePolicy
+        else
+            stop("'cachePolicy' argument must be 'withinTask' or 'none'")
+    }
     old.options <- list()
     if (!is.null(optionsPath)) {
         tmpenv <- new.env(parent=emptyenv())
@@ -136,9 +176,12 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     objSummary <- summaryRow(name="")[0,]
     if (!file.exists(file.path(dataDir))) {
         if (!create)
-            stop("dir \"", dir, "\" does not exist (supply create=TRUE to create it)")
-        else if (is(dir.create(file.path(dataDir), recursive=TRUE), "try-error"))
-            stop("could not creating tracking dir")
+            stop("dir \"", dataDir, "\" does not exist (supply create=TRUE to create it)")
+        res <- dir.create(file.path(dataDir), recursive=TRUE)
+        if (is(res, "try-error"))
+            stop("could not creating tracking dir '", dataDir, "': ", res)
+        if (!file.exists(dataDir))
+            stop("failed to create tracking dir '", dataDir, "'")
         fileMap <- character(0)
         assign(".trackingFileMap", fileMap, envir=trackingEnv)
         fileMapCreated <- TRUE
@@ -276,7 +319,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     }
     if (check.Last) {
         if (length(i <- find(".Last.sys")) > 1)
-            if (i != find("track.start")[1])
+            if (i[1] != find("track.start")[1])
                 warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs will is masked and will not run.  This may affect the saving of tracked environments.\n")
             else
                 warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs masks others and they will not run\n")

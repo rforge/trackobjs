@@ -12,7 +12,8 @@
 }
 \usage{
 track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(pos),
-           trackingEnv = getTrackingEnv(envir), full = TRUE, dryRun=FALSE)
+           trackingEnv = getTrackingEnv(envir), full = TRUE,
+           dryRun = FALSE, taskEnd = FALSE)
 }
 \arguments{
   \item{pos}{ The search path position of the environment being tracked
@@ -41,6 +42,9 @@ track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(p
     system or to the R environment, but changes that would be made are
     printed out.  Note that a change to a file for a tracked variable
     will not be detect.}
+  \item{taskEnd}{Should be \code{TRUE} when called at the end of a
+    top-level command task (i.e., when called by the task callback
+    handler.)}
 }
 \details{
     Synchronizing the tracking database with the contents of the

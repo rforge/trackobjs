@@ -1,4 +1,6 @@
 track.attach <- function(dir, pos=2, name=NULL, readonly=TRUE, create=FALSE, lockEnv=FALSE) {
+    if (missing(dir) && missing(pos) && is.null(name) && !readonly && !lockEnv)
+        return(track.start())
     if (pos < 2)
         stop("pos must be >= 2")
     if (!file.exists(dir))
@@ -23,5 +25,6 @@ track.attach <- function(dir, pos=2, name=NULL, readonly=TRUE, create=FALSE, loc
     if (is.null(name))
         name <- getAbsolutePath(dir)
     attach(what=NULL, pos=pos, name=name)
-    return(track.start(trackingDir, pos=pos, readonly=readonly, lockEnv=lockEnv))
+    cat("Attaching to tracking db in '", name, "'\n", sep="")
+    return(track.start(trackingDir, pos=pos, readonly=readonly, lockEnv=lockEnv, check.Last=FALSE))
 }
