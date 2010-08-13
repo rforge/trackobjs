@@ -1,4 +1,4 @@
-* write tests that GC-triggered flushing at the end of the R session does write out objects
+* write tests that GC-triggered flushing at the end of the R session does write out objects (a little tricky to test because the test needs to span multiple sessions)
 * DONE: Think about automatic caching and garbage collection: now when a tracking env is garbage-collected at the end of the R session, if it isn't already flushed, it is flushed.
 * DONE: write .Last.sys function that will call track.stop() (which calls track.sync(full=TRUE) and track.flush())
 * add tests to testFollowObjs.Rout.save with recordAccesses=FALSE, and separately

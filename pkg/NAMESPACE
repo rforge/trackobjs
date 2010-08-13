@@ -27,4 +27,8 @@ export(track.start,
        track.forget,
        track.rescan,
        track.load,
-       track.rebuild)
+       track.rebuild,
+       track.history.start,
+       track.history.stop,
+       track.history.load,
+       track.history.writer)
