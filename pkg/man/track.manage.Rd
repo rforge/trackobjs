@@ -102,9 +102,9 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
       objects in the tracking environment that were acted upon}
     \item{track.load:}{a list with two components:
       \itemize{
-        \item{\code{loaded}:}{names of objects that were loaded from \code{file}}
-        \item{\code{skipped}:}{names of objects in \code{file} that
-          were not loaded}
+        \item \code{loaded}: names of objects that were loaded from \code{file}
+        \item \code{skipped}: names of objects in \code{file} that
+          were not loaded
     }
   }
 }
