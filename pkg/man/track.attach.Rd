@@ -10,7 +10,9 @@
   new environment attached at \code{pos} on the search path.
 }
 \usage{
-track.attach(dir, pos = 2, name = NULL, readonly = TRUE, create = FALSE, lockEnv = FALSE)
+track.attach(dir, pos = 2, name = NULL,
+             create = FALSE, readonly = !create,
+             lockEnv = FALSE, verbose = TRUE)
 track.detach(pos = NULL, name = NULL)
 }
 \arguments{
@@ -24,18 +26,19 @@ track.detach(pos = NULL, name = NULL)
 \item{name}{
   The name to use on the search path for the new environment.
 }
+  \item{create}{
+    Should the tracking database be created if it does not exist?
+}
 \item{readonly}{
   Logical flag indicating whether the tracking db should be attached in
   a readonly mode.  The global environment (\code{pos=1} in the search
   path) cannot be tracked in a readonly mode.
 }
-  \item{create}{
-    Should the tracking database be created if it does not exist?
-}
   \item{lockEnv}{Should the environment be locked for a readonly
   tracking environment? The default is \code{FALSE} because locking the
   environment is irreversible, and it prevents rescanning or caching
   (because can't delete or add bindings)}
+  \item{verbose}{print a message about what directory is being tracked?}
 }
 \details{
   \code{track.attach} attaches a new environment to the search path at the specified

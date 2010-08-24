@@ -1,6 +1,5 @@
 \name{track.summary}
 \alias{track.summary}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Return a summary of the basic properties of tracked objects }
 \description{
   Return a summary of the basic properties of tracked objects: name,
@@ -9,7 +8,8 @@
 }
 \usage{
 track.summary(expr, pos = 1, envir = as.environment(pos), list = NULL, pattern = NULL,
-        glob = NULL, times = track.options("summaryTimes", envir=envir)[[1]],
+        glob = NULL, all.names = FALSE,
+        times = track.options("summaryTimes", envir=envir)[[1]],
         access = track.options("summaryAccess", envir=envir)[[1]], size=TRUE)
 }
 
@@ -23,6 +23,8 @@ track.summary(expr, pos = 1, envir = as.environment(pos), list = NULL, pattern =
   \item{list}{ A character vector of variable names to summarize }
   \item{pattern}{ A regular expression specifying variable names to summarize }
   \item{glob}{ A regular expression specifying variable names to summarize }
+  \item{all.names}{ should names beginning with a period be included
+  (like \code{all.names} in \code{ls})}
   \item{times}{ An integer 0..3 specifying how many time columns to
     return (in order of: modify, create, access) }
   \item{access}{  An integer 0..3 specifying how many access-count

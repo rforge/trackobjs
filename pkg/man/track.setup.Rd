@@ -3,8 +3,8 @@
 \alias{track.stop}
 \alias{track.rescan}
 \alias{track.info}
-\alias{track.Last.sys}
-\alias{.Last.sys}
+\alias{track.Last}
+% \alias{.Last}
 \alias{env.is.tracked}
 \alias{tracked.envs}
 %- Also NEED an '\alias' for EACH other topic documented here.
@@ -24,18 +24,20 @@ track.info()
 }
 }
 \usage{
-track.start(dir="rdatadir", pos = 1, envir = as.environment(pos), create = TRUE,
+track.start(dir="rdatadir", pos = 1, envir = as.environment(pos),
+        create = TRUE,
         clobber = c("no", "files", "variables", "vars", "var"),
         cache = NULL, cachePolicy = NULL, options = NULL,
-        RDataSuffix = NULL, auto = NULL, readonly = FALSE, lockEnv = FALSE, check.Last = TRUE)
+        RDataSuffix = NULL, auto = NULL, readonly = FALSE,
+        lockEnv = FALSE, check.Last = TRUE, verbose = TRUE)
 track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
         stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE)
 track.info(pos = 1, envir = as.environment(pos), all=TRUE)
 track.rescan(pos = 1, envir = as.environment(pos), forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
 tracked.envs(envirs=search())
-track.Last.sys()
-.Last.sys()
+track.Last()
+% .Last()
 }
 
 \arguments{
@@ -88,9 +90,9 @@ track.Last.sys()
   environment is irreversible, and it prevents rescanning or caching
   (because can't delete or add bindings)}
 
-  \item{check.Last}{By default, a warning is issued if the \code{.Last.sys}
+  \item{check.Last}{By default, a warning is issued if the \code{.Last}
   function in the \code{trackObjs} package is masked by any other
-  \code{.Last.sys} function.  Supplying \code{check.Last=FALSE}
+  \code{.Last} function.  Supplying \code{check.Last=FALSE}
   inhibits this check and warning.}
 
 \item{level}{Should the rescan be done at a high or low level: a high
@@ -101,6 +103,7 @@ track.Last.sys()
   \item{sessionEnd}{If \code{TRUE}, this is a call at the end of a
     session and no recovery from errors is possible -- just try to
     as best as can to save objects as appropriate.}
+  \item{verbose}{print a message about what directory is being tracked?}
 }
 \details{
   \describe{
@@ -108,14 +111,17 @@ track.Last.sys()
       tracking directory already exists, objects in it will be made
       accessible, otherwise it will be created (unless \code{create=FALSE}).}
 
-    \item{\code{track.stop}:}{ stop tracking \code{envir}.  Unsaved
+    \item{\code{track.stop}:}{ stop tracking \code{envir} (default is
+      the global environment).  Unsaved
       values will be saved to files first.  Tracked variables will
-      become unavailable unless \code{keepVars=TRUE} is supplied. At
-      least one of \code{pos}, \code{envir}, or \code{all} must be
-      supplied to specify which environment to stop tracking (and there
-      is no default to avoid accidents with calling \code{track.stop()} prior
+      become unavailable unless \code{keepVars=TRUE} is supplied. If no
+      arguments are supplied, stops tracking the global environment
+      (pos=1).
+      (In standard use, there is not a problem with only calling
+      \code{track.stop()} prior
       to quitting R, thinking that it will cleanup all tracked
-      environments).}
+      environments, because tracked envs at positions other than 1 will
+      be attached readonly.)}
 
     \item{\code{track.info}:}{ returns a dataframe of information about
       environments currently tracked.}
@@ -130,6 +136,15 @@ Variables that have disappeared from the tracking dir will disappear
 from visibility, and variables added to the tracking dir will become
 available.
 }
+    \item{.Last:}{\code{track.start()} or \code{track.attach()} set
+      \code{.Last} in the global env to have the value
+      \code{track.Last}, provided \code{.Last} does not already exist
+      there.  \code{.Last} will be called
+      at the end of an R session, before the remaining variables in the
+      global environment are saved to \code{.RData}.  \code{track.Last}
+      stops tracking all tracking db's, and removes tracked vars from
+      their environments.
+}
 }
 }
 \value{
@@ -140,18 +155,9 @@ available.
       tracked environment that are on the search list.  If given an
       argument that is a vector of environments (or environment names),
       it returns the subset of that vector that are tracked environments.}
-    \item{track.Last.sys:}{calls \code{track.stop(all=TRUE)} to ensure
+    \item{track.Last:}{calls \code{track.stop(all=TRUE)} to ensure
       that all tracking information and objects are written to files,
    and removes tracked variables from the environment.}
-    \item{.Last.sys:}{synonym for \code{track.Last.sys}; will be called
-      at the end of an R session, before the remaining variables in the
-      global environment are saved to \code{.RData}.  This function
-      exists in the \code{trackObjs} package, and will be called
-      automatically at the end of an R session provided it is not
-      masked.  The existence of \code{.Last.sys} in this location may
-      change in the future if a better way of doing this is found (e.g.,
-    it may be better to create \code{.Last.sys} or \code{.Last} in the
-    global env.}
 }
 \author{Tony Plate <tplate@acm.org>}
 \seealso{ \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }

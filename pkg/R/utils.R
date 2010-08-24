@@ -90,7 +90,9 @@
 env.is.tracked <- function(pos=1, envir=as.environment(pos)) {
     # .trackingEnv could be present and NULL for a non-tracked environment
     env <- mget(".trackingEnv", ifnotfound=list(NULL), envir=envir)[[1]]
-    return(!is.null(env))
+    return(!is.null(env)
+           && exists(".trackingPid", envir=env, inherits=FALSE)
+           && identical(get(".trackingPid", envir=env, inherits=FALSE), Sys.getpid()))
 }
 
 getDataDir <- function(trackingDir) {
@@ -177,7 +179,8 @@ isReservedName <- function(objname)
            | is.element(objname, c(".trackingEnv", ".trackingDir", ".trackingFileMap",
                                    ".trackingUnsaved", ".trackingSummary",
                                    ".trackingSummaryChanged", ".trackingOptions",
-                                   ".trackAuto", ".trackFinished")))
+                                   ".trackingPid",
+                                   ".trackAuto", ".trackingFinished")))
 
 objIsTracked <- function(objnames, envir, trackingEnv, all.objs=.Internal(ls(envir, TRUE))) {
     if (length(objnames)==0)

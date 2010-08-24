@@ -40,7 +40,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         if (!is.null(list))
             stop("cannot use expr= or list= at the same time as pattern=, glob=, or all=TRUE")
         list <- track.status(envir=envir, pattern=pattern, glob=glob, file.status=FALSE,
-                             what=if (op=="save") "unsaved" else "tracked", tracked=TRUE)
+                             what=if (op=="save") "unsaved" else "tracked", tracked=TRUE, all.names=TRUE)
     }
     all.objs <- .Internal(ls(envir, TRUE))
     if (length(list)) {
@@ -172,5 +172,5 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     }
     if (is(save1.res, "try-error") || is(save2.res, "try-error"))
         stop("unable to save some tracking info in ", file.path(dataDir), ": fix problem and run track.resave()")
-    return(list)
+    return(invisible(list))
 }

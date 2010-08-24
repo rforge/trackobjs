@@ -11,6 +11,7 @@
 > unlink("tmp3", recursive=TRUE)
 > remove(list=ls(all=TRUE))
 > track.start("tmp3", cache=TRUE, cachePolicy="none")
+Tracking <env R_GlobalEnv> using new directory tmp3 
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > # create some objects that are untrackable for various reasons
@@ -36,9 +37,9 @@ x6         tracked  TRUE       x6       TRUE  TRUE
 > # trick to make x5 not an active binding
 > {remove(list=c("x4", "x5")) ; x5 <- "not tracked"}
 > track.flush(x2)
-[1] "x2"
 > track.status(reserved=TRUE)
                       Status InMem FileBase FileExists Saved
+.Last                tracked  TRUE       _1       TRUE  TRUE
 .trackingEnv     untrackable    NA     <NA>         NA    NA
 .trackingFileMap untrackable    NA     <NA>         NA    NA
 uncoop           untrackable    NA     <NA>         NA    NA
@@ -58,7 +59,6 @@ x3         tracked  TRUE       x3       TRUE FALSE
 x5          masked  TRUE       x5       TRUE  TRUE
 x6         tracked  TRUE       x6       TRUE  TRUE
 > track.save()
-[1] "x3"
 > track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -78,7 +78,7 @@ x5          masked  TRUE       x5       TRUE  TRUE
 x6         tracked  TRUE       x6       TRUE  TRUE
 > track.unsaved()
 [1] "x3"
-> tracked()
+> tracked(all=FALSE)
 [1] "x1" "x2" "x3" "x6"
 > untracked()
 character(0)
@@ -89,7 +89,6 @@ character(0)
 > track.orphaned()
 character(0)
 > track.save(x3)
-[1] "x3"
 > track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -107,7 +106,6 @@ x6         tracked  TRUE       x6       TRUE  TRUE
 > x3
 [1] 2
 > track.forget(x3)
-[1] "x3"
 > x3
 [1] 1
 > # Test untracking a variable (doesn't really work with auto=TRUE)
@@ -209,7 +207,7 @@ $skipped
 
 Warning message:
 In track.load("tmp3y.rda") :
-  skipping 2 variable(s) because these exist in <env R_GlobalEnv> and clobber=FALSE: 'y3''y5'
+  skipping 2 variable(s) because these exist in <env R_GlobalEnv> and clobber=FALSE: 'y3', 'y5'
 
 > y3
 [1] "new value"
@@ -235,7 +233,7 @@ character(0)
 
 Warning message:
 In track.load("tmp3y.rda", clobber = TRUE) :
-  clobbering 3 existing variable(s) in <env R_GlobalEnv> and clobber=FALSE: 'y3''y4''y5'
+  clobbering 3 existing variable(s) in <env R_GlobalEnv>: 'y3', 'y4', 'y5'
 
 > y3
 [[1]]

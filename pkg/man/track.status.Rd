@@ -17,15 +17,16 @@
 \usage{
 track.status(pos = 1, envir = as.environment(pos), expr,
         qexpr = NULL, list = NULL, pattern = NULL, glob = NULL,
-        file.status = TRUE, tracked = NA, reserved=FALSE,
+        file.status = TRUE, tracked = NA, reserved = FALSE,
+        all.names = FALSE,
         what = c("all", "tracked", "trackable", "untracked",
                  "orphaned", "masked", "unsaved", "untrackable"))
-tracked(        pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-untracked(      pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-track.orphaned( pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-track.masked(   pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-untrackable(    pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-track.unsaved(  pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
+tracked(        pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
+untracked(      pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
+track.orphaned( pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
+track.masked(   pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
+untrackable(    pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
+track.unsaved(  pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
 }
 
 \arguments{
@@ -46,6 +47,8 @@ track.unsaved(  pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=
     objects, if \code{FALSE}, return information only on objects that
     are not tracked, and if \code{NA} return information on all
     variables (subject to other filtering).}
+  \item{all.names}{ should names beginning with a period be included
+  (like \code{all.names} in \code{ls})}
   \item{what}{ controls the information returned: \code{"all"} means
     return a data frame of status, other values means return a list of
     names of objects having that status }

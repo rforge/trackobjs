@@ -2,6 +2,7 @@
 > options(error=function() NULL)
 > invisible(if (file.exists("tmp17")) unlink("tmp17", recursive=TRUE))
 > track.start(dir="tmp17", auto=FALSE, cache=FALSE)
+Tracking <env R_GlobalEnv> using new directory tmp17 
 > x <- 1
 > y <- 2
 > track.status()
@@ -20,6 +21,7 @@ y tracked FALSE        y       TRUE  TRUE
 x  tracked FALSE        x       TRUE  TRUE
 y orphaned FALSE        y       TRUE  TRUE
 > track.sync(master="envir", full=FALSE, dryRun=TRUE)
+track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync(dryRun): would remove 1 deleted variables: y
 > track.status()
@@ -37,6 +39,7 @@ x tracked FALSE        x       TRUE  TRUE
 x   tracked FALSE        x       TRUE  TRUE
 z untracked    NA     <NA>         NA    NA
 > track.sync(master="envir", full=FALSE, dryRun=TRUE)
+track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
 track.sync(dryRun): would track 1 untracked variables: z
 track.sync: no deleted variables
 > track.status()
@@ -55,6 +58,7 @@ z tracked FALSE        z       TRUE  TRUE
 x  masked FALSE        x       TRUE  TRUE
 z tracked FALSE        z       TRUE  TRUE
 > track.sync(master="envir", full=FALSE, dryRun=TRUE)
+track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync: no deleted variables
 > track.status()
@@ -62,6 +66,7 @@ track.sync: no deleted variables
 x  masked FALSE        x       TRUE  TRUE
 z tracked FALSE        z       TRUE  TRUE
 > track.sync(master="envir", full=TRUE, dryRun=TRUE)
+track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync: no deleted variables
 track.sync: retracking var: x

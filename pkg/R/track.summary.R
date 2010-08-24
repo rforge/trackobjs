@@ -1,5 +1,6 @@
 
-track.summary <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL,
+track.summary <- function(expr, pos=1, envir=as.environment(pos), list=NULL,
+                          pattern=NULL, glob=NULL, all.names=FALSE,
                           times=track.options("summaryTimes", envir=envir)[[1]],
                           access=track.options("summaryAccess", envir=envir)[[1]],
                           size=TRUE) {
@@ -14,6 +15,8 @@ track.summary <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pat
     objSummary <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
     if (!is.data.frame(objSummary))
         stop(".trackingSummary in ", envname(trackingEnv), " is not a data.frame")
+    if (!all.names && nrow(objSummary) > 0)
+        objSummary <- objSummary[substring(rownames(objSummary), 1, 1)!=".", ]
     objs <- rownames(objSummary)
     qexpr <- if (!missing(expr)) substitute(expr) else NULL
     if (!is.null(qexpr)) {
@@ -41,7 +44,7 @@ track.summary <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pat
         objs <- intersect(objs, list)
 
     # Get an independent idea of what vars are currently tracked.
-    tracked.actual <- unique(track.status(envir=envir, qexpr=qexpr, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="tracked"))
+    tracked.actual <- unique(track.status(envir=envir, qexpr=qexpr, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="tracked", all.names=all.names))
     # Might it be better to have a "status" column in the returned summary
     # than print out a warning message here?
     if (length(setdiff(tracked.actual, objs)))

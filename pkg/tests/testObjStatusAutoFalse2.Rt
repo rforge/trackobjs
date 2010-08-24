@@ -10,6 +10,7 @@
 > unlink("tmp12", recursive=TRUE)
 > remove(list=ls(all=TRUE))
 > track.start("tmp12", cache=FALSE, auto=FALSE)
+Tracking <env R_GlobalEnv> using new directory tmp12 
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), globalenv())
@@ -40,9 +41,9 @@ x6       untracked    NA     <NA>         NA    NA
 > remove(list=c("x4", "x5"))
 > x5 <- "not tracked"
 > track.flush(x2)
-[1] "x2"
 > track.status(reserved=TRUE)
                       Status InMem FileBase FileExists Saved
+.Last              untracked    NA     <NA>         NA    NA
 .trackingEnv     untrackable    NA     <NA>         NA    NA
 .trackingFileMap untrackable    NA     <NA>         NA    NA
 uncoop           untrackable    NA     <NA>         NA    NA
@@ -64,7 +65,6 @@ x4        orphaned FALSE       x4       TRUE  TRUE
 x5          masked FALSE       x5       TRUE  TRUE
 x6       untracked    NA     <NA>         NA    NA
 > track.save()
-[1] "x3"
 > track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -88,7 +88,7 @@ x6       untracked    NA     <NA>         NA    NA
 [1] "x3"
 > tracked()
 [1] "x1" "x2" "x3"
-> untracked()
+> untracked(all=FALSE)
 [1] "x6"
 > untrackable()
 [1] ".trackingEnv"     ".trackingFileMap" "uncoop"          
@@ -97,7 +97,6 @@ x6       untracked    NA     <NA>         NA    NA
 > track.orphaned()
 [1] "x4"
 > track.save(x3)
-[1] "x3"
 > track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -116,7 +115,6 @@ x6       untracked    NA     <NA>         NA    NA
 > x3
 [1] 2
 > track.forget(x3)
-[1] "x3"
 > x3
 [1] 1
 > # Test untracking a variable
@@ -135,7 +133,6 @@ x6       untracked    NA     <NA>         NA    NA
 > bindingIsActive("x2", globalenv())
 [1] TRUE
 > untrack(x2)
-[1] "x2"
 > track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -150,7 +147,6 @@ x6       untracked    NA     <NA>         NA    NA
 > bindingIsActive("x3", globalenv())
 [1] TRUE
 > untrack(x3, keep.in.db=TRUE)
-[1] "x3"
 > track.status()
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -227,7 +223,7 @@ $skipped
 
 Warning message:
 In track.load("tmp12y.rda") :
-  skipping 2 variable(s) because these exist in <env R_GlobalEnv> and clobber=FALSE: 'y3''y5'
+  skipping 2 variable(s) because these exist in <env R_GlobalEnv> and clobber=FALSE: 'y3', 'y5'
 
 > y3
 [1] "new value"
@@ -254,7 +250,7 @@ character(0)
 
 Warning message:
 In track.load("tmp12y.rda", clobber = TRUE) :
-  clobbering 3 existing variable(s) in <env R_GlobalEnv> and clobber=FALSE: 'y3''y4''y5'
+  clobbering 3 existing variable(s) in <env R_GlobalEnv>: 'y3', 'y4', 'y5'
 
 > y3
 [[1]]

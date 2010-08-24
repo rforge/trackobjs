@@ -29,7 +29,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         # no variables are masked, etc.  If new variables have been added, these might
         # prevent re-starting if there are name conflicts, but there's not much we can do
         # about that except try and fail.
-        status <- track.status(envir=envir, tracked=TRUE)
+        status <- track.status(envir=envir, tracked=TRUE, all.names=TRUE)
         if (any(is.element(status$status, c("untrackable", "masked"))))
             stop("will not be able to reattach tracking env because some vars are untrackable or masked (look at output of track.status(envir, tracked=TRUE))")
         envName <- environmentName(envir)
@@ -44,7 +44,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
             cat("track.rescan: stop and restart tracking on ", envName, "\n", sep="")
         if (!dryRun) {
             track.stop(envir=envir)
-            track.start(dir=dir, envir=envir, create=FALSE,
+            track.start(dir=dir, envir=envir, create=FALSE, verbose=FALSE,
                         readonly=opt$readonly, lockEnv=environmentIsLocked(envir))
         }
         return(invisible(NULL))

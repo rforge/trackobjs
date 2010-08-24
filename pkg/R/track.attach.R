@@ -1,30 +1,23 @@
-track.attach <- function(dir, pos=2, name=NULL, readonly=TRUE, create=FALSE, lockEnv=FALSE) {
-    if (missing(dir) && missing(pos) && is.null(name) && !readonly && !lockEnv)
-        return(track.start())
+track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, lockEnv=FALSE, verbose=TRUE) {
+    ## if (missing(dir) && missing(pos) && is.null(name) && !readonly && !lockEnv)
+    ##    return(track.start())
     if (pos < 2)
         stop("pos must be >= 2")
-    if (!file.exists(dir))
-        if (create) {
-            dir.create(dir)
-            cat("", file=file.path(dir, "filemap.txt"))
-        } else {
-            stop("dir '", dir, "' does not exist")
-        }
     if (file.exists(file.path(dir, "filemap.txt"))) {
         trackingDir <- dir
         if (basename(dir)=="rdatadir")
             dir <- dirname(dir)
+    } else if (file.exists(file.path(dir, "rdatadir", "filemap.txt"))) {
+        trackingDir <- file.path(dir, "rdatadir")
     } else {
-        if (file.exists(file.path(dir, "rdatadir", "filemap.txt"))) {
-            trackingDir <- file.path(dir, "rdatadir")
-        } else {
-            stop("can't find a tracking database: files '", file.path(dir, "filemap.txt"),
-                 "' and '", file.path(dir, "rdatadir", "filemap.txt"), "' do not exist")
-        }
+        if (!create || readonly)
+            stop("dir '", dir, "' does not exist and create=FALSE or readonly=TRUE")
+        trackingDir <- dir
     }
     if (is.null(name))
         name <- getAbsolutePath(dir)
     attach(what=NULL, pos=pos, name=name)
-    cat("Attaching to tracking db in '", name, "'\n", sep="")
-    return(track.start(trackingDir, pos=pos, readonly=readonly, lockEnv=lockEnv, check.Last=FALSE))
+    # track.start() will print out a message
+    # cat("Attaching to tracking db in '", name, "'\n", sep="")
+    return(track.start(trackingDir, pos=pos, readonly=readonly, create=create, lockEnv=lockEnv, check.Last=FALSE, verbose=verbose))
 }

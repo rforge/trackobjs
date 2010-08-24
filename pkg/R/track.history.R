@@ -7,16 +7,31 @@ track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL) {
         options(incr.hist.style=style)
     if (!is.null(times))
         options(incr.hist.times=times)
-    if (is.element("track.history.writer", getTaskCallbackNames()))
+    while (is.element("track.history.writer", getTaskCallbackNames()))
         removeTaskCallback("track.history.writer")
-    invisible(addTaskCallback(track.history.writer, name="track.history.writer"))
+    res <- addTaskCallback(track.history.writer, name="track.history.writer")
+    # write a startup comment to the file
+    file <- getOption("incr.hist.file")
+    if (is.null(file) || nchar(file)==0)
+        file <- Sys.getenv("R_INCR_HIST_FILE")
+    if (is.null(file) || nchar(file)==0)
+        file <- ".Rincr_history"
+    times <- getOption("incr.hist.times")
+    if (is.null(times) || nchar(times)==0)
+        times <- Sys.getenv("R_INCR_HIST_TIMES")
+    if (is.null(times) || nchar(times)==0)
+        times <- TRUE
+    times <- as.logical(times)
+    cat("##------** Starting history at", date(), "**------##", file=file)
+    invisible(res)
 }
 track.history.stop <- function() {
     if (is.element("track.history.writer", getTaskCallbackNames()))
         removeTaskCallback("track.history.writer")
     invisible(NULL)
 }
-track.history.load <- function() {
+
+track.history.load <- function(times=FALSE) {
     file <- getOption("incr.hist.file")
     if (is.null(file) || nchar(file)==0)
         file <- Sys.getenv("R_INCR_HIST_FILE")
@@ -24,11 +39,21 @@ track.history.load <- function() {
         file <- ".Rincr_history"
     if (file.exists(file)) {
         cat("Loading incremental history file", file, "\n")
-        loadhistory(file)
+        ## Specify namespace utils to make this function work
+        ## when called from .Rprofile
+        if (times) {
+            utils:::loadhistory(file)
+        } else {
+            file2 <- tempfile(file)
+            writeLines(grep("^##------ .* ------##$",
+                            readLines(file, -1), invert=TRUE, value=TRUE), con=file2)
+            utils:::loadhistory(file2)
+        }
     } else {
         cat("Incremental history file", file, "does not exist\n")
     }
 }
+
 track.history.writer <- function(expr, value, ok, visible) {
     file <- getOption("incr.hist.file")
     if (is.null(file) || nchar(file)==0)

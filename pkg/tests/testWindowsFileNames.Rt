@@ -9,6 +9,7 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp10", recursive=TRUE)
 > track.start("tmp10")
+Tracking <env R_GlobalEnv> using new directory tmp10 
 > x <- 1
 > prn <- 2
 > nul <- 3
@@ -19,13 +20,13 @@
 > X <- array(1:24, dim=2:4)
 > track.status(tracked=TRUE)
           Status InMem FileBase FileExists Saved
-X        tracked FALSE       _5       TRUE  TRUE
+X        tracked FALSE       _6       TRUE  TRUE
 com0     tracked FALSE     com0       TRUE  TRUE
-com1.2.3 tracked FALSE       _4       TRUE  TRUE
+com1.2.3 tracked FALSE       _5       TRUE  TRUE
 com10    tracked FALSE    com10       TRUE  TRUE
-com7     tracked FALSE       _3       TRUE  TRUE
-nul      tracked FALSE       _2       TRUE  TRUE
-prn      tracked FALSE       _1       TRUE  TRUE
+com7     tracked FALSE       _4       TRUE  TRUE
+nul      tracked FALSE       _3       TRUE  TRUE
+prn      tracked FALSE       _2       TRUE  TRUE
 x        tracked FALSE        x       TRUE  TRUE
 > track.summary(time=0, size=FALSE, access=1) # omit the 'size' column: it varies by machine
            class    mode  extent length TA TW
@@ -39,6 +40,7 @@ prn      numeric numeric     [1]      1  0  1
 x        numeric numeric     [1]      1  0  1
 > track.stop(pos=1)
 > track.start("tmp10")
+Tracking <env R_GlobalEnv> using existing directory tmp10 
 > x
 [1] 1
 > prn
@@ -80,13 +82,13 @@ x        numeric numeric     [1]      1  0  1
 
 > track.status(tracked=TRUE)
           Status InMem FileBase FileExists Saved
-X        tracked FALSE       _5       TRUE  TRUE
+X        tracked FALSE       _6       TRUE  TRUE
 com0     tracked FALSE     com0       TRUE  TRUE
-com1.2.3 tracked FALSE       _4       TRUE  TRUE
+com1.2.3 tracked FALSE       _5       TRUE  TRUE
 com10    tracked FALSE    com10       TRUE  TRUE
-com7     tracked FALSE       _3       TRUE  TRUE
-nul      tracked FALSE       _2       TRUE  TRUE
-prn      tracked FALSE       _1       TRUE  TRUE
+com7     tracked FALSE       _4       TRUE  TRUE
+nul      tracked FALSE       _3       TRUE  TRUE
+prn      tracked FALSE       _2       TRUE  TRUE
 x        tracked FALSE        x       TRUE  TRUE
 > track.summary(time=0, size=FALSE, access=1) # omit the 'size' column: it varies by machine
            class    mode  extent length TA TW

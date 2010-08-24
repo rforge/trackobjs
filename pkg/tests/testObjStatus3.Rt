@@ -14,6 +14,7 @@
 > attach(NULL, name="testenv")
 > remove(list=ls(all=TRUE))
 > track.start("tmp5", pos=2, cache=FALSE, cachePolicy="none")
+Tracking <env testenv> using new directory tmp5 
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), as.environment("testenv"))
@@ -45,7 +46,6 @@ x6         tracked FALSE       x6       TRUE  TRUE
 > remove(list=c("x4", "x5"), pos="testenv")
 > assign("x5", "not tracked", pos=2)
 > track.flush(x2, pos=2)
-[1] "x2"
 > track.status(reserved=TRUE, pos=2)
                       Status InMem FileBase FileExists Saved
 .trackingEnv     untrackable    NA     <NA>         NA    NA
@@ -67,7 +67,6 @@ x3         tracked  TRUE       x3       TRUE FALSE
 x5         tracked FALSE       x5       TRUE  TRUE
 x6         tracked FALSE       x6       TRUE  TRUE
 > track.save(pos=2)
-[1] "x3"
 > track.status(pos=2)
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -98,7 +97,6 @@ character(0)
 > track.orphaned(pos=2)
 character(0)
 > track.save(x3, pos=2)
-[1] "x3"
 > track.status(pos=2)
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -118,7 +116,6 @@ x6         tracked FALSE       x6       TRUE  TRUE
 > x3
 [1] 2
 > track.forget(x3, pos=2)
-[1] "x3"
 > x3
 [1] 1
 > # Test untracking a variable
@@ -136,7 +133,6 @@ x6         tracked FALSE       x6       TRUE  TRUE
 > bindingIsActive("x2", as.environment(2))
 [1] TRUE
 > untrack(x2, pos=2)
-[1] "x2"
 > track.status(pos=2)
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -150,7 +146,6 @@ x6         tracked FALSE       x6       TRUE  TRUE
 > bindingIsActive("x3", as.environment("testenv"))
 [1] TRUE
 > untrack(x3, keep.in.db=TRUE, pos=2)
-[1] "x3"
 > track.status(pos=2)
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA
@@ -224,7 +219,7 @@ $skipped
 
 Warning message:
 In track.load("tmp5y.rda", pos = 2) :
-  skipping 2 variable(s) because these exist in <env testenv> and clobber=FALSE: 'y3''y5'
+  skipping 2 variable(s) because these exist in <env testenv> and clobber=FALSE: 'y3', 'y5'
 
 > y3
 [1] "new value"
@@ -250,7 +245,7 @@ character(0)
 
 Warning message:
 In track.load("tmp5y.rda", clobber = TRUE, pos = 2) :
-  clobbering 3 existing variable(s) in <env testenv> and clobber=FALSE: 'y3''y4''y5'
+  clobbering 3 existing variable(s) in <env testenv>: 'y3', 'y4', 'y5'
 
 > y3
 [[1]]

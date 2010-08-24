@@ -1,4 +1,37 @@
-* write tests that GC-triggered flushing at the end of the R session does write out objects (a little tricky to test because the test needs to span multiple sessions)
+* track.stop() behaving weirdly -- saw tracking envs still attached -- test it on no
+
+* make track.sync issue a warning if variables are created in
+  a readonly tracked env
+
+* clean up examples in .Rd files -- make them simple, not tests
+
+* add FILE access and FILE write counters to the trackingSummary
+
+* test turning off writeToDisk and having that handled by track.sync() (need to think about what happens when an error in the computation occurs)
+
+* write tests that .Last invoked flushing at the end of the R
+  session does write out objects (a little tricky to test
+  because the test needs to span multiple sessions)
+
+* write tests that GC-triggered flushing at the end of the R
+  session does write out objects (a little tricky to test
+  because the test needs to span multiple sessions) However:
+  This can't work very well because save.image() at the end
+  will be run before finalizers
+
+* DONE: make it easier to attach a new tracking env at position 2
+ (current track.start(pos = 2, dir = "tmp4") gets several errors)
+
+* DONE: need to store Sys.pid() in tracking env to detect
+  situations where .trackingEnv was loaded back into the
+  global env by saveimage()/loadimage(), but things are not
+  set up properly.
+
+* DONE: track.info() should detect the situation where
+  .trackingEnv was saved & restored and is not active (look
+  at saved pid)
+
+* DONE: make track.history.load() filter out timestamps by default
 * DONE: Think about automatic caching and garbage collection: now when a tracking env is garbage-collected at the end of the R session, if it isn't already flushed, it is flushed.
 * DONE: write .Last.sys function that will call track.stop() (which calls track.sync(full=TRUE) and track.flush())
 * add tests to testFollowObjs.Rout.save with recordAccesses=FALSE, and separately

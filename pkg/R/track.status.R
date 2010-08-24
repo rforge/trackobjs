@@ -1,24 +1,24 @@
-tracked <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="tracked")
+tracked <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names=TRUE)
+    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="tracked", all.names=all.names)
 
-untracked <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="untracked", tracked=FALSE)
+untracked <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names=TRUE)
+    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="untracked", tracked=FALSE, all.names=all.names)
 
-track.orphaned <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="orphaned", tracked=TRUE)
+track.orphaned <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names=TRUE)
+    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="orphaned", tracked=TRUE, all.names=all.names)
 
-track.masked <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="masked", tracked=TRUE)
+track.masked <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names=TRUE)
+    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="masked", tracked=TRUE, all.names=all.names)
 
-untrackable <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="untrackable", tracked=FALSE, reserved=TRUE)
+untrackable <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names=TRUE)
+    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="untrackable", tracked=FALSE, reserved=TRUE, all.names=all.names)
 
-track.unsaved <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL)
-    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="unsaved", tracked=TRUE)
+track.unsaved <- function(pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names=TRUE)
+    track.status(envir=envir, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="unsaved", tracked=TRUE, all.names=all.names)
 
 track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, list=NULL,
                          pattern=NULL, glob=NULL, file.status=TRUE,
-                         tracked=NA, reserved=FALSE,
+                         tracked=NA, reserved=FALSE, all.names=FALSE,
                          what=c("all", "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved", "untrackable")) {
     ## return a dataframe with the status on each var matching pattern or glob, with
     ## the following columns:
@@ -54,9 +54,12 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
         }
         list <- c(objname, list)
     }
-    all.objs <- .Internal(ls(envir, TRUE))
+    all.objs <- .Internal(ls(envir, all.names || reserved))
+    fileMap.names <- names(fileMap)
+    if (!(all.names || reserved))
+        fileMap.names <- fileMap.names[substring(fileMap.names, 1, 1)!="."]
     if (is.null(list)) {
-        list <- union(all.objs, names(fileMap))
+        list <- union(all.objs, fileMap.names)
         if (!reserved) {
             i <- isReservedName(list)
             if (any(i))
@@ -72,16 +75,16 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
     }
     if (!is.na(tracked))
         if (tracked)
-            list <- intersect(list, names(fileMap))
+            list <- intersect(list, fileMap.names)
         else
-            list <- setdiff(list, names(fileMap))
+            list <- setdiff(list, fileMap.names)
     status <- lapply(list, function(objname) {
         ## an object is already tracked if the following 2 conditions are met:
         ##   - it exists as an activing binding in envir
         ##   - there is an entry in the fileMap in the trackingEnv
         inMem <- fileExists <- as.logical(NA)
         fileBase <- as.character(NA)
-        if (is.element(objname, names(fileMap))) {
+        if (is.element(objname, fileMap.names)) {
             saved <- !is.element(objname, unsaved)
             if (!is.element(objname, all.objs))
                 status <- "orphaned"

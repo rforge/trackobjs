@@ -8,11 +8,12 @@
 > options(error=function() NULL)
 > unlink("tmp6", recursive=TRUE)
 > track.start("tmp6")
+Tracking <env R_GlobalEnv> using new directory tmp6 
 > x <- 33
 > X <- array(1:24, dim=2:4)
 > track.status()
    Status InMem FileBase FileExists Saved
-X tracked FALSE       _1       TRUE  TRUE
+X tracked FALSE       _2       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
 > track.options(cache=TRUE, writeToDisk=FALSE, cachePolicy="none") # change for just this session
 > # different ways of retrieving option values
@@ -92,21 +93,21 @@ $readonly
 > # see the effect of the changed options on the status of X (not saved to disk)
 > track.status()
    Status InMem FileBase FileExists Saved
-X tracked FALSE       _1       TRUE  TRUE
+X tracked FALSE       _2       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
 > X[1,1,1] <- 0
 > track.status()
    Status InMem FileBase FileExists Saved
-X tracked  TRUE       _1       TRUE FALSE
+X tracked  TRUE       _2       TRUE FALSE
 x tracked FALSE        x       TRUE  TRUE
 > track.flush()
-[1] "X" "x"
 > track.status()
    Status InMem FileBase FileExists Saved
-X tracked FALSE       _1       TRUE  TRUE
+X tracked FALSE       _2       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
 > track.stop(pos=1)
 > track.start("tmp6")
+Tracking <env R_GlobalEnv> using existing directory tmp6 
 > # note that options previously changed are back at defaults (because default
 > # to track.options() is save=FALSE
 > track.options(c("cache", "writeToDisk", "cachePolicy"))
@@ -132,6 +133,7 @@ $cachePolicy
 
 > track.stop(pos=1)
 > track.start("tmp6")
+Tracking <env R_GlobalEnv> using existing directory tmp6 
 > # now options previously changed are remembered (because track.options(..., save=TRUE) was used)
 > track.options(c("cache", "writeToDisk", "cachePolicy"))
 $cache

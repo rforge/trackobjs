@@ -22,6 +22,9 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
 
     opt <- track.options(trackingEnv=trackingEnv)
     verbose <- dryRun || opt$debug > 0
+    if (verbose)
+        cat("track.sync", if (dryRun) "(dryRun)",
+            ": syncing tracked env ", envname(envir), "\n", sep="")
     master <- match.arg(master)
     if (master=="auto")
         if (opt$readonly)
@@ -31,6 +34,18 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (master=="files")
         return(track.rescan(envir=envir, forgetModified=TRUE, level="low"))
     if (opt$readonly && master=="envir" && !isTRUE(full)) {
+        ## The only thing to do for a readonly env is
+        ## to flush cached objects out of memory.
+        if (taskEnd && opt$cachePolicy=="withinTask") {
+            if (dryRun) {
+                cat("track.sync(dryRun): Would flush all vars\n")
+            } else {
+                if (opt$debug)
+                    cat("track.sync: calling track.flush(envir=",
+                        envname(envir), ")\n", sep="")
+                track.flush(envir=envir, all=TRUE)
+            }
+        }
         return(list(new=character(0), deleted=character(0)))
     }
     if (master=="envir" && opt$readonly) {
@@ -160,10 +175,14 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         assign(".trackAuto", list(on=TRUE, last=now), envir=trackingEnv)
     }
     if (taskEnd && opt$cachePolicy=="withinTask") {
-        if (dryRun)
+        if (dryRun) {
             cat("track.sync(dryRun): Would flush all vars\n")
-        else
+        } else {
+            if (opt$debug)
+                cat("track.sync: calling track.flush(envir=",
+                    envname(envir), ")\n", sep="")
             track.flush(envir=envir, all=TRUE)
+        }
     }
     return(invisible(list(new=untracked, removed=deleted)))
 }
@@ -173,9 +192,13 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ##   addTaskCallback(track.sync.callback, data=globalenv())
     ## and
     ##   assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
+    ## 'data' arg is 'envir' - the tracked env
     trackingEnv <- getTrackingEnv(data, stop.on.not.tracked = FALSE)
     ## trackingEnv will be missing on the callback following the completion
     ## of the command track.stop()
+    i <- match(paste("track.auto:", envname(data), sep=""), getTaskCallbackNames())
+    if (length(i)>1)
+        warning("have more than one callback for ", paste("track.auto:", envname(data), sep=""))
     if (is.null(trackingEnv))
         return(FALSE)
     autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]

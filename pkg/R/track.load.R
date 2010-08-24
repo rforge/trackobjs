@@ -38,12 +38,12 @@ track.load <- function(files, pos=1, envir=as.environment(pos), list=NULL, patte
             if (!clobber) {
                 warning("skipping ", sum(i), " variable(s) because these exist in ", envname(envir),
                         " and clobber=FALSE: ",
-                        paste("'", list[i][seq(len=min(3, sum(i)))], "'", sep=""), if (sum(i)>3) "...", "\n")
+                        paste("'", list[i][seq(len=min(3, sum(i)))], "'", sep="", collapse=", "), if (sum(i)>3) "...", "\n")
                 list <- list[!i]
             } else {
                 warning("clobbering ", sum(i), " existing variable(s) in ", envname(envir),
-                        " and clobber=FALSE: ",
-                        paste("'", list[i][seq(len=min(3, sum(i)))], "'", sep=""), if (sum(i)>3) "...", "\n")
+                        ": ",
+                        paste("'", list[i][seq(len=min(3, sum(i)))], "'", sep="", collapse=", "), if (sum(i)>3) "...", "\n")
             }
         }
         for (objName in list) {

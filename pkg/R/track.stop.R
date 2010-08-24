@@ -1,6 +1,8 @@
 track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.error=FALSE, keepVars=FALSE, sessionEnd=FALSE) {
-    if (missing(pos) && missing(envir) && missing(all))
-        stop("must specify one of pos, envir, or all")
+    ## track.stop() with no arguments behaves analogously
+    ## to track.start() with no args, and works on pos=1 (globalenv)
+    ## if (missing(pos) && missing(envir) && missing(all)) {
+    ##    stop("must specify one of pos, envir, or all")
     ## Want the quiet arg for when this is run at the end of an R session --
     ## no recovery possible in that case.
     if (keepVars && sessionEnd) {
@@ -74,7 +76,7 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
         }
         ## Assign a marker variable so that a finalizer can see
         ## when this env is done with.
-        assign(".trackFinished", TRUE, envir=trackingEnv)
+        assign(".trackingFinished", TRUE, envir=trackingEnv)
     }
     return(invisible(NULL))
 }

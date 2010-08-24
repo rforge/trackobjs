@@ -2,13 +2,15 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                         create=TRUE, clobber=c("no", "files", "variables", "vars", "var"),
                         cache=NULL, cachePolicy=NULL,
                         options=NULL, RDataSuffix=NULL, auto=NULL,
-                        readonly=FALSE, lockEnv=FALSE, check.Last=TRUE) {
+                        readonly=FALSE, lockEnv=FALSE, check.Last=TRUE,
+                        verbose=TRUE) {
     ## Start tracking the specified environment to a directory
     clobber <- match.arg(clobber)
     if (clobber=="vars" || clobber=="var") clobber <- "variables"
     if (env.is.tracked(envir))
         stop("env ", envname(envir), " is already tracked by dir '",
              get(".trackingDir", envir=getTrackingEnv(envir), inherits=FALSE), "'")
+    dir.orig <- dir
     dir <- getAbsolutePath(dir)
     ## Working out the options values to use is a little tricky.
     ## This is the priority:
@@ -21,17 +23,24 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     trackingEnv <- new.env(hash=TRUE, parent=emptyenv())
     assign(".trackingDir", dir, envir=trackingEnv)
     track.stop.finalizer <- function(trackingEnv) {
-        if (exists(".trackFinished", envir=trackingEnv, inherits=FALSE))
+        ## Finalizer is difficult because it can be called long
+        ## after a tracking environment has been disconnected.
+        if (exists(".trackingFinished", envir=trackingEnv, inherits=FALSE))
             return(NULL)
         if (!exists(".trackingEnv", env=envir, inherits=FALSE)) {
-            # This used to happen under some circumstances when the finalizer is
-            # called after tracking has stopped, but the check for ".trackFinished"
-            # fixed that.
-            cat("Bogus call to track.stop reg.finalizer for", envname(trackingEnv),
-                ": no .trackingEnv in", envname(envir), "\n")
+            ## This used to happen under some circumstances when the finalizer is
+            ## called after tracking has stopped, but the check for ".trackingFinished"
+            ## fixed that.
+            if (FALSE)
+                cat("Bogus call to track.stop reg.finalizer for", envname(trackingEnv),
+                    ": no .trackingEnv in", envname(envir), "\n")
             return(NULL)
         }
         if (!identical(trackingEnv, get(".trackingEnv", env=envir, inherits=FALSE))) {
+            ## This can happen in cases where a tracking env is partially
+            ## set up and then discarded, as when there are variable name
+            ## conflicts
+            if (FALSE)
             cat("Bogus call to track.stop reg.finalizer for", envname(trackingEnv),
                 ": .trackingEnv in", envname(envir), "is different:",
                 envname(get(".trackingEnv", env=envir, inherits=FALSE)), "\n")
@@ -112,11 +121,15 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                     suffix <- gopt$RDataSuffixes[1]
             }
         }
+        if (verbose)
+            cat("Tracking", envname(envir), "using existing directory", dir.orig, "\n")
     } else {
         if (is.null(RDataSuffix))
             suffix <- gopt$RDataSuffixes[1]
         else
             suffix <- RDataSuffix
+        if (verbose)
+            cat("Tracking", envname(envir), "using new directory", dir.orig, "\n")
     }
     if (!is.element(suffix, gopt$RDataSuffixes))
         stop("internal error: ended up with an illegal suffix?? (", suffix, ")")
@@ -314,7 +327,11 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     }
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
     if (auto) {
-        addTaskCallback(track.sync.callback, data=envir, name=paste("track.auto:", envname(envir), sep=""))
+        callbackName <- paste("track.auto:", envname(envir), sep="")
+        ## remove the old callback (to avoid having duplicates)
+        while (is.element(callbackName, getTaskCallbackNames()))
+            removeTaskCallback(callbackName)
+        addTaskCallback(track.sync.callback, data=envir, name=callbackName)
         assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
     }
     if (check.Last) {
@@ -331,6 +348,18 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     ## and the tracking env is not locked.
     if (lockEnv && opt$readonly && environmentName(envir) != "R_GlobalEnv")
         lockEnvironment(envir)
+    .Last <- track.Last
+    environment(.Last) <- globalenv()
+    if (exists(".Last", where=1, inherits=FALSE) && !identical(.Last, get(".Last", pos=1, inherits=FALSE))) {
+        warning(".Last already exists in globalenv -- not installing track.Last, user must call track.stop(all=TRUE) before ending R session")
+    } else {
+        assign(".Last", .Last, pos=1)
+    }
+    ## Store the Pid of this R session so that we can identify
+    ## situations where are dead .trackEnv has been loaded
+    ## in by mistake (probably as a result of saving and
+    ## reloading an entire environment.)
+    assign(".trackingPid", Sys.getpid(), envir=trackingEnv)
     return(invisible(NULL))
 }
 

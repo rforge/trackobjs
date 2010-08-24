@@ -18,7 +18,7 @@
 \usage{
 track.history.start(file = NULL, width = NULL, style = NULL, times = NULL)
 track.history.stop()
-track.history.load()
+track.history.load(times = FALSE)
 track.history.writer(expr, value, ok, visible)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -39,7 +39,8 @@ track.history.writer(expr, value, ok, visible)
   at the command prompt, in the original formatting.}
 }
 \item{times}{
-  Should time stamps be written to file?
+  Should time stamps be written to or read from the file?  The default
+  behavior for \code{track.history.start()} is \code{TRUE}.
 }
 \item{expr}{
   Provided by the task callback
@@ -93,6 +94,7 @@ if (interactive()) {
 
 }
 \value{
+  These functions currently provide no useful return values.
 }
 \author{
   Tony Plate \email{tplate@acm.org}

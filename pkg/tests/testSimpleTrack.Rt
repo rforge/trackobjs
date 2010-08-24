@@ -8,6 +8,7 @@
 > trackObjs:::create.fake.Sys.time(0)
 > unlink("tmp8", recursive=TRUE)
 > track.start("tmp8")
+Tracking <env R_GlobalEnv> using new directory tmp8 
 > x <- 33
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved
@@ -15,7 +16,7 @@ x tracked FALSE        x       TRUE  TRUE
 > X <- array(1:24, dim=2:4)
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved
-X tracked FALSE       _1       TRUE  TRUE
+X tracked FALSE       _2       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
 > Y <- list(a=1:3,b=2)
 > X[2] <- -1
@@ -27,9 +28,9 @@ x numeric numeric     [1]      1  0  1
 > # look at the fake times, and see how they change when the objects are modified or accessed
 > track.summary(time=3, size=FALSE, access=1)
     class    mode  extent length            modified             created            accessed TA TW
-X   array numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
-Y    list    list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:04  0  1
-x numeric numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
+X   array numeric [2x3x4]     24 2001-01-01 09:00:09 2001-01-01 09:00:04 2001-01-01 09:00:07  2  3
+Y    list    list   [[2]]      2 2001-01-01 09:00:05 2001-01-01 09:00:05 2001-01-01 09:00:05  0  1
+x numeric numeric     [1]      1 2001-01-01 09:00:03 2001-01-01 09:00:03 2001-01-01 09:00:03  0  1
 > X
 , , 1
 
@@ -58,15 +59,15 @@ x numeric numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01
 > x <- 34
 > track.summary(time=3, size=FALSE, access=1)
     class    mode  extent length            modified             created            accessed TA TW
-X   array numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:09  3  3
-Y    list    list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:04  0  1
-x numeric numeric     [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:02 2001-01-01 09:00:02  0  2
+X   array numeric [2x3x4]     24 2001-01-01 09:00:09 2001-01-01 09:00:04 2001-01-01 09:00:10  3  3
+Y    list    list   [[2]]      2 2001-01-01 09:00:05 2001-01-01 09:00:05 2001-01-01 09:00:05  0  1
+x numeric numeric     [1]      1 2001-01-01 09:00:11 2001-01-01 09:00:03 2001-01-01 09:00:03  0  2
 > Y[[2]] <- 3
 > track.summary(time=3, size=FALSE, access=1)
     class    mode  extent length            modified             created            accessed TA TW
-X   array numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:09  3  3
-Y    list    list   [[2]]      2 2001-01-01 09:00:14 2001-01-01 09:00:04 2001-01-01 09:00:12  2  3
-x numeric numeric     [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:02 2001-01-01 09:00:02  0  2
+X   array numeric [2x3x4]     24 2001-01-01 09:00:09 2001-01-01 09:00:04 2001-01-01 09:00:10  3  3
+Y    list    list   [[2]]      2 2001-01-01 09:00:15 2001-01-01 09:00:05 2001-01-01 09:00:13  2  3
+x numeric numeric     [1]      1 2001-01-01 09:00:11 2001-01-01 09:00:03 2001-01-01 09:00:03  0  2
 > track.stop(pos=1)
 > unlink("tmp8", recursive=TRUE)
 >
