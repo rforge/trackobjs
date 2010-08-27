@@ -53,7 +53,7 @@ x6                   tracked FALSE       x6       TRUE  TRUE
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
 x2         tracked FALSE       x2       TRUE  TRUE
-x3         tracked  TRUE       x3       TRUE FALSE
+x3         tracked  TRUE       x3       TRUE  TRUE
 x5         tracked FALSE       x5       TRUE  TRUE
 x6         tracked FALSE       x6       TRUE  TRUE
 > track.save()
@@ -71,11 +71,11 @@ x6         tracked FALSE       x6       TRUE  TRUE
 uncoop untrackable    NA     <NA>         NA    NA
 x1         tracked FALSE       x1       TRUE  TRUE
 x2         tracked FALSE       x2       TRUE  TRUE
-x3         tracked  TRUE       x3       TRUE FALSE
+x3         tracked  TRUE       x3       TRUE  TRUE
 x5         tracked FALSE       x5       TRUE  TRUE
 x6         tracked FALSE       x6       TRUE  TRUE
 > track.unsaved()
-[1] "x3"
+character(0)
 > tracked(all=FALSE)
 [1] "x1" "x2" "x3" "x5" "x6"
 > untracked()
@@ -100,12 +100,12 @@ x6         tracked FALSE       x6       TRUE  TRUE
 [1] 1
 > x3 <- 2
 > track.unsaved()
-[1] "x3"
+character(0)
 > x3
 [1] 2
 > track.forget(x3)
 > x3
-[1] 1
+[1] 2
 > # Test untracking a variable
 > track.options(cache=FALSE)
 > x2
@@ -245,6 +245,7 @@ In track.load("tmp4y.rda", clobber = TRUE) :
 > y5
 [1] 5
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp4", recursive=TRUE)
 > remove(list=ls(all=TRUE))
 > 

@@ -13,6 +13,6 @@
 ## Then R_RunExitFinalizers(); is called after that.
 track.Last <- function() {
     if (!isTRUE(getOption("global.track.options")$inhibit.Last))
-        track.stop(all=TRUE, sessionEnd=TRUE)
+        track.stop(all=TRUE, sessionEnd=TRUE, callFrom=".Last()")
 }
 

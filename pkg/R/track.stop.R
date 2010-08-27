@@ -1,9 +1,9 @@
-track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.error=FALSE, keepVars=FALSE, sessionEnd=FALSE) {
+track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.error=FALSE, keepVars=FALSE, sessionEnd=FALSE, detach=TRUE, callFrom=NULL) {
     ## track.stop() with no arguments behaves analogously
     ## to track.start() with no args, and works on pos=1 (globalenv)
     ## if (missing(pos) && missing(envir) && missing(all)) {
     ##    stop("must specify one of pos, envir, or all")
-    ## Want the quiet arg for when this is run at the end of an R session --
+    ## Want the "sessionEnd" arg for when this is run at the end of an R session --
     ## no recovery possible in that case.
     if (keepVars && sessionEnd) {
         warning("cannot keepVars when sessionEnd==TRUE")
@@ -16,6 +16,8 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
     ## Detach a tracking env -- should call track.flush first.
     if (all) {
         env.names <- tracked.envs()
+        if (length(env.names) && !is.null(callFrom))
+            cat("Stopping all tracking via call from ", callFrom, "\n", sep="")
         for (e.name in env.names)
             if (stop.on.error)
                 track.stop(envir=as.environment(e.name), keepVars=keepVars, sessionEnd=sessionEnd)
@@ -29,6 +31,7 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
                 warning("environment ", environmentName(envir), " is not tracked")
             return(invisible(NULL))
         }
+        cat("Stopping tracking on ", envname(envir), "\n", sep="")
         trackingEnv <- getTrackingEnv(envir)
         opt <- track.options(trackingEnv=trackingEnv)
         if (opt$readonly && keepVars && environmentIsLocked(envir))
@@ -77,6 +80,23 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
         ## Assign a marker variable so that a finalizer can see
         ## when this env is done with.
         assign(".trackingFinished", TRUE, envir=trackingEnv)
+        ## If we created this env via track.attach() and it is now empty
+        ## of everything except tracking reserved names, detach it.
+        if (detach && exists(".trackingCreated", envir=envir, inherits=FALSE)
+            && !identical(globalenv(), envir)) {
+            vars <- ls(envir=trackingEnv, all=TRUE)
+            if (all(isReservedName(vars))) {
+                pos <- match(environmentName(envir), search())
+                if (!is.na(pos)) {
+                    cat("Removing", envname(envir), "from the search path\n")
+                    detach(pos=pos)
+                } else {
+                    cat("Strange: can't find", envname(envir), "on the search path\n")
+                }
+            } else {
+                cat("Can't remove ", envname(envir), " from the search path: still contains some variables: ", paste(vars[!isReservedName(vars)], collapse=", "), "\n", sep="")
+            }
+        }
     }
     return(invisible(NULL))
 }

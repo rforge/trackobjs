@@ -31,7 +31,8 @@ track.start(dir="rdatadir", pos = 1, envir = as.environment(pos),
         RDataSuffix = NULL, auto = NULL, readonly = FALSE,
         lockEnv = FALSE, check.Last = TRUE, verbose = TRUE)
 track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
-        stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE)
+        stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE,
+        detach = TRUE, callFrom = NULL)
 track.info(pos = 1, envir = as.environment(pos), all=TRUE)
 track.rescan(pos = 1, envir = as.environment(pos), forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
@@ -78,6 +79,13 @@ track.Last()
     will be no longer accessible.  If \code{TRUE}, tracked variables will
     be left as ordinary variables in the environment, as well as remaining
     in files.}
+  \item{detach}{ If \code{TRUE}, the environment attached to the search
+  path (in a position other than 2) will be detached after stopping
+  tracking, IF it was created by \code{track.attach()} and if there are no
+  variables left remaining in the environment after removing
+  all tracked variables.}
+  \item{callFrom}{A character string used in a message saying where
+  \code{track.stop()} was called from.}
   \item{envirs}{A list or vector of objects that can be interpreted as
     environments by \code{as.environment}}
   \item{forgetModified}{ If \code{TRUE}, discard copies that are

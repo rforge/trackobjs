@@ -170,19 +170,45 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         environment(f) <- parent.env(environment(f))
         makeActiveBinding(objname, env=envir, fun=f)
     }
-    if (full & !dryRun) {
-        ## save the time that we did this full sync
-        assign(".trackAuto", list(on=TRUE, last=now), envir=trackingEnv)
-    }
     if (taskEnd && opt$cachePolicy=="withinTask") {
         if (dryRun) {
             cat("track.sync(dryRun): Would flush all vars\n")
         } else {
             if (opt$debug)
-                cat("track.sync: calling track.flush(envir=",
-                    envname(envir), ")\n", sep="")
+                cat("track.sync: calling track.flush(envir=", envname(envir), ")\n", sep="")
             track.flush(envir=envir, all=TRUE)
         }
+    } else {
+        if (dryRun) {
+            cat("track.sync(dryRun): Would save all vars\n")
+        } else {
+            if (opt$debug)
+                cat("track.sync: calling track.save(envir=", envname(envir), ")\n", sep="")
+            track.save(envir=envir, all=TRUE)
+        }
+    }
+    if (!opt$readonly) {
+        ##  write out the object summary if necessary
+        summaryChanged <- mget(".trackingSummaryChanged", ifnotfound=list(FALSE), envir=trackingEnv)[[1]]
+        if (summaryChanged) {
+            if (!exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
+                warning("no .trackingSummary in trackng env ", envname(trackingEnv))
+            } else {
+                dir <- getTrackingDir(trackingEnv)
+                file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
+                if (opt$debug)
+                    cat("track.sync: saving .trackingSummary for envir=", envname(envir), " to ", dir, "\n", sep="")
+                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
+                if (is(save.res, "try-error"))
+                    warning("unable to save .trackingSummary to ", dir)
+                else
+                    assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
+            }
+        }
+    }
+    if (full & !dryRun) {
+        ## save the time that we did this full sync
+        assign(".trackAuto", list(on=TRUE, last=now), envir=trackingEnv)
     }
     return(invisible(list(new=untracked, removed=deleted)))
 }

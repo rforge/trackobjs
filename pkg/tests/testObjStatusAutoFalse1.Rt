@@ -8,7 +8,7 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp11", recursive=TRUE)
 > remove(list=ls(all=TRUE))
-> track.start("tmp11", cache=TRUE, auto=FALSE)
+> track.start("tmp11", cache=TRUE, auto=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> using new directory tmp11 
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
@@ -264,6 +264,7 @@ In track.load("tmp11y.rda", clobber = TRUE) :
 > y5
 [1] 5
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp11", recursive=TRUE)
 > remove(list=ls(all=TRUE))
 >

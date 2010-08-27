@@ -17,7 +17,8 @@ track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, 
     if (is.null(name))
         name <- getAbsolutePath(dir)
     attach(what=NULL, pos=pos, name=name)
-    # track.start() will print out a message
-    # cat("Attaching to tracking db in '", name, "'\n", sep="")
-    return(track.start(trackingDir, pos=pos, readonly=readonly, create=create, lockEnv=lockEnv, check.Last=FALSE, verbose=verbose))
+    assign(".trackingCreated", TRUE, pos=pos)
+    if (verbose)
+        cat("Attaching tracking db in '", dir, "' to env in pos ", pos, "\n", sep="")
+    return(track.start(trackingDir, pos=pos, readonly=readonly, create=create, lockEnv=lockEnv, check.Last=FALSE, verbose=FALSE))
 }

@@ -2,7 +2,7 @@
 > dir.create("tmp14")
 > cat("", file="tmp14/filemap.txt")
 > track.attach("tmp14", name="track:tmp14", readonly=FALSE)
-Tracking <env track:tmp14> using existing directory tmp14 
+Attaching tracking db in 'tmp14' to env in pos 2
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -25,13 +25,15 @@ y tracked FALSE        y       TRUE  TRUE
 x numeric numeric    [1]      1   32  0  1
 y numeric numeric    [1]      1   32  0  1
 > track.detach(pos=2)
+Stopping tracking on <env track:tmp14>
+Removing <env track:tmp14> from the search path
 > is.element("track:tmp14", search())
 [1] FALSE
 > # Get modification times of the files
 > mtime1 <- file.info(file.path("tmp14",list.files("tmp14",all=T,pattern=".(rda|txt)$")))[,c("size","mtime")]
 > Sys.sleep(2) # give some time for at a one second difference to show up
 > track.attach("tmp14", name="track:tmp14", readonly=FALSE, pos=2)
-Tracking <env track:tmp14> using existing directory tmp14 
+Attaching tracking db in 'tmp14' to env in pos 2
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -45,6 +47,8 @@ y tracked FALSE        y       TRUE  TRUE
 x numeric numeric    [1]      1   32  0  1
 y numeric numeric    [1]      1   32  0  1
 > track.detach(pos=2)
+Stopping tracking on <env track:tmp14>
+Removing <env track:tmp14> from the search path
 > is.element("track:tmp14", search())
 [1] FALSE
 > # This was not a readonly attachment, so we expect mtime difference in .trackingSummary.rda
@@ -55,7 +59,7 @@ y numeric numeric    [1]      1   32  0  1
 > options(error=function() NULL)
 > Sys.sleep(2) # give some time for at a one second difference to show up
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2, lockEnv=TRUE)
-Tracking <env track:tmp14> using existing directory tmp14 
+Attaching tracking db in 'tmp14' to env in pos 2
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -78,6 +82,8 @@ Error in assign("z", 123, pos = 2) :
 Error in remove(list = "y", pos = 2) : 
   cannot remove bindings from a locked environment
 > track.detach(2)
+Stopping tracking on <env track:tmp14>
+Removing <env track:tmp14> from the search path
 > is.element("track:tmp14", search())
 [1] FALSE
 > # No files should be modified
@@ -90,7 +96,7 @@ Error in remove(list = "y", pos = 2) :
 > file.remove("tmp14/y.rda")
 [1] TRUE
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
-Tracking <env track:tmp14> using existing directory tmp14 
+Attaching tracking db in 'tmp14' to env in pos 2
 Error in track.start(trackingDir, pos = pos, readonly = readonly, create = create,  : 
   missing files for some variables in the fileMap (use track.rebuild() to repair): y
 > track.rebuild(dir="tmp14", level='all', dryRun=FALSE)
@@ -103,10 +109,12 @@ y    y.rda
 loaded 'x'
 Object 'y' is not stored on file ('./tmp14/y.rda') and is not cached -- forgetting about it
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
-Tracking <env track:tmp14> using existing directory tmp14 
+Attaching tracking db in 'tmp14' to env in pos 2
 > track.status(pos=2)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE
 > track.detach(pos=2)
+Stopping tracking on <env track:tmp14>
+Removing <env track:tmp14> from the search path
 > invisible(if (file.exists("tmp14")) unlink("tmp14", recursive=TRUE))
 > 

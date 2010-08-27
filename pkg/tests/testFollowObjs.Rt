@@ -46,11 +46,13 @@ character(0)
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 
 > # standard options, intersperse detach/attach
 > unlink("tmp2", recursive=TRUE)
@@ -163,24 +165,29 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- 2
 > z <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > Y <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- z + Y
@@ -188,6 +195,7 @@ Tracking <env R_GlobalEnv> using existing directory tmp2
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
@@ -198,6 +206,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -261,24 +270,29 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- 2
 > z <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > Y <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- z + Y
@@ -286,6 +300,7 @@ Tracking <env R_GlobalEnv> using existing directory tmp2
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
@@ -296,6 +311,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -310,24 +326,29 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- 2
 > z <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > Y <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- z + Y
@@ -335,6 +356,7 @@ Tracking <env R_GlobalEnv> using existing directory tmp2
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
@@ -345,6 +367,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -359,24 +382,29 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- 2
 > z <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > Y <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- z + Y
@@ -384,6 +412,7 @@ Tracking <env R_GlobalEnv> using existing directory tmp2
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
@@ -394,6 +423,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -408,24 +438,29 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- 2
 > z <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > Y <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- z + Y
@@ -433,6 +468,7 @@ Tracking <env R_GlobalEnv> using existing directory tmp2
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
@@ -443,6 +479,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -457,24 +494,29 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- 2
 > z <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > Y <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- z + Y
@@ -482,6 +524,7 @@ Tracking <env R_GlobalEnv> using existing directory tmp2
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
@@ -492,6 +535,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -506,24 +550,29 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- 2
 > z <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > Y <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- z + Y
@@ -531,6 +580,7 @@ Tracking <env R_GlobalEnv> using existing directory tmp2
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
@@ -541,6 +591,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 
 > # Try different combinations of options: cache, writeToDisk, alwaysSaveSummary
 > unlink("tmp2", recursive=TRUE)
@@ -555,24 +606,29 @@ character(0)
 > x <- 1
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- 2
 > z <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > Y <- x + 1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > z <- Y + x
 > Y <- z + x
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > x <- z + Y
@@ -580,6 +636,7 @@ Tracking <env R_GlobalEnv> using existing directory tmp2
 > c(x, Y, z)
 [1] 12  7 19
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> using existing directory tmp2 
 > c(x, Y, z)
@@ -590,6 +647,7 @@ Y numeric numeric    [1]      1  7  1  0  5  3
 x numeric numeric    [1]      1  7  1  0  8  3
 z numeric numeric    [1]      1  6  1  0  4  4
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp2", recursive=TRUE)
 > 
 > # TODO: try with recordAccesses=FALSE, and separately with maintainSummary=FALSE

@@ -91,6 +91,7 @@ $readonly
 [1] FALSE
 
 > # see the effect of the changed options on the status of X (not saved to disk)
+> track.auto(FALSE)
 > track.status()
    Status InMem FileBase FileExists Saved
 X tracked FALSE       _2       TRUE  TRUE
@@ -106,6 +107,7 @@ x tracked FALSE        x       TRUE  TRUE
 X tracked FALSE       _2       TRUE  TRUE
 x tracked FALSE        x       TRUE  TRUE
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp6")
 Tracking <env R_GlobalEnv> using existing directory tmp6 
 > # note that options previously changed are back at defaults (because default
@@ -132,6 +134,7 @@ $cachePolicy
 [1] "withinTask"
 
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp6")
 Tracking <env R_GlobalEnv> using existing directory tmp6 
 > # now options previously changed are remembered (because track.options(..., save=TRUE) was used)
@@ -190,4 +193,5 @@ $autoTrackExcludeClass
 [1] "RODBC"
 
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > 

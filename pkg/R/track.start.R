@@ -41,9 +41,9 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             ## set up and then discarded, as when there are variable name
             ## conflicts
             if (FALSE)
-            cat("Bogus call to track.stop reg.finalizer for", envname(trackingEnv),
-                ": .trackingEnv in", envname(envir), "is different:",
-                envname(get(".trackingEnv", env=envir, inherits=FALSE)), "\n")
+                cat("Bogus call to track.stop reg.finalizer for", envname(trackingEnv),
+                    ": .trackingEnv in", envname(envir), "is different:",
+                    envname(get(".trackingEnv", env=envir, inherits=FALSE)), "\n")
             return(NULL)
         }
         ## cat("Valid call to track.stop reg.finalizer for", envname(trackingEnv),

@@ -12,6 +12,11 @@ y untracked    NA     <NA>         NA    NA
 > track.sync(master="envir")
 > track.status()
    Status InMem FileBase FileExists Saved
+x tracked  TRUE        x       TRUE  TRUE
+y tracked  TRUE        y       TRUE  TRUE
+> track.flush()
+> track.status()
+   Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE
 y tracked FALSE        y       TRUE  TRUE
 > # remove a var
@@ -24,6 +29,7 @@ y orphaned FALSE        y       TRUE  TRUE
 track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync(dryRun): would remove 1 deleted variables: y
+track.sync(dryRun): Would save all vars
 > track.status()
     Status InMem FileBase FileExists Saved
 x  tracked FALSE        x       TRUE  TRUE
@@ -42,6 +48,7 @@ z untracked    NA     <NA>         NA    NA
 track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
 track.sync(dryRun): would track 1 untracked variables: z
 track.sync: no deleted variables
+track.sync(dryRun): Would save all vars
 > track.status()
      Status InMem FileBase FileExists Saved
 x   tracked FALSE        x       TRUE  TRUE
@@ -50,36 +57,39 @@ z untracked    NA     <NA>         NA    NA
 > track.status()
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE
-z tracked FALSE        z       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
 > # replace an active binding for a var by a non-active binding
 > {remove("x"); assign("x", 111, pos=1)}
 > track.status()
    Status InMem FileBase FileExists Saved
 x  masked FALSE        x       TRUE  TRUE
-z tracked FALSE        z       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
 > track.sync(master="envir", full=FALSE, dryRun=TRUE)
 track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync: no deleted variables
+track.sync(dryRun): Would save all vars
 > track.status()
    Status InMem FileBase FileExists Saved
 x  masked FALSE        x       TRUE  TRUE
-z tracked FALSE        z       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
 > track.sync(master="envir", full=TRUE, dryRun=TRUE)
 track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync: no deleted variables
 track.sync: retracking var: x
+track.sync(dryRun): Would save all vars
 > track.sync(master="envir", full=FALSE)
 > track.status()
    Status InMem FileBase FileExists Saved
 x  masked FALSE        x       TRUE  TRUE
-z tracked FALSE        z       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
 > track.sync(master="envir", full=TRUE)
 > track.status()
    Status InMem FileBase FileExists Saved
-x tracked FALSE        x       TRUE  TRUE
-z tracked FALSE        z       TRUE  TRUE
+x tracked  TRUE        x       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
 > track.stop(1)
+Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp17", recursive=TRUE)
 > 

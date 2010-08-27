@@ -39,6 +39,7 @@ nul      numeric numeric     [1]      1  0  1
 prn      numeric numeric     [1]      1  0  1
 x        numeric numeric     [1]      1  0  1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp10")
 Tracking <env R_GlobalEnv> using existing directory tmp10 
 > x
@@ -101,5 +102,6 @@ nul      numeric numeric     [1]      1  1  1
 prn      numeric numeric     [1]      1  1  1
 x        numeric numeric     [1]      1  1  1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp10", recursive=TRUE)
 >

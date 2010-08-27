@@ -179,7 +179,7 @@ isReservedName <- function(objname)
            | is.element(objname, c(".trackingEnv", ".trackingDir", ".trackingFileMap",
                                    ".trackingUnsaved", ".trackingSummary",
                                    ".trackingSummaryChanged", ".trackingOptions",
-                                   ".trackingPid",
+                                   ".trackingPid", ".trackingCreated",
                                    ".trackAuto", ".trackingFinished")))
 
 objIsTracked <- function(objnames, envir, trackingEnv, all.objs=.Internal(ls(envir, TRUE))) {
@@ -349,7 +349,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
     ## Need to assign it in the tracking env, because save() requires
     ## an object in an env. Maybe we could skip this step when cache=FALSE,
     ## but then we'd need to try to find it in its original location (if any).
-    ## No longer true - could remove doAssign arg -- in one use case, the var
+    ## No longer true: could remove doAssign arg -- in one use case, the var
     ## is already in the env, so don't need the assign.
     ##
     ## Robustness: what to do if the assign fails?
@@ -377,7 +377,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
         }
     }
     fullFile <- NULL
-    if (opt$writeToDisk) {
+    if (opt$writeToDisk && !is.element("withinTask", opt$cachePolicy)) {
         ##  the value of 'file' is the base of the filename -- work out the full pathname
         fullFile <- file.path(getDataDir(dir), paste(file, opt$RDataSuffix, sep="."))
         if (opt$debug)
@@ -437,12 +437,14 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
                 warning("unable to assign .trackingSummary back to tracking env on ", envname(trackingEnv))
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-                file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
-                if (is(save.res, "try-error"))
-                    warning("unable to save .trackingSummary to ", dir)
-                else
-                    assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
+                if (opt$writeToDisk && !is.element("withinTask", opt$cachePolicy)) {
+                    file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
+                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
+                    if (is(save.res, "try-error"))
+                        warning("unable to save .trackingSummary to ", dir)
+                    else
+                        assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
+                }
             }
         }
     }
@@ -521,7 +523,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
             } else {
                 ## only makes sense to save() .trackingSummary if we were able to assign it
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-                if (opt$alwaysSaveSummary) {
+                if (opt$alwaysSaveSummary && !is.element("withinTask", opt$cachePolicy)) {
                     if (is.null(dir))
                         dir <- getTrackingDir(trackingEnv)
                     file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))

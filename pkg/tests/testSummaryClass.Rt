@@ -23,5 +23,6 @@ data     data.frame    list [[10x2]]      2 2001-01-01 09:00:04  2  1
 fit          glm,lm    list   [[30]]     30 2001-01-01 09:00:11  0  1
 tt   POSIXt,POSIXct numeric      [1]      1 2001-01-01 09:00:08  0  1
 > track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp9", recursive=TRUE)
 > 

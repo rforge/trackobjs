@@ -13,7 +13,7 @@
 > unlink("tmp13", recursive=TRUE)
 > attach(NULL, name="testenv")
 > remove(list=ls(all=TRUE))
-> track.start("tmp13", pos=2, cache=FALSE, auto=FALSE)
+> track.start("tmp13", pos=2, cache=FALSE, auto=FALSE, cachePolicy="none")
 Tracking <env testenv> using new directory tmp13 
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
@@ -276,6 +276,7 @@ In track.load("tmp13y.rda", clobber = TRUE, pos = 2) :
 > find("y5")
 [1] "testenv"
 > track.stop(pos=2)
+Stopping tracking on <env testenv>
 > unlink("tmp13", recursive=TRUE)
 > remove(list=ls(all=TRUE))
 >
