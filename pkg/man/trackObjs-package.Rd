@@ -8,7 +8,7 @@ Overview of trackObjs package
 \description{
 
 The trackObjs package sets up a link between R objects in memory and
-files on disk so that objects are automatically resaved to files when
+files on disk so that objects are automatically saved to files when
 they are changed.  R objects in files are read in on demand and do not
 consume memory prior to being referenced.  The trackObjs package also
 tracks times when objects are created and modified, and caches some
@@ -16,27 +16,47 @@ basic characteristics of objects to allow for fast summaries of objects.
 
 Each object is stored in a separate RData file using the standard
 format as used by \code{save()}, so that objects can be manually
-picked out of or added to the trackObjs database if needed.
+picked out of or added to the trackObjs database if needed.  The
+trackObjs database is a directory usually named \code{rdatadir} that
+contains a RData file for each object and several housekeeping files
+that are either plain text or RData files.
 
 Tracking works by replacing a tracked variable by an
 \code{activeBinding}, which when accessed looks up information in an
 associated 'tracking environment' and reads or writes the corresponding
 RData file and/or gets or assigns the variable in the tracking
-environment.  A callback for the end-of-top-level-task handles newly
-created or deleted variables.
+environment.  In the default mode of operation, R variables that are
+accessed are stored in memory for the duration of the top level task
+(i.e., in one expression evaluated from the prompt.) A callback that is
+called each time a top-level-task completes does three major things:
+\itemize{
+  \item detects newly created or deleted variables, and adds or removes
+  from the tracking database as appropriate, and
+  \item writes changed variables to the database, and
+  \item deletes cached objects from memory.
+  }
 
 Tracking is not particularly suitable for storing objects that contain
-environments, because those environments will be fully written out in
-the saved file (whereas, in memory, the environments are references.)  The results of
-some modeling functions are like this, e.g., \code{lm} stores several
-references to the environment that contains the data.  When such objects
-are \code{save}'ed, the environment containing the data, and all the
-other objects in that environment, are saved in the same file.  To work
-with large data objects and modeling functions, consider creating a
-tracking database that contains the data objects, and then attaching
-this at pos=2 in the R session where the modeling is conducted, and
-don't use tracking for that session.  Alternatively, use modeling
-functions that don't store references to environments.
+environments, because those environments and their contents will be
+fully written out in the saved file (in a live R session, environments
+are references, and there can be multiple references to one
+environment.)  The results of some modeling functions contain
+environments, e.g., \code{lm} stores several references to the
+environment that contains the data.  When such objects are
+\code{save}'ed, the environment containing the data, and all the other
+objects in that environment, are saved in the same file.  To work with
+large data objects and modeling functions, consider creating a tracking
+database that contains the data objects, and then attaching this at
+pos=2 in the R session where the modeling is conducted, and don't use
+tracking for that session.  Alternatively, use modeling functions that
+do not store references to environments.
+
+The trackObjs package also provides a self-contained incremental history
+saving function that writes the most recent command to the file
+\code{.Rincr_history} at the end of each top-level task. (The standard
+history functionality (savehistory/loadhistory) in R writes the history
+only at the end of the session.  Thus, if the R session terminates
+abnormally, history is lost.)
 
 }
 \details{
@@ -44,15 +64,16 @@ There are four main reasons to use the \code{trackObjs} package:
 \itemize{
   \item conveniently handle many moderately-large objects that would
   collectively exhaust memory or be inconvenient to manage in
-  files by manually using \code{save()}, \code{load()}, and/or \code{save.image()}.
-  \item keep track of creation and modification times on objects
-  \item get fast summaries of basic characteristics of objects - class,
-  size, dimension, etc.
+  files by manually using \code{save()}, \code{load()}, and/or
+  \code{save.image()}.
   \item have changed or newly created objects saved automatically at the
   end of each top-level command, which ensures objects are preserved
   in the event of accidental or abnormal termination of the R session,
   and which also makes startup and saving much faster when many large
   objects in the global environment must be loaded or saved.
+  \item keep track of creation and modification times on objects
+  \item get fast summaries of basic characteristics of objects - class,
+  size, dimension, etc.
 }
 
 There is an option to control whether tracked objects are cached in
@@ -335,6 +356,27 @@ callback function that is called at the end of each top-level task (each
 time R returns to the prompt after completing a command):
 \url{http://developer.r-project.org/TaskHandlers.pdf}.
 
+}
+\examples{
+\dontrun{
+library(trackObjs)
+# start tracking the global environment using directory 'rdatadir'
+# inside dontrun to avoid creating/removing rdatadir
+track.start()
+a <- 1
+b <- 2
+ls()
+track.status()
+track.summary()
+track.info()
+track.stop()
+# variables are now gone
+ls()
+# bring them back
+track.start()
+ls()
+track.stop()
+}
 }
 \keyword{ package }
 \keyword{ data }

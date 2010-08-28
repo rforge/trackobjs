@@ -1,4 +1,4 @@
-track.detach <- function(pos=NULL, name=NULL) {
+track.detach <- function(pos=NULL, name=NULL, detach=TRUE) {
     if (is.null(pos) == is.null(name))
         stop("must specify one of pos or name")
     if (is.null(pos)) {
@@ -17,7 +17,7 @@ track.detach <- function(pos=NULL, name=NULL) {
     opt <- track.options(trackingEnv=trackingEnv)
     if (!opt$readonly)
         track.sync(pos=pos, full=TRUE, master="envir")
-    track.stop(pos=pos)
+    track.stop(pos=pos, detach=detach)
     # detach(pos=pos, unload=TRUE)
     return(invisible(NULL))
 }

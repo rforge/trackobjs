@@ -22,9 +22,11 @@ objects, including creation, modification and access times.
 
 A tracking environment can be linked to one environment on the search
 path, but the tracking environment is not on the search path itself.  An
-environment can only have one tracking environment linked to it.  Variables
-cannot be tracked automatically: they must be registered with the
-tracking environment using the function \code{track()}.
+environment on the search path can only have one tracking environment
+linked to it.  In standard use, variables are tracked automatically by a
+task callback function.  Alternatively, variables to track can be
+registered with the tracking environment using the function
+\code{track()}.
 
 Any user-created environment on the search path, or the global
 environment, can be tracked.
@@ -40,27 +42,34 @@ Note that the default tracked visible environment is the global environment.
 \preformatted{
 
 Tracked Visible Environment
-(on search list)
-attr(., "trackingEnv") -> Tracking Environment   +->  Tracking Directory (files)
-+-----------------+       (not on search list)  /         |
-|                 |       attr(., "trackingDir")          |
-|                 |   +-------------------------+         +
-|                 |   |        .trackingFileMap |         +- filemap.txt
-|                 |   |        .trackingSummary |         +- .trackingSummary.rda
-|                 |   |        .trackingUnsaved |         |
-|                 |   | .trackingSummaryChanged |         |
-|                 |   |        .trackingOptions |         |
+(on search list)          Tracking Environment
+                          (not on search list)
++-----------------+   +-------------------------+
+|     .trackingEnv|-->|            .trackingDir |---> Tracking Directory (files)
+|                 |   |                         |         |
 |         x (*)   |   |                   x (@) |         +- x.rda
 |       abc (*)   |   |                 abc (@) |         +- abc.rda
 |         Y (*)   |   |                   Y (@) |         +- _1.rda
-|        x1       |   +-------------------------+
-|        x2       |        
-+-----------------+
+|        x1       |   |                         |         |
+|        x2       |   |                         |         |
+|                 |   |        .trackingFileMap |         +- filemap.txt
+|                 |   |        .trackingSummary |         +- .trackingSummary.rda
+|                 |   |        .trackingUnsaved |
+|                 |   | .trackingSummaryChanged |
+|                 |   |        .trackingOptions |
++-----------------+   +-------------------------+
 
 }
 \itemize{
 \item variables marked (*) are tracked and are actually an active
-binding that refers to the corresponding variable in the tracking environment.
+binding that refers to the corresponding variable in the tracking
+environment.  There can also be untracked variables in the visible
+tracked environment, but in the standard mode of operation these are
+detected by the end-of-task callback function and are immediately
+converted to tracked variables (except for variables with reserved names
+like .trackingSummary, and variables matching exclude patterns, see
+options \code{autoTrackExcludePattern} and \code{autoTrackExcludeClass}
+in \link{track.options}.
 \item variables marked (@) may or may not exist -- if they do not exist in
   the tracking environment, they will be automatically read from file
   when the corresponding tracked object is accessed.
@@ -122,7 +131,7 @@ The tracking directory is organized as an R package.  It's layout is as follows 
 }
 
 \preformatted{
-/tmp/trackdir1 
+/tmp/trackdir1
       |
       +- filemap.txt
       +- .trackingSummary.rda
@@ -257,7 +266,7 @@ different in R.)
   Tracking directories are intended to be operating-system independent
   and completely portable across different operating systems.
 }
-  
+
 \references{
 Roger D. Peng. Interacting with data using the filehash package. R
 News, 6(4):19-24, October

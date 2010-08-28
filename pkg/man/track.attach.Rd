@@ -13,7 +13,7 @@
 track.attach(dir, pos = 2, name = NULL,
              create = FALSE, readonly = !create,
              lockEnv = FALSE, verbose = TRUE)
-track.detach(pos = NULL, name = NULL)
+track.detach(pos = NULL, name = NULL, detach = TRUE)
 }
 \arguments{
   \item{dir}{
@@ -39,6 +39,13 @@ track.detach(pos = NULL, name = NULL)
   environment is irreversible, and it prevents rescanning or caching
   (because can't delete or add bindings)}
   \item{verbose}{print a message about what directory is being tracked?}
+  \item{detach}{ If \code{TRUE}, the environment attached to the search
+  path (in a position other than 2) will be detached after stopping
+  tracking, IF it was created by \code{track.attach()} and if there are no
+  variables left remaining in the environment after removing
+  all tracked variables.  If \code{detach="force"}, the attached
+  environment will be removed even if there are variables remaining in
+  it (though not if it was not created by \code{track.attach}).}
 }
 \details{
   \code{track.attach} attaches a new environment to the search path at the specified
@@ -48,7 +55,9 @@ track.detach(pos = NULL, name = NULL)
   is locked to ensure that variables cannot be created or deleted.
 
   \code{track.detach} syncs all variables to files and detaches the
-  environment from the search list.
+  environment from the search list if it is empty.  See
+  \code{\link[track.stop]{track.setup}} for conditions under which the
+  environment may not be detached.
 }
 \value{
 NULL

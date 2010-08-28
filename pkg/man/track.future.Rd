@@ -11,21 +11,29 @@ of feasibility and priority ('easy', 'medium' and 'hard' are an estimate
 of design and coding difficulty):
 
 \describe{
+  \item{better handling of writing files on changes to
+  objects:}{(medium) with cachePolicy="withinTask", changed objects are
+  only written to file at the end of a top level task.  However, with
+  cachePolicy="none", objects are written to file on each change -- is
+  better control over this needed?}
   \item{untracked variables in the summary:}{(easy) would this be useful?
     wouldn't need to cache these, mark with an asterisk in a special
-    column?}
+    column?  Compute these each time track.summary is called.}
+  \item{option writeToDisk:}{is this redundant option with cache and cachePolicy?}
   \item{other default tracked environment:}{(easy) would it be useful to allow
     an environment other than the global environment to be the
     default tracking environment?  This could be implemented by using
     \code{options("tracked.environment")} as the default environment for all the
     tracking functions (rather than the currently hardcoded pos=1)}
-  \item{better cleanup:}{(easy) provide an integrated quiting function that
+  \item{DONE better cleanup:}{(easy) provide an integrated quiting function that
     saves all tracked vars and history before quitting (and maybe also
     saves untracked vars in an RData file)}
   \item{caching rules:}{(hard) allow rule-based decisions for caching, e.g.,
     only cache objects under a certain size, or only cache objects of
     certain classes, or enforce a limit on memory for caching tracked
     variables, and flush out least-recently used variables}
+  \item{record file read/writes:}{(easy) record each time a file is read
+  or written in the summary.  Could be useful for smarter caching.}
   \item{auto-trust in rebuild:}{(easy) when rebuilding an active tracking
     environment, base decision whether to use summary row from file or
     environment on which has more recent dates in it. (whole dataframe,
@@ -40,11 +48,11 @@ of design and coding difficulty):
   \item{investigate double-get:}{ doing subset-replacement (e.g.,
     \code{X[2] <- ...}) retrieves \code{X} twice
     (see example below)}
-  \item{readonly mode:}{(hard) to allow linking tracking dirs that might be
+  \item{DONE readonly mode:}{(hard) to allow linking tracking dirs that might be
     in use by other R processes -- would require not recording
     gets -- this would require adding a new env on the
     search path and tracking it}
-  \item{autoflush:}{(hard) automatic flushing of variables that haven't been used
+  \item{DONE autoflush:}{(hard) automatic flushing of variables that haven't been used
     frequently (triggered automaticall when memory runs low?) -- this
     is why the summary records fetches as well as writes}
   \item{safer restart:}{(medium) check that we will be able to restart before
@@ -53,7 +61,7 @@ of design and coding difficulty):
     file is not removed until the new file is written -- not sure if
     this is necessary, because objects are in memory, and can be
     rewritten if there is a failure}
-  \item{autotrack:}{(hard) automatically track new variables? (would require hooks in
+  \item{DONE autotrack:}{(hard) automatically track new variables? (would require hooks in
     base-R that get called when a new var is created)}
 }
 
@@ -87,7 +95,7 @@ set
 > X
 get
 [1] 2
-> 
+>
 > X[1]
 get
 [1] 2
