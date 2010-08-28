@@ -56,7 +56,7 @@ track.detach(pos = NULL, name = NULL, detach = TRUE)
 
   \code{track.detach} syncs all variables to files and detaches the
   environment from the search list if it is empty.  See
-  \code{\link[track.stop]{track.setup}} for conditions under which the
+  \code{\link{track.stop}} for conditions under which the
   environment may not be detached.
 }
 \value{
