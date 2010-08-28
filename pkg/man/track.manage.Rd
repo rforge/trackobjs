@@ -11,7 +11,8 @@
 \title{ Manage how objects are handled in a tracking session }
 \description{
   Functions to start and stop tracking objects, remove them, load objects from
-  RData files, and manage cached and saved copies of objects.
+  RData files, and manage cached and saved copies of objects.  These
+  functions should not be needed in plain vanilla use of the trackObjs package.
 }
 \usage{
 track(expr, pos = 1, envir = as.environment(pos), list = NULL,

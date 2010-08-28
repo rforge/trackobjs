@@ -74,7 +74,11 @@ track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(p
 \author{
   Tony Plate <tplate@acm.org>
 }
-\seealso{ \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }
+\seealso{ \code{\link{track.rescan}} for rescanning the files in a tracked database
+  that is attached at a position 2 or greater after the files on disk
+  have changed.
+
+  \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ data }

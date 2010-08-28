@@ -1,9 +1,25 @@
-* track.stop() behaving weirdly -- saw tracking envs still attached -- test it on no
+* move track.rescan() from track.setup.Rd into track.sync.Rd ?
+
+* DONE: track.stop() behaving weirdly -- saw tracking envs still attached -- fixed
 
 * make track.sync issue a warning if variables are created in
   a readonly tracked env
 
 * clean up examples in .Rd files -- make them simple, not tests
+OK pkg/man/track.attach.Rd
+OK pkg/man/track.auto.Rd
+NONE pkg/man/track.design.Rd
+OK pkg/man/track.future.Rd
+OK pkg/man/track.history.Rd
+OK pkg/man/track.manage.Rd
+OK pkg/man/track.options.Rd
+OK pkg/man/track.performance.Rd
+OK pkg/man/track.rebuild.Rd
+OK pkg/man/track.setup.Rd
+OK pkg/man/track.status.Rd
+OK pkg/man/track.summary.Rd
+OK pkg/man/track.sync.Rd
+OK pkg/man/trackObjs-package.Rd
 
 * add FILE access and FILE write counters to the trackingSummary
 

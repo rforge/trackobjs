@@ -3,8 +3,9 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Set and get tracking options on a tracked environment}
 \description{
-  Set and get tracking options on a tracked environment.  One
-  independent set of tracking options exists for each tracked environment.
+  Set and get tracking options on a tracked environment.  Each tracked
+  environment has its own set of tracking options exists which can be
+  changed indpendently.   Global default values can be set in \code{options("global.track.options")}.
 }
 \usage{
 track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
@@ -109,6 +110,10 @@ track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
   and when it is saved to disk (the default is for it to be updated and
   saved to disk for every read and write access to an object, whether or
   not the object is cached in memory).
+
+  Global default values can be set in
+  \code{options("global.track.options")} as a list like
+  \code{options(global.track.options=list(cache=TRUE, cachePolicy='withinTask'))}.
 }
 \value{
   The value returned is a list of option values.  If options were

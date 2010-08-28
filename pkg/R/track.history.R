@@ -64,7 +64,7 @@ track.history.writer <- function(expr, value, ok, visible) {
     if (is.null(style) || nchar(style)==0)
         style <- Sys.getenv("R_INCR_HIST_STYLE")
     if (is.null(style) || nchar(style)==0)
-        style <- "fast"
+        style <- "full"
     times <- getOption("incr.hist.times")
     if (is.null(times) || nchar(times)==0)
         times <- Sys.getenv("R_INCR_HIST_TIMES")

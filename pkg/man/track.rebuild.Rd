@@ -78,7 +78,7 @@ track.rebuild(pos = 1, envir = as.environment(pos), dir = NULL,
 # Rebuild a damaged tracking database
 library(trackObjs)
 unlink("tmp1", recursive=TRUE)
-# build a tracking dir populated with some variables
+# first build a tracking dir populated with some variables
 track.start("tmp1")
 x <- 33
 X <- array(1:24, dim=2:4)

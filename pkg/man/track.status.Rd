@@ -106,88 +106,12 @@ library(trackObjs)
 unlink("tmp1", recursive=TRUE)
 remove(list=ls(all=TRUE))
 track.start("tmp1", cache=TRUE)
-# with the standard options, create a variable with each status:
-# "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
-# create some objects that are untrackable for various reasons
-makeActiveBinding("uncoop", function(v) {cat("I'm a binding that prints this message when accessed!\n"); "used to be a an active binding"}, globalenv())
-.trackingFileMap <- "aren't I a mischevious little object :-)"
-# .trackingEnv <- "Assigning me like this will break tracking!"
-uncoop
-.trackingFileMap
 x1 <- 123
 x2 <- 456
 x3 <- 789
-x4 <- -321
-x5 <- -654
-x6 <- -987
 track.status()
-remove(list=c("x4", "x5"))
-x5 <- "not tracked"
-track.flush(x2)
-track.status(reserved=TRUE)
-track.options(writeToDisk=FALSE)
-x3 <- 0
+rm(x3)
 track.status()
-track.save()
-track.status()
-x3 <- 1
-track.status()
-track.unsaved()
-tracked()
-untracked()
-untrackable()
-track.masked()
-track.orphaned()
-track.save(x3)
-track.status()
-# Test forgetting an unsaved variable
-x3
-x3 <- 2
-track.unsaved()
-x3
-track.forget(x3)
-x3
-# Test untracking a variable
-track.options(cache=FALSE)
-x2
-track.status()
-bindingIsActive("x2", globalenv())
-untrack(x2)
-track.status()
-bindingIsActive("x2", globalenv())
-bindingIsActive("x3", globalenv())
-untrack(x3, keep.in.db=TRUE)
-track.status()
-bindingIsActive("x3", globalenv())
-# Try saving some objects to a file then loading them into the tracked environment
-y1 <- 1
-y2 <- "abc"
-y3 <- list(2, "def")
-save(list=c("y1", "y2", "y3"), file="tmpy.rda")
-remove(list=c("y1", "y2", "y3"))
-track.options(list(writeToDisk=TRUE, cache=TRUE))
-track.status()
-track.load("tmpy.rda")
-unlink("tmpy.rda")
-track.status()
-y1
-y2
-y3
-# See if the protection mechanisms against overwriting vars in
-# track.load work correctly.
-y4 <- 4
-y5 <- 5
-save(list=c("y3", "y4", "y5"), file="tmpy.rda")
-remove(list=c("y4"))
-y3 <- "new value"
-y3
-track.load("tmpy.rda")
-y3
-track.status()
-track.load("tmpy.rda", clobber=TRUE)
-y3
-y4
-y5
 track.stop(pos=1)
 unlink("tmp1", recursive=TRUE)
 }

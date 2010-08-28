@@ -31,12 +31,13 @@ track.history.writer(expr, value, ok, visible)
 }
 \item{style}{
   Two styles are possible: \itemize{
-    \item \code{fast}: use deparsed version of
+  \item \code{full}: (default) write history to a file and read back commands to
+  find the recent ones.  This is slower, but it records everything typed
+  at the command prompt, in the original formatting.
+  \item \code{fast}: use deparsed version of
   most recently executed command.  This is fast, but it doesn't record
   comments and some commands with errors, and it changes formatting.
-  \item \code{full}: write history to a file and read back commands to
-  find the recent ones.  This is slower, but it records everything typed
-  at the command prompt, in the original formatting.}
+  }
 }
 \item{times}{
   Should time stamps be written to or read from the file?  The default
@@ -110,7 +111,7 @@ if (interactive()) {
 \examples{
 \dontrun{
 ## Can't use history except in Rgui and Rterm
-track.history.start(style="full")
+track.history.start()
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
