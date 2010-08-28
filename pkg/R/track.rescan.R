@@ -43,7 +43,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         if (verbose)
             cat("track.rescan: stop and restart tracking on ", envName, "\n", sep="")
         if (!dryRun) {
-            track.stop(envir=envir, detach=FALSE)
+            track.stop(envir=envir, detach=FALSE, verbose=FALSE)
             track.start(dir=dir, envir=envir, create=FALSE, verbose=FALSE,
                         readonly=opt$readonly, lockEnv=environmentIsLocked(envir))
         }

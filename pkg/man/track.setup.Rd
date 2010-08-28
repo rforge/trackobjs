@@ -32,7 +32,7 @@ track.start(dir="rdatadir", pos = 1, envir = as.environment(pos),
         lockEnv = FALSE, check.Last = TRUE, verbose = TRUE)
 track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
         stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE,
-        detach = TRUE, callFrom = NULL)
+        verbose = TRUE, detach = TRUE, callFrom = NULL)
 track.info(pos = 1, envir = as.environment(pos), all=TRUE)
 track.rescan(pos = 1, envir = as.environment(pos), forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
 env.is.tracked(pos = 1, envir = as.environment(pos))
@@ -83,7 +83,9 @@ track.Last()
   path (in a position other than 2) will be detached after stopping
   tracking, IF it was created by \code{track.attach()} and if there are no
   variables left remaining in the environment after removing
-  all tracked variables.}
+  all tracked variables.  If \code{detach="force"}, the attached
+  environment will be removed even if there are variables remaining in
+  it (though not if it was not created by \code{track.attach}).}
   \item{callFrom}{A character string used in a message saying where
   \code{track.stop()} was called from.}
   \item{envirs}{A list or vector of objects that can be interpreted as

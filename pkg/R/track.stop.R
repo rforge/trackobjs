@@ -1,4 +1,9 @@
-track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.error=FALSE, keepVars=FALSE, sessionEnd=FALSE, detach=TRUE, callFrom=NULL) {
+track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.error=FALSE, keepVars=FALSE, sessionEnd=FALSE, verbose=TRUE, detach=TRUE, callFrom=NULL) {
+    force.detach <- FALSE
+    if (is.character(detach) && detach=="force") {
+        force.detach <- TRUE
+        detach <- TRUE
+    }
     ## track.stop() with no arguments behaves analogously
     ## to track.start() with no args, and works on pos=1 (globalenv)
     ## if (missing(pos) && missing(envir) && missing(all)) {
@@ -16,7 +21,7 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
     ## Detach a tracking env -- should call track.flush first.
     if (all) {
         env.names <- tracked.envs()
-        if (length(env.names) && !is.null(callFrom))
+        if (verbose && length(env.names) && !is.null(callFrom))
             cat("Stopping all tracking via call from ", callFrom, "\n", sep="")
         for (e.name in env.names)
             if (stop.on.error)
@@ -31,7 +36,8 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
                 warning("environment ", environmentName(envir), " is not tracked")
             return(invisible(NULL))
         }
-        cat("Stopping tracking on ", envname(envir), "\n", sep="")
+        if (verbose)
+            cat("Stopping tracking on ", envname(envir), "\n", sep="")
         trackingEnv <- getTrackingEnv(envir)
         opt <- track.options(trackingEnv=trackingEnv)
         if (opt$readonly && keepVars && environmentIsLocked(envir))
@@ -85,16 +91,18 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
         if (detach && exists(".trackingCreated", envir=envir, inherits=FALSE)
             && !identical(globalenv(), envir)) {
             vars <- ls(envir=trackingEnv, all=TRUE)
-            if (all(isReservedName(vars))) {
-                pos <- match(environmentName(envir), search())
+            pos <- match(environmentName(envir), search())
+            vars <- vars[!isReservedName(vars)]
+            if (length(vars)==0 || force.detach) {
                 if (!is.na(pos)) {
-                    cat("Removing", envname(envir), "from the search path\n")
+                    if (verbose)
+                        cat("Removing", envname(envir), "from the search path\n")
                     detach(pos=pos)
                 } else {
                     cat("Strange: can't find", envname(envir), "on the search path\n")
                 }
             } else {
-                cat("Can't remove ", envname(envir), " from the search path: still contains some variables: ", paste(vars[!isReservedName(vars)], collapse=", "), "\n", sep="")
+                warning("Can't remove ", envname(envir), " from the search path: still contains some variables: ", paste(vars[!isReservedName(vars)], collapse=", "), "\n", sep="")
             }
         }
     }
