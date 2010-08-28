@@ -1,4 +1,4 @@
-track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL) {
+track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, message="Session start") {
     if (!is.null(file))
         options(incr.hist.file=file)
     if (!is.null(width))
@@ -22,7 +22,7 @@ track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL) {
     if (is.null(times) || nchar(times)==0)
         times <- TRUE
     times <- as.logical(times)
-    cat("##------* Starting history at", date(), "*------##\n", file=file, append=TRUE)
+    cat("##------*", message, "at", date(), "*------##\n", file=file, append=TRUE)
     invisible(res)
 }
 track.history.stop <- function() {

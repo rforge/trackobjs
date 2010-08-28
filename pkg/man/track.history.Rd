@@ -16,7 +16,7 @@
   of an R session.
 }
 \usage{
-track.history.start(file = NULL, width = NULL, style = NULL, times = NULL)
+track.history.start(file = NULL, width = NULL, style = NULL, times = NULL, message="Session start")
 track.history.stop()
 track.history.load(times = FALSE)
 track.history.writer(expr, value, ok, visible)
@@ -54,6 +54,9 @@ track.history.writer(expr, value, ok, visible)
 \item{visible}{
   Provided by the task callback
 }
+\item{message}{
+    A string to be written (once) to the incremental history file along with
+  the date and time when incremental history tracking is started.}
 }
 \details{
   Default values are taken first from options \code{incr.hist.style},
