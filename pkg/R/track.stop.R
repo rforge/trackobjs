@@ -67,6 +67,14 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
             ## environment is removed from the search path.
             if (!environmentIsLocked(envir))
                 remove(list=tracked.vars, envir=envir)
+            if (sessionEnd && identical(envir, globalenv())) {
+                ## Would be nice to print this message here, but
+                ## printing messages from .Last is tricky because of the order
+                ## of how things appear to user: first comes the question, then
+                ## if the answer to "save?" is not cancel, .Last is run, and
+                ## save.image() called.
+                ## cat("All tracked objects removed from the global environment (pos=1) -- saying 'y' to save will only save untracked objects\n")
+            }
         }
         ## Set the tracking env pointer to NULL rather than removing it, in
         ## case 'envir' is locked.
