@@ -23,6 +23,17 @@ OK pkg/man/trackObjs-package.Rd
 
 * add FILE access and FILE write counters to the trackingSummary
 
+* request .Last hook and a .Last.pre.ask hook (pre-question)
+  (would go in src/gnuwin/system.c.  Printing messages from
+  .Last is tricky because of order of how things appear to
+  user: first comes the question, then if the answer to
+  "save?" is not cancel, .Last is run, and save.image()
+  called.
+  - src/gnuwin32/system.c: in R_Cleanup, call to R_dot_Last
+  - src/unix/sys-std.c: in Rstd_Cleanup, call to R_dot_Last
+  - src/main/main.c: defn of function R_dot_Last
+  - example of hook calling in
+
 * test turning off writeToDisk and having that handled by track.sync() (need to think about what happens when an error in the computation occurs)
 
 * write tests that .Last invoked flushing at the end of the R
