@@ -350,7 +350,12 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         lockEnvironment(envir)
     .Last <- track.Last
     environment(.Last) <- globalenv()
-    if (exists(".Last", where=1, inherits=FALSE) && !identical(.Last, get(".Last", pos=1, inherits=FALSE))) {
+    existing.Last <- NULL
+    if (exists(".Last", where=1, inherits=FALSE)) {
+        existing.Last <- get(".Last", pos=1, inherits=FALSE)
+        environment(existing.Last) <- globalenv()
+    }
+    if (!is.null(existing.Last) && !identical(.Last, existing.Last)) {
         warning(".Last already exists in globalenv -- not installing track.Last, user must call track.stop(all=TRUE) before ending R session")
     } else {
         assign(".Last", .Last, pos=1)
