@@ -64,7 +64,7 @@ track.history.writer <- function(expr, value, ok, visible) {
     if (is.null(style) || nchar(style)==0)
         style <- Sys.getenv("R_INCR_HIST_STYLE")
     if (is.null(style) || nchar(style)==0)
-        style <- "full"
+        style <- "fast"
     times <- getOption("incr.hist.times")
     if (is.null(times) || nchar(times)==0)
         times <- Sys.getenv("R_INCR_HIST_TIMES")
@@ -84,10 +84,24 @@ track.history.writer <- function(expr, value, ok, visible) {
         ## slow style
         file1 <- tempfile("Rrawhist")
         savehistory(file1)
+        ## What I don't like about timestamp() is that the time stamps
+        ## appear within the interactive history in the R session, which
+        ## is just annoying.  However, we need some way in the history
+        ## of identifying the last command, and it can be multi-line.
+        ## Could remember the previous command, and look for that.
+        ## Could look for the last complete R expression in the file.
+        ## Could look for the last expression in the file that matches
+        ## the value of the expr arg to this function.
+        ## For the moment, use timestamp().
         timestamp(quiet=TRUE)
+        ## cat(c(if (times) paste("##------", date(), "------##"),
+        ##      deparse(expr, width)), sep="\n", file=file, append=TRUE)
         rawhist <- readLines(file1)
         unlink(file1)
-        stamp.lines <- max(grep("^##------.*------##$", rawhist))
+        posns <- grep("^##------.*------##$", rawhist)
+        stamp.lines <- NA
+        if (length(posns))
+            stamp.lines <- max(posns)
         if (is.na(stamp.lines))
             stamp.lines <- 1
         else if (!times)
