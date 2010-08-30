@@ -6,8 +6,9 @@ track.info <- function(pos=1, envir=as.environment(pos), all=TRUE) {
         names(env.list) <- envirs[is.tracked]
         for (j in seq(along=envirs))
             if (!is.tracked[j] && exists(".trackingEnv", envir=as.environment(envirs[j]), inherits=FALSE))
-                warning("env ", envirs[i], " (pos ", j, " on search list) appears to be an inactive tracking environment, saved from another session and loaded here inappropriately")
-        res <- data.frame(row.names=NULL, env.name=envirs[i], pos=seq(len=length(envirs))[i])
+                warning("env ", envirs[j], " (pos ", j, " on search list) appears to be an inactive tracking environment, saved from another session and loaded here inappropriately")
+        res <- data.frame(row.names=NULL, env.name=envirs[is.tracked],
+                          pos=seq(len=length(envirs))[is.tracked])
     } else {
         if (!is.environment(envir))
             envir <- as.environment(envir)
