@@ -1,3 +1,6 @@
+* figure out a way of using full commands in history without inserting time stamps
+  into the interactive history.
+
 * move track.rescan() from track.setup.Rd into track.sync.Rd ?
 
 * DONE: track.stop() behaving weirdly -- saw tracking envs still attached -- fixed

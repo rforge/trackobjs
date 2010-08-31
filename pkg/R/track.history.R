@@ -72,6 +72,12 @@ track.history.writer <- function(expr, value, ok, visible) {
         times <- TRUE
     times <- as.logical(times)
     ## cat("Writing history to file", file, "using style=", style, "\n")
+    ## "full" style is nicer because it gets the commands
+    ## as typed (incl formatting & comments), while "fast" style gets
+    ## the deparsed form of the parse expression.
+    ## But, haven't yet programmed a way of identifying the full
+    ## command without inserting time stamps into the history, so
+    ## keep the "fast" style until figure that out.
     if (style=="fast") {
         width <- getOption("incr.hist.width")
         if (is.null(width) || nchar(width)==0)

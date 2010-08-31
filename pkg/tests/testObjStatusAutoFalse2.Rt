@@ -10,7 +10,7 @@
 > unlink("tmp12", recursive=TRUE)
 > remove(list=ls(all=TRUE))
 > track.start("tmp12", cache=FALSE, auto=FALSE, cachePolicy="none")
-Tracking <env R_GlobalEnv> using new directory tmp12 
+Tracking <env R_GlobalEnv> (writable) using new directory tmp12 
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), globalenv())

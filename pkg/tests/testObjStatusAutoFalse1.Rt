@@ -9,7 +9,7 @@
 > unlink("tmp11", recursive=TRUE)
 > remove(list=ls(all=TRUE))
 > track.start("tmp11", cache=TRUE, auto=FALSE, cachePolicy="none")
-Tracking <env R_GlobalEnv> using new directory tmp11 
+Tracking <env R_GlobalEnv> (writable) using new directory tmp11 
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > # create some objects that are untrackable for various reasons

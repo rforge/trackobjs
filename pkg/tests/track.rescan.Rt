@@ -32,6 +32,8 @@ y tracked FALSE        y       TRUE  TRUE
 > file.rename("tmp15", "tmp16")
 [1] TRUE
 > track.rescan(pos=2)
+Stopping tracking on <env track:tmp16>
+Tracking <env track:tmp16> (writable) using existing directory tmp16 
 > track.status(pos=2)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE

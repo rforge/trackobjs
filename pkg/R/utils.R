@@ -575,6 +575,29 @@ create.fake.Sys.time <- function(offset) {
     invisible(NULL)
 }
 
+find.relative.path <- function(path, file) {
+    ## Find a way to express file as a relative path to path
+    path <- normalizePath(path)
+    file <- normalizePath(file)
+    if (.Platform$OS.type == "windows") {
+        path <- gsub("\\", "/", path, fixed=TRUE)
+        file <- gsub("\\", "/", file, fixed=TRUE)
+    }
+    path.comp <- strsplit(path, split="/", fixed=TRUE)[[1]]
+    file.comp <- strsplit(file, split="/", fixed=TRUE)[[1]]
+    i <- 1
+    while (i <= min(length(path.comp), length(file.comp))
+           && path.comp[i] == file.comp[i])
+        i <- i+1
+    file.rel <- file.comp[seq(to=length(file.comp), len=length(file.comp)-(i-1))]
+    ## path.use <- path.comp[seq(from=1, len=i-1)]
+    if (i <= length(path.comp))
+        file.rel <- c(rep("..", length(path.comp)-(i-1)), file.rel)
+    if (length(file.rel)==0)
+        file.rel <- "."
+    return(paste(file.rel, collapse=.Platform$file.sep))
+}
+
 if (F) {
     ## Code in here was an alternate, worse way to override Sys.time() for testing purposes
     ## (worse because it introduced permanent overhead for Sys.time(), even in normal operation)

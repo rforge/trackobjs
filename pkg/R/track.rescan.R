@@ -20,7 +20,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         else
             track.forget(list=unsaved, envir=envir)
     }
-    dir <- track.dir(envir=envir)
+    dir <- find.relative.path(getwd(), track.dir(envir=envir))
     opt <- track.options(envir=envir)
     verbose <- dryRun || opt$debug > 0
     if (level=="high") {
@@ -40,11 +40,11 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
             pos <- 1
         else
             pos <- match(envName, search())
-        if (verbose)
-            cat("track.rescan: stop and restart tracking on ", envName, "\n", sep="")
+        if (verbose & dryRun)
+            cat("track.rescan: stopping and restart tracking on ", envName, "\n", sep="")
         if (!dryRun) {
-            track.stop(envir=envir, detach=FALSE, verbose=FALSE)
-            track.start(dir=dir, envir=envir, create=FALSE, verbose=FALSE,
+            track.stop(envir=envir, detach=FALSE, verbose=TRUE)
+            track.start(dir=dir, envir=envir, create=FALSE, verbose=TRUE,
                         readonly=opt$readonly, lockEnv=environmentIsLocked(envir))
         }
         return(invisible(NULL))
@@ -84,17 +84,17 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         ## Use some info from exisiting summary to update the summary read
         ## from file (to retain access counts, etc.)
         retained <- intersect(rownames(objSummary), rownames(objSummaryEnv))
-        ## Might want to think about what to do with non-zero SR & SW just read
+        ## Might want to think about what to do with non-zero SA & SW just read
         ## from the file -- these might reflect another session currently
         ## attached to this DB -- currently ignore those here.
         if (nrow(objSummary))
-            objSummary[, c("SR", "SW")] <- 0
+            objSummary[, c("SA", "SW")] <- 0
         if (length(retained)) {
             if (verbose)
                 cat("updating re-read object summary with session data for vars: ",
                     paste(retained, collapse=", "), "\n", sep="")
             if (!dryRun)
-                objSummary[retained, c("SR", "SW")] <- objSummaryEnv[retained, c("SR", "SW")]
+                objSummary[retained, c("SA", "SW")] <- objSummaryEnv[retained, c("SA", "SW")]
         }
         ## Delete unneeded active bindings and cached objects
         unneeded <- setdiff(names(fileMapEnv), names(fileMap))

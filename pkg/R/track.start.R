@@ -122,14 +122,16 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             }
         }
         if (verbose)
-            cat("Tracking", envname(envir), "using existing directory", dir.orig, "\n")
+            cat("Tracking", envname(envir), if (readonly) "(readonly)" else "(writable)",
+                "using existing directory", dir.orig, "\n")
     } else {
         if (is.null(RDataSuffix))
             suffix <- gopt$RDataSuffixes[1]
         else
             suffix <- RDataSuffix
         if (verbose)
-            cat("Tracking", envname(envir), "using new directory", dir.orig, "\n")
+            cat("Tracking", envname(envir), if (readonly) "(readonly)" else "(writable)",
+                "using new directory", dir.orig, "\n")
     }
     if (!is.element(suffix, gopt$RDataSuffixes))
         stop("internal error: ended up with an illegal suffix?? (", suffix, ")")
