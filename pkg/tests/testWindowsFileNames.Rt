@@ -9,7 +9,7 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp10", recursive=TRUE)
 > track.start("tmp10")
-Tracking <env R_GlobalEnv> (writable) using new directory tmp10 
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp10'
 > x <- 1
 > prn <- 2
 > nul <- 3
@@ -41,7 +41,7 @@ x        numeric numeric     [1]      1  0  1
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp10")
-Tracking <env R_GlobalEnv> (writable) using existing directory tmp10 
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp10'
 > x
 [1] 1
 > prn

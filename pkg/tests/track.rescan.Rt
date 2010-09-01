@@ -3,7 +3,7 @@
 > invisible(if (file.exists("tmp16")) unlink("tmp15", recursive=TRUE))
 > # Create one db
 > track.attach("tmp15", pos=2, name="track:tmp15", readonly=FALSE, create=TRUE)
-Attaching tracking db in 'tmp15' to env in pos 2
+Attaching tracking db in 'tmp15' to env in pos 2 (writable)
 > assign("x", 1, pos=2)
 > assign("z", 3, pos=2)
 > track.status(pos=2)
@@ -16,7 +16,7 @@ Removing <env track:tmp15> from the search path
 > 
 > # Create the second db
 > track.attach("tmp16", pos=2, name="track:tmp16", readonly=FALSE, create=TRUE)
-Attaching tracking db in 'tmp16' to env in pos 2
+Attaching tracking db in 'tmp16' to env in pos 2 (writable)
 > assign("x", 11, pos=2)
 > assign("y", 12, pos=2)
 > track.status(pos=2)
@@ -33,7 +33,7 @@ y tracked FALSE        y       TRUE  TRUE
 [1] TRUE
 > track.rescan(pos=2)
 Stopping tracking on <env track:tmp16>
-Tracking <env track:tmp16> (writable) using existing directory tmp16 
+Tracking <env track:tmp16> (writable) using existing directory 'tmp16'
 > track.status(pos=2)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE

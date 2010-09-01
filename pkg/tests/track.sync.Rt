@@ -2,7 +2,7 @@
 > options(error=function() NULL)
 > invisible(if (file.exists("tmp17")) unlink("tmp17", recursive=TRUE))
 > track.start(dir="tmp17", auto=FALSE, cache=FALSE)
-Tracking <env R_GlobalEnv> (writable) using new directory tmp17 
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp17'
 > x <- 1
 > y <- 2
 > track.status()

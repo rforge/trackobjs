@@ -2,7 +2,7 @@
 > dir.create("tmp14")
 > cat("", file="tmp14/filemap.txt")
 > track.attach("tmp14", name="track:tmp14", readonly=FALSE)
-Attaching tracking db in 'tmp14' to env in pos 2
+Attaching tracking db in 'tmp14' to env in pos 2 (writable)
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -33,7 +33,7 @@ Removing <env track:tmp14> from the search path
 > mtime1 <- file.info(file.path("tmp14",list.files("tmp14",all=T,pattern=".(rda|txt)$")))[,c("size","mtime")]
 > Sys.sleep(2) # give some time for at a one second difference to show up
 > track.attach("tmp14", name="track:tmp14", readonly=FALSE, pos=2)
-Attaching tracking db in 'tmp14' to env in pos 2
+Attaching tracking db in 'tmp14' to env in pos 2 (writable)
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -59,7 +59,7 @@ Removing <env track:tmp14> from the search path
 > options(error=function() NULL)
 > Sys.sleep(2) # give some time for at a one second difference to show up
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2, lockEnv=TRUE)
-Attaching tracking db in 'tmp14' to env in pos 2
+Attaching tracking db in 'tmp14' to env in pos 2 (readonly)
 > search()[1:2]
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
@@ -96,7 +96,7 @@ Removing <env track:tmp14> from the search path
 > file.remove("tmp14/y.rda")
 [1] TRUE
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
-Attaching tracking db in 'tmp14' to env in pos 2
+Attaching tracking db in 'tmp14' to env in pos 2 (readonly)
 Error in track.start(trackingDir, pos = pos, readonly = readonly, create = create,  : 
   missing files for some variables in the fileMap (use track.rebuild() to repair): y
 > track.rebuild(dir="tmp14", level='all', dryRun=FALSE)
@@ -109,7 +109,7 @@ y    y.rda
 loaded 'x'
 Object 'y' is not stored on file ('./tmp14/y.rda') and is not cached -- forgetting about it
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
-Attaching tracking db in 'tmp14' to env in pos 2
+Attaching tracking db in 'tmp14' to env in pos 2 (readonly)
 > track.status(pos=2)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE

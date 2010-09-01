@@ -14,7 +14,7 @@
 > attach(NULL, name="testenv")
 > remove(list=ls(all=TRUE))
 > track.start("tmp13", pos=2, cache=FALSE, auto=FALSE, cachePolicy="none")
-Tracking <env testenv> (writable) using new directory tmp13 
+Tracking <env testenv> (writable) using new directory 'tmp13'
 > # with the standard options, create a variable with each status:
 > # "tracked", "trackable", "untracked", "orphaned", "masked", "unsaved"
 > makeActiveBinding("uncoop", function(v) cat("I'm a binding that does nothing!\n"), as.environment("testenv"))

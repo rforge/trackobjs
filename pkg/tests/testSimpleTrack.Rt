@@ -8,7 +8,7 @@
 > trackObjs:::create.fake.Sys.time(0)
 > unlink("tmp8", recursive=TRUE)
 > track.start("tmp8")
-Tracking <env R_GlobalEnv> (writable) using new directory tmp8 
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp8'
 > x <- 33
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved

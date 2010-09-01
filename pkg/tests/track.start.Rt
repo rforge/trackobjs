@@ -3,14 +3,14 @@
 > options(error=function() NULL)
 > invisible(if (file.exists("tmp18")) unlink("tmp18", recursive=TRUE))
 > track.start(dir="tmp18")
-Tracking <env R_GlobalEnv> (writable) using new directory tmp18 
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp18'
 > x <- 1
 > y <- 2
 > track.stop(1)
 Stopping tracking on <env R_GlobalEnv>
 > x <- -1
 > track.start(dir="tmp18", clobber="var")
-Tracking <env R_GlobalEnv> (writable) using existing directory tmp18 
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp18'
 > x
 [1] 1
 > y
@@ -19,7 +19,7 @@ Tracking <env R_GlobalEnv> (writable) using existing directory tmp18
 Stopping tracking on <env R_GlobalEnv>
 > x <- -1
 > track.start(dir="tmp18", clobber="files")
-Tracking <env R_GlobalEnv> (writable) using existing directory tmp18 
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp18'
 > x
 [1] -1
 > y
