@@ -33,22 +33,55 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             stop("must supply argument master='files' or master='envir' when tracking db is attached with readonly=FALSE")
     if (master=="files")
         return(track.rescan(envir=envir, forgetModified=TRUE, level="low"))
-    if (opt$readonly && master=="envir" && !isTRUE(full)) {
+
+    ## If there is a cacheKeepFun, see what it says...
+    ## Record what variables it says to not keep in purgeVars.
+    ## purgeVars is NULL if there is no cacheKeepFun
+    purgeVars <- NULL
+    if (taskEnd && opt$cachePolicy=="eotPurge" && length(opt$cacheKeepFun)
+        && exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
+        objs <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
+        keep <- try(do.call(opt$cacheKeepFun, list(objs=objs, envname=envname(envir))))
+        if (is(keep, "try-error")) {
+            warning("opt$cacheKeepFun stopped with an error: ", keep)
+        } else if (!is.logical(keep) || length(keep)!=nrow(objs) || any(is.na(keep))) {
+            warning("opt$cacheKeepFun did not return a TRUE/FALSE vector of the correct length")
+        } else {
+            purgeVars <- rownames(objs)[!keep]
+        }
+    }
+
+    if (opt$readonly && !isTRUE(full)) {
         ## The only thing to do for a readonly env is
         ## to flush cached objects out of memory.
-        if (taskEnd && opt$cachePolicy=="withinTask") {
-            if (dryRun) {
-                cat("track.sync(dryRun): Would flush all vars\n")
+        ## Well..., perhaps we should also check that
+        ## no new variables have been created, and if
+        ## they have, warn about them.
+        if (taskEnd && opt$cachePolicy=="eotPurge") {
+            if (!is.null(purgeVars)) {
+                if (dryRun) {
+                    cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
+                        paste(purgeVars, collapse=", "), "\n")
+                } else {
+                    if (opt$debug)
+                        cat("track.sync: purging", length(purgeVars), "vars with call to track.flush(envir=",
+                            envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
+                    if (length(purgeVars))
+                        track.flush(envir=envir, list=purgeVars)
+                }
             } else {
-                if (opt$debug)
-                    cat("track.sync: calling track.flush(envir=",
-                        envname(envir), ")\n", sep="")
-                track.flush(envir=envir, all=TRUE)
+                if (dryRun) {
+                    cat("track.sync(dryRun): Would flush all vars\n")
+                } else {
+                    if (opt$debug)
+                        cat("track.sync: calling track.flush(envir=", envname(envir), ", all=TRUE)\n", sep="")
+                    track.flush(envir=envir, all=TRUE)
+                }
             }
         }
         return(list(new=character(0), deleted=character(0)))
     }
-    if (master=="envir" && opt$readonly) {
+    if (opt$readonly) {
         warning("readonly=TRUE will prevent writing anything to files, but will show what will happen")
         dryRun <- TRUE
     }
@@ -79,7 +112,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         untracked <- grep(re, untracked, invert=TRUE, value=TRUE)
     deleted <- setdiff(names(fileMap), all.objs)
     if (length(untracked)) {
-        if (dryRun) {
+        if (opt$readonly) {
+            warning("variables have been created in a readonly tracking env, these will not be written out to the files: ",
+                    paste(untracked, collapse=", "))
+        } else if (dryRun) {
             cat("track.sync(dryRun): would track ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
         } else {
             if (opt$debug > 0)
@@ -91,7 +127,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             cat("track.sync: no untracked variables\n")
     }
     if (length(deleted)) {
-        if (dryRun) {
+        if (opt$readonly) {
+            warning("variables have been deleted from a readonly tracking env, these will not be deleted from the files: ",
+                    paste(deleted, collapse=", "))
+        } else if (dryRun) {
             cat("track.sync(dryRun): would remove ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
         } else {
             if (opt$debug > 0)
@@ -121,9 +160,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         if (verbose && any(reserved))
             cat("track.sync: cannot track variables with reserved names: ", paste(tracked[reserved], collapse=", "), "\n", sep="")
         tracked <- tracked[!reserved]
-        if (length(tracked)) {
+        if (length(tracked))
             retrack <- tracked[!sapply(tracked, bindingIsActive, envir)]
-        }
     }
     if (length(retrack))
         for (re in opt$autoTrackExcludePattern)
@@ -139,15 +177,18 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 cat("track.sync", if (dryRun) "(dryRun)", ": var is from excluded class, not tracking: ", objname, "\n", sep="")
             next
         }
-        if (verbose)
+        if (verbose && !opt$readonly)
             cat("track.sync: retracking var: ", objname, "\n", sep="")
+        if (opt$readonly)
+            warning("variable ", objname, " was clobbered in a readonly tracking env -- forgetting the changes")
         if (dryRun)
             next
         ## Use setTrackedVar to write the object to disk (or merely cache
         ## it in trackingEnv, depending on settings in opt).
         ## setTrackedVar() will assign it in the trackingEnv -- it currently
         ## exists in 'envir'
-        setTrackedVar(objname, objval, trackingEnv, opt)
+        if (!opt$readonly)
+            setTrackedVar(objname, objval, trackingEnv, opt)
         remove(list=objname, envir=envir)
         f <- substitute(function(v) {
             if (missing(v))
@@ -170,13 +211,26 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         environment(f) <- parent.env(environment(f))
         makeActiveBinding(objname, env=envir, fun=f)
     }
-    if (taskEnd && opt$cachePolicy=="withinTask") {
-        if (dryRun) {
-            cat("track.sync(dryRun): Would flush all vars\n")
+    if (taskEnd && opt$cachePolicy=="eotPurge") {
+        if (!is.null(purgeVars)) {
+            if (dryRun) {
+                cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
+                    paste(purgeVars, collapse=", "), "\n")
+            } else {
+                if (opt$debug)
+                    cat("track.sync: purging", length(purgeVars), "vars with call to track.flush(envir=",
+                        envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
+                if (length(purgeVars))
+                    track.flush(envir=envir, list=purgeVars)
+            }
         } else {
-            if (opt$debug)
-                cat("track.sync: calling track.flush(envir=", envname(envir), ")\n", sep="")
-            track.flush(envir=envir, all=TRUE)
+            if (dryRun) {
+                cat("track.sync(dryRun): Would flush all vars\n")
+            } else {
+                if (opt$debug)
+                    cat("track.sync: calling track.flush(envir=", envname(envir), ", all=TRUE)\n", sep="")
+                track.flush(envir=envir, all=TRUE)
+            }
         }
     } else {
         if (dryRun) {

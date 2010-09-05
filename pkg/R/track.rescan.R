@@ -5,9 +5,9 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
     ## If we have some modified variables cached in memory but not saved
     ## to disk, this function will stop with an error unless
     ## forgetModified==TRUE.
-    ## Variables that have disappeared from the tracking dir will disappear
-    ## from visibility, and variables added to the tracking dir will become
-    ## available.
+    ## Variables that have disappeared from the tracking dir (outside of
+    ## this session) will disappear from visibility, and variables added
+    ## to the tracking dir will become available.
     level <- match.arg(level)
     unsaved <- track.unsaved(envir=envir)
     if (!forgetModified && length(unsaved))

@@ -63,7 +63,10 @@ $cache
 [1] TRUE
 
 $cachePolicy
-[1] "withinTask"
+[1] "eotPurge"
+
+$cacheKeepFun
+NULL
 
 $writeToDisk
 [1] TRUE
@@ -73,9 +76,6 @@ $maintainSummary
 
 $alwaysSaveSummary
 [1] FALSE
-
-$useDisk
-[1] TRUE
 
 $recordAccesses
 [1] TRUE
@@ -112,7 +112,10 @@ $cache
 [1] TRUE
 
 $cachePolicy
-[1] "withinTask"
+[1] "eotPurge"
+
+$cacheKeepFun
+NULL
 
 $writeToDisk
 [1] TRUE
@@ -122,9 +125,6 @@ $maintainSummary
 
 $alwaysSaveSummary
 [1] FALSE
-
-$useDisk
-[1] TRUE
 
 $recordAccesses
 [1] TRUE
@@ -217,7 +217,10 @@ $cache
 [1] FALSE
 
 $cachePolicy
-[1] "withinTask"
+[1] "eotPurge"
+
+$cacheKeepFun
+NULL
 
 $writeToDisk
 [1] TRUE
@@ -226,9 +229,6 @@ $maintainSummary
 [1] TRUE
 
 $alwaysSaveSummary
-[1] TRUE
-
-$useDisk
 [1] TRUE
 
 $recordAccesses

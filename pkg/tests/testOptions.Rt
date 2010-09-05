@@ -48,6 +48,9 @@ $cache
 $cachePolicy
 [1] "none"
 
+$cacheKeepFun
+NULL
+
 $writeToDisk
 [1] FALSE
 
@@ -56,9 +59,6 @@ $maintainSummary
 
 $alwaysSaveSummary
 [1] FALSE
-
-$useDisk
-[1] TRUE
 
 $recordAccesses
 [1] TRUE
@@ -120,7 +120,7 @@ $writeToDisk
 [1] TRUE
 
 $cachePolicy
-[1] "withinTask"
+[1] "eotPurge"
 
 > track.options(cache=TRUE, writeToDisk=FALSE, save=TRUE) # change the options on disk
 > track.options(c("cache", "writeToDisk", "cachePolicy"))
@@ -131,7 +131,7 @@ $writeToDisk
 [1] FALSE
 
 $cachePolicy
-[1] "withinTask"
+[1] "eotPurge"
 
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
@@ -146,7 +146,7 @@ $writeToDisk
 [1] FALSE
 
 $cachePolicy
-[1] "withinTask"
+[1] "eotPurge"
 
 > # Test how multi-value options are handled
 > track.options("autoTrackExcludePattern")

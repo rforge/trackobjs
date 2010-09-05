@@ -377,7 +377,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
         }
     }
     fullFile <- NULL
-    if (opt$writeToDisk && !is.element("withinTask", opt$cachePolicy)) {
+    if (opt$writeToDisk && !is.element("eotPurge", opt$cachePolicy)) {
         ##  the value of 'file' is the base of the filename -- work out the full pathname
         fullFile <- file.path(getDataDir(dir), paste(file, opt$RDataSuffix, sep="."))
         if (opt$debug)
@@ -437,7 +437,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
                 warning("unable to assign .trackingSummary back to tracking env on ", envname(trackingEnv))
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-                if (opt$writeToDisk && !is.element("withinTask", opt$cachePolicy)) {
+                if (opt$writeToDisk && !is.element("eotPurge", opt$cachePolicy)) {
                     file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
                     save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
                     if (is(save.res, "try-error"))
@@ -523,7 +523,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
             } else {
                 ## only makes sense to save() .trackingSummary if we were able to assign it
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-                if (opt$alwaysSaveSummary && !is.element("withinTask", opt$cachePolicy)) {
+                if (opt$alwaysSaveSummary && !is.element("eotPurge", opt$cachePolicy)) {
                     if (is.null(dir))
                         dir <- getTrackingDir(trackingEnv)
                     file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))

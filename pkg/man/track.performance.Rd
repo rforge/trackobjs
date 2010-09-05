@@ -20,14 +20,14 @@
   Three options (see \link{track.options}) control performance:
   \itemize{
     \item{cache}: \code{TRUE}/\code{FALSE} should variables be cached at all?
-    \item{cachePolicy}: \code{withinTask}/\code{none} higher level
+    \item{cachePolicy}: \code{tltPurge}/\code{none} higher level
     policy for maintaining cache
     \item{writeToDisk}: \code{TRUE}/\code{FALSE} should objects be
     written after a change?
   }
 
   Useful possible combinations of settings are: \itemize{
-  \item{cache=TRUE, cachePolicy="withinTask", writeToDisk=TRUE}:
+  \item{cache=TRUE, cachePolicy="tltPurge", writeToDisk=TRUE}:
   (DEFAULT) keep objects in memory for the duration of a task; flush
   and/or write to disk at the end of task
   \item{cache=TRUE, cachePolicy="none", writeToDisk=TRUE}:
@@ -43,7 +43,7 @@
 
 Performance tuning is a possible area of future development of the
 trackObjs package, at as version 0.9-9, the defaults settings of
-\code{cache=TRUE}, \code{cachePolicy="withinTask"}, and
+\code{cache=TRUE}, \code{cachePolicy="tltPurge"}, and
 \code{writeToDisk=TRUE} work well.  However, smarter caching based on
 access patterns to objects is certainly possible.
 }

@@ -12,7 +12,7 @@ of design and coding difficulty):
 
 \describe{
   \item{better handling of writing files on changes to
-  objects:}{(medium) with cachePolicy="withinTask", changed objects are
+  objects:}{(medium) with cachePolicy="tltPurge", changed objects are
   only written to file at the end of a top level task.  However, with
   cachePolicy="none", objects are written to file on each change -- is
   better control over this needed?}

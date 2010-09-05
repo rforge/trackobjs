@@ -51,12 +51,15 @@ track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
   Note that this option is a function of how a tracking database is
   accessed -- it is not a property of the database itself.  To
   unconditionally protect a tracking database from modification, use file permissions.}
-    \item{summaryTimes:}{logical, or integer value 0,1,2,3}
+    \item{summaryTimes:}{logical, or integer value 0,1,2,3 (see
+  \code{\link{track.summary}()} for the effect of these settings}
     \item{summaryAccess:}{logical, or integer value 0,1,2,3,4}
-    \item{cache:}{logical (default TRUE) (keep written objects in memory?)}
-    \item{writeToDisk:}{logical (default TRUE) (always write changed objects to disk?)}
-    \item{useDisk:}{logical (default TRUE) if FALSE, don't write anything
-    -- not implemented yet}
+    \item{cache:}{logical (default TRUE): keep written objects in memory?}
+    \item{writeToDisk:}{logical (default TRUE): always write changed
+      objects to disk?  If \code{TRUE}, when objects are written to disk depends on \code{cachePolicy}:
+      \code{cachePolicy="none"}: write objects immediately on a change;
+      \code{cachePolicy="eotPurge"}: write changed objects at the end of a top-level task
+    }
     \item{recordAccesses:}{logical (default TRUE) if TRUE, record
       counts and times for access ("get") operations on tracked variables}
     \item{maintainSummary:}{logical (default TRUE) if TRUE, record time & number of accesses}
@@ -113,7 +116,7 @@ track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
 
   Global default values can be set in
   \code{options("global.track.options")} as a list like
-  \code{options(global.track.options=list(cache=TRUE, cachePolicy='withinTask'))}.
+  \code{options(global.track.options=list(cache=TRUE, cachePolicy='tltPurge'))}.
 }
 \value{
   The value returned is a list of option values.  If options were

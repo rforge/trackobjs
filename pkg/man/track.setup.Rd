@@ -59,7 +59,7 @@ track.Last()
     tracking directory)}
   \item{cache}{ Should objects be keep cached in memory?  Default is \code{TRUE}.  This option is a shorthand way of supplying \code{options=list(cache=...)}.}
   \item{cachePolicy}{ Policy for keeping cached objects in memory.
-  Default is \code{withinTask}, for which cached objects are removed
+  Default is \code{tltPurge}, for which cached objects are removed
   from memory at the end of a top-level task.  This option is a shorthand way of supplying \code{options=list(cachePolicy=...)}.}
   \item{options}{ Option values (as a list) to be used for this tracking database.  See \code{track.options()}.}
   \item{all}{If \code{TRUE}, all tracked environment are unlinked}

@@ -150,10 +150,10 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     if (!is.null(cachePolicy)) {
         if (is.null(options))
             options <- list()
-        if (is.element(cachePolicy, c("withinTask", "none")))
+        if (is.element(cachePolicy, c("eotPurge", "none")))
             options$cachePolicy <- cachePolicy
         else
-            stop("'cachePolicy' argument must be 'withinTask' or 'none'")
+            stop("'cachePolicy' argument must be 'eotPurge' or 'none'")
     }
     old.options <- list()
     if (!is.null(optionsPath)) {

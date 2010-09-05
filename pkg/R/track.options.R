@@ -9,10 +9,14 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     ## valid options are:
     ##   summaryTimes: logical, or integer value 0,1,2,3
     ##   summaryAccess: logical, or integer value 0,1,2,3,4
-    ##   cache: logical (default TRUE) (keep written objects in memory?)
-    ##   cachePolicy: char vector (default "withinTask") (when to keep objects in memory)
+    ##   cache: logical (default TRUE) (keep objects in memory?)
+    ##   cachePolicy: char vector (default "eotPurge") (when to keep objects in memory)
+    ##   cacheKeepFun: char vector or function (default NULL): function to call
+    ##     to determine which objects to keep in cache
     ##   writeToDisk: logical (default TRUE) (always write changed objects to disk?)
-    ##   useDisk: logical (default TRUE) if FALSE, don't write anything
+    ##     when objects are written to disk depends on cachePolicy:
+    ##       cachePolicy='none': write objects immediately on a change
+    ##       cachePolicy='eotPurge': write changed objects at the end of a top-level task
     ##   recordAccesses: logical (default TRUE) if TRUE, record time & number of get()'s
     ##   maintainSummary: logical (default TRUE) if TRUE, record time & number of accesses
     ##   alwaysSaveSummary: logical (default TRUE) if TRUE, always save the summary on any change
@@ -85,8 +89,8 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
         values <- list()
     if (length(values)==1 && is.list(values[[1]]))
         values <- values[[1]]
-    optionNames <- c("cache", "cachePolicy", "writeToDisk", "maintainSummary", "alwaysSaveSummary",
-                     "useDisk", "recordAccesses", "summaryTimes", "summaryAccess",
+    optionNames <- c("cache", "cachePolicy", "cacheKeepFun", "writeToDisk", "maintainSummary",
+                     "alwaysSaveSummary", "recordAccesses", "summaryTimes", "summaryAccess",
                      "RDataSuffix", "debug", "autoTrackExcludePattern", "autoTrackExcludeClass",
                      "autoTrackFullSyncWait", "clobberVars", "readonly")
     if (!is.null(names(values))) {
@@ -126,10 +130,11 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     if (length(need.value)) {
         names(need.value) <- need.value
         repaired <- lapply(need.value, function(x)
-                           switch(x, cache=TRUE, cachePolicy="withinTask",
+                           switch(x, cache=TRUE, cachePolicy="eotPurge",
+                                  cacheKeepFun=NULL,
                                   readonly=FALSE, writeToDisk=TRUE,
                                   maintainSummary=TRUE, alwaysSaveSummary=FALSE,
-                                  useDisk=TRUE, recordAccesses=TRUE,
+                                  recordAccesses=TRUE,
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
                                   debug=0, autoTrackExcludePattern=c("^\\.track", "^\\.required"),
                                   autoTrackExcludeClass=c("RODBC"),
@@ -141,19 +146,33 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
         new.values <- currentOptions
         for (opt in names(values)) {
             single <- TRUE
+            special <- FALSE
             if (opt=="cache") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
             } else if (opt=="cachePolicy") {
                 if (!is.character(values[[opt]]))
                     values[[opt]] <- as.character(values[[opt]])
+            } else if (opt=="cacheKeepFun") {
+                # can be the name of a function, or a function
+                # don't do the standard NA & length checks
+                special <- TRUE
+                f <- values[[opt]]
+                if (!is.function(f)) {
+                    if (is.character(f) && length(f)==1) {
+                        f <- get(f)
+                    } else if (is.name(f)) {
+                        f <- eval(f)
+                    }
+                }
+                if (!is.function(f))
+                    stop("cacheKeepFun must be a function or the name of a function")
+                if (!all(is.element(c("objs", "envname"), names(formals(f)))))
+                    stop("cacheKeepFun must have an arguments namd 'objs' and 'envname'")
             } else if (opt=="readonly") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
             } else if (opt=="writeToDisk") {
-                if (!is.logical(values[[opt]]))
-                    values[[opt]] <- as.logical(values[[opt]])
-            } else if (opt=="useDisk") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
             } else if (opt=="recordAccesses") {
@@ -191,10 +210,12 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
             } else {
                 stop("unrecognized option name '", opt, "'")
             }
-            if (any(is.na(values[[opt]])))
-                stop("cannot set option ", opt, " to an NA value")
-            if (single && length(values[[opt]])!=1)
-                stop("option ", opt, " must have a value of length 1")
+            if (!special) {
+                if (any(is.na(values[[opt]])))
+                    stop("cannot set option ", opt, " to an NA value")
+                if (single && length(values[[opt]])!=1)
+                    stop("option ", opt, " must have a value of length 1")
+            }
             ## Now, how we put the value in depends on whethr it can have single or multiple values
             if (single || clear)
                 new.values[[opt]] <- values[[opt]]
@@ -210,15 +231,17 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
             stop("cannot make a readonly tracked environment writable (because cannot unlock a locked environment) -- to make it writeable, use track.detach() followed by track.attach(readonly=FALSE)")
         assign(".trackingOptions", new.values, envir=trackingEnv)
     }
-    if (save && !only.preprocess && !identical(currentOptions$useDisk, FALSE)) {
-        ## write them to disk -- use the old value of options$useDisk
-        ## because otherwise we will never save the change of this
-        dir <- getTrackingDir(trackingEnv)
-        file <- file.path(getDataDir(dir), paste(".trackingOptions", currentOptions$RDataSuffix, sep="."))
-        ## if we did change any options, they will have been saved in .trackingOptions in trackingEnv
-        save.res <- try(save(list=".trackingOptions", file=file, envir=trackingEnv))
-        if (is(save.res, "try-error"))
-            stop("unable to save .trackingOptions in ", file)
+    if (save && !only.preprocess) {
+        if (!identical(currentOptions$readonly, FALSE)) {
+            warning("cannot save options in a readonly tracking db")
+        } else {
+            dir <- getTrackingDir(trackingEnv)
+            file <- file.path(getDataDir(dir), paste(".trackingOptions", currentOptions$RDataSuffix, sep="."))
+            ## if we did change any options, they will have been saved in .trackingOptions in trackingEnv
+            save.res <- try(save(list=".trackingOptions", file=file, envir=trackingEnv))
+            if (is(save.res, "try-error"))
+                stop("unable to save .trackingOptions in ", file)
+        }
     }
     ## Want to return the old values
     if (set.values)
