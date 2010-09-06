@@ -1,3 +1,11 @@
+* add a "track.plugin" man page and examples of use
+
+* DONE: make the callback catch errors and always return TRUE, so
+  that it doesn't get removed.  make track.auto(TRUE) check
+  that the callback is in place.
+
+* DONE: add 'inmem' & 'envname' to the args passed to a cacheKeepFun
+
 * figure out a way of using full commands in history without inserting time stamps
   into the interactive history.
 
@@ -8,7 +16,7 @@
 * make track.sync issue a warning if variables are created in
   a readonly tracked env
 
-* clean up examples in .Rd files -- make them simple, not tests
+* clean up examples in .Rd files -- make them simple pedagogic examples, not tests of functionality (the latter are in tests/*.Rt)
 OK pkg/man/track.attach.Rd
 OK pkg/man/track.auto.Rd
 NONE pkg/man/track.design.Rd

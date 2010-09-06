@@ -170,7 +170,7 @@ x6       untracked    NA     <NA>         NA    NA
 > y3 <- list(2, "def")
 > save(list=c("y1", "y2", "y3"), file="tmp13y.rda")
 > remove(list=c("y1", "y2", "y3"))
-> track.options(list(writeToDisk=TRUE, cache=TRUE), pos=2)
+> track.options(values=list(writeToDisk=TRUE, cache=TRUE), pos=2)
 > track.status(pos=2)
             Status InMem FileBase FileExists Saved
 uncoop untrackable    NA     <NA>         NA    NA

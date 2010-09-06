@@ -1,4 +1,4 @@
-\name{track}
+\name{track.manage}
 \alias{track}
 \alias{untrack}
 \alias{track.remove}
@@ -22,11 +22,14 @@ untrack(expr, pos = 1, envir = as.environment(pos), list = NULL,
 track.remove(expr, pos = 1, envir = as.environment(pos), list = NULL,
         pattern = NULL, glob = NULL, all = FALSE, force = FALSE)
 track.save(expr, pos = 1, envir = as.environment(pos), list = NULL,
-        pattern = NULL, glob = NULL, all = missing(expr))
+        pattern = NULL, glob = NULL,
+        all = missing(expr) && missing(list) && missing(pattern) && missing(glob))
 track.resave(expr, pos = 1, envir = as.environment(pos), list = NULL,
-        pattern = NULL, glob = NULL, all = missing(expr))
+        pattern = NULL, glob = NULL,
+        all = missing(expr) && missing(list) && missing(pattern) && missing(glob))
 track.flush(expr, pos = 1, envir = as.environment(pos), list = NULL,
-        pattern = NULL, glob = NULL, all = missing(expr))
+        pattern = NULL, glob = NULL,
+        all = missing(expr) && missing(list) && missing(pattern) && missing(glob))
 track.forget(expr, pos = 1, envir = as.environment(pos), list = NULL,
         pattern = NULL, glob = NULL, all = FALSE)
 track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
@@ -44,7 +47,10 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
   \item{list}{ A character vector of variable names to operate upon }
   \item{pattern}{ A regular expression specifying variable names to operate upon }
   \item{glob}{ A regular expression specifying variable names to operate upon }
-  \item{all}{If \code{TRUE}, operate upon all elegible variables}
+  \item{all}{If \code{TRUE}, operate upon all elegible variables.  The
+  default is \code{FALSE} for functions that can change data, and
+  \code{TRUE} for functions that merely control whether data is in
+  memory or file or both.}
   \item{exclude}{Controls exclusion of particular variables by pattern
   matching against a vector of regular expressions in the
   \code{autoTrackExcludePattern} option value.  If \code{exclude==TRUE} (the default),

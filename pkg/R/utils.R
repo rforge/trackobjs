@@ -26,10 +26,10 @@
 ##   track.start(dir=trackingDir)
 ##   track.dir()
 ##   track.stop()
-##   track(var) track(var <- value) track(list=...) track(all=T)
+##   track(var) track(var <- value) track(list=...) track(all=TRUE)
 ##   track.status(): return a list of track env, track dir, and tracked, untracked, and untrackable vars
-##   untrack(var) untrack(list=) untrack(all=T)
-##   track.remove(var) track.remove(list=) track.remove(all=T) (call this track.remove() ?)
+##   untrack(var) untrack(list=) untrack(all=TRUE)
+##   track.remove(var) track.remove(list=) track.remove(all=TRUE) (call this track.remove() ?)
 ##   track.summary()
 ##
 ##   tracked(): return all tracked variables
@@ -247,7 +247,7 @@ getFileMapObj <- function(trackingEnv) {
 }
 
 writeFileMapFile <- function(fileMap, trackingEnv, dataDir, assignObj=TRUE) {
-    if (assignObj && is(try(assign(".trackingFileMap", fileMap, envir=trackingEnv)), "try-error"))
+    if (assignObj && is(try(assign(".trackingFileMap", fileMap, envir=trackingEnv), silent=TRUE), "try-error"))
         warning("failed to assign '.trackingFileMap' in ", envname(trackingEnv))
     if (length(fileMap)) {
         i <- order(names(fileMap))
@@ -262,7 +262,7 @@ writeFileMapFile <- function(fileMap, trackingEnv, dataDir, assignObj=TRUE) {
         return(FALSE)
     }
     on.exit(close(con))
-    save.res <- try(writeLines(text=fileData, con=con, sep="\n"))
+    save.res <- try(writeLines(text=fileData, con=con, sep="\n"), silen=TRUE)
     if (is(save.res, "try-error")) {
         warning("failed to save filemap.txt: try to fix problem, then do 'track.resave()'")
         return(FALSE)
@@ -276,7 +276,7 @@ readFileMapFile <- function(trackingEnv, dataDir, assignObj) {
     if (is(open.res, "try-error"))
         stop("failed to open \"", file.path(dataDir, "filemap.txt"), "\" for reading: try using track.rebuild()")
     on.exit(close(con))
-    fileData <- try(readLines(con=con, n=-1))
+    fileData <- try(readLines(con=con, n=-1), silent=TRUE)
     if (is(fileData, "try-error"))
         stop("failed to read file map data from \"", file.path(dataDir, "filemap.txt"), "\": try using track.rebuild()")
     ## Remove Windows line termination
@@ -286,7 +286,7 @@ readFileMapFile <- function(trackingEnv, dataDir, assignObj) {
         stop("file map contains invalid data (need a ':' in each line): \"", file.path(dataDir, "filemap.txt"), "\": try using track.rebuild()")
     fileMap <- substring(fileData, 1, i-1)
     names(fileMap) <- substring(fileData, i+1)
-    if (assignObj && is(try(assign(".trackingFileMap", fileMap, envir=trackingEnv)), "try-error"))
+    if (assignObj && is(try(assign(".trackingFileMap", fileMap, envir=trackingEnv), silent=TRUE), "try-error"))
         warning("failed to assign '.trackingFileMap' in ", envname(trackingEnv))
     return(fileMap)
 }
@@ -327,9 +327,9 @@ makeObjFileName <- function(objname, fileNames) {
     ## Generate a filename of the form _NNN (NNN is a number without a leading zero)
     ## work out what numbers have been used
     if (is.list(fileNames))
-        used <- unlist(use.names=FALSE, lapply(fileNames, function(x) as.numeric(substring(grep("^_[1-9][0-9]*$", x, value=T), 2))))
+        used <- unlist(use.names=FALSE, lapply(fileNames, function(x) as.numeric(substring(grep("^_[1-9][0-9]*$", x, value=TRUE), 2))))
     else
-        used <- as.numeric(substring(grep("^_[1-9][0-9]*$", fileNames, value=T), 2))
+        used <- as.numeric(substring(grep("^_[1-9][0-9]*$", fileNames, value=TRUE), 2))
     used <- unique(used)
     used <- sort(c(0, used, length(used)+2))
     ## find the first gap
@@ -410,7 +410,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
             warning(".trackingSummary in ", envname(trackingEnv), " is not a data.frame: not updating summary; run track.rebuild()")
         } else {
             if (is.element(objName, rownames(objSummary))) {
-                sumRow <- summaryRow(objName, sumRow=objSummary[objName, , drop=F], obj=value,
+                sumRow <- summaryRow(objName, sumRow=objSummary[objName, , drop=FALSE], obj=value,
                                         file=NULL, change=TRUE, times=times)
             } else {
                 ## Don't have a row in the summary for this object.
@@ -432,9 +432,10 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
                     sumRow$A <- 0
             }
             objSummary[objName, ] <- sumRow
-            assign.res <- try(assign(".trackingSummary", objSummary, envir=trackingEnv))
+            assign.res <- try(assign(".trackingSummary", objSummary, envir=trackingEnv), silent=TRUE)
             if (is(assign.res, "try-error")) {
-                warning("unable to assign .trackingSummary back to tracking env on ", envname(trackingEnv))
+                warning("unable to assign .trackingSummary back to tracking env on ",
+                        envname(trackingEnv), ": ", assign.res)
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
                 if (opt$writeToDisk && !is.element("eotPurge", opt$cachePolicy)) {
@@ -493,7 +494,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
             warning(".trackingSummary in ", envname(trackingEnv), " is not a data.frame: not updating objSummary; run track.rebuild()")
         } else {
             if (is.element(objName, rownames(objSummary))) {
-                sumRow <- summaryRow(objName, sumRow=objSummary[objName, , drop=F], obj=value,
+                sumRow <- summaryRow(objName, sumRow=objSummary[objName, , drop=FALSE], obj=value,
                                         file=NULL, change=FALSE, times=NULL)
             } else {
                 if (is.null(fullFile)) {
@@ -529,7 +530,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
                     file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
                     save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
                     if (is(save.res, "try-error"))
-                        warning("unable to save .trackingSummary to ", dir)
+                        warning("unable to save .trackingSummary to ", dir, ": ", save.res)
                     else
                         assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
                 }
@@ -539,7 +540,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
     return(value)
 }
 
-if (F) {
+if (FALSE) {
 create.fake.Sys.time2 <- function() {
     ## The Sys.time() function created by this function doesn't get
     ## called by functions in a different environment.
@@ -598,7 +599,7 @@ find.relative.path <- function(path, file) {
     return(paste(file.rel, collapse=.Platform$file.sep))
 }
 
-if (F) {
+if (FALSE) {
     ## Code in here was an alternate, worse way to override Sys.time() for testing purposes
     ## (worse because it introduced permanent overhead for Sys.time(), even in normal operation)
 call.Sys.time <- function() Sys.time()

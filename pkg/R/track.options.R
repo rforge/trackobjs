@@ -1,4 +1,4 @@
-track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, clear=FALSE, delete=FALSE, trackingEnv, only.preprocess=FALSE, old.options=list()) {
+track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...), save=FALSE, clear=FALSE, delete=FALSE, trackingEnv, only.preprocess=FALSE, old.options=list()) {
     ## This function probably tries to do too many things (e.g., in using arg
     ## combinations only.preprocess, trackingEnv, save, old.options, ...)
     ## It would probably be better rewritten into several functions, with
@@ -68,7 +68,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
                 if (!file.exists(file))
                     stop("weird: thought I had the options file, but it doesn't exist...; ", file, "; ", x)
                 tmpenv <- new.env(parent=emptyenv())
-                load.res <- try(load(file=file, envir=tmpenv))
+                load.res <- try(load(file=file, envir=tmpenv), silent=TRUE)
                 if (is(load.res, "try-error") || length(load.res)!=1 || load.res!=".trackingOptions") {
                     warning(file, " does not contain a .trackingOptions object -- ignoring it and using system defaults")
                 } else {
@@ -83,12 +83,9 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
     }
     if (length(currentOptions)==0) ## in case someone supplied old.options=NULL
         currentOptions <- list()
-    values <- list(...)
-    ## if we were called like track.options(NULL), make this like track.options()
+    ## If we were called like track.options(values=NULL), make this like track.options()
     if (length(values)==1 && is.null(values[[1]]))
-        values <- list()
-    if (length(values)==1 && is.list(values[[1]]))
-        values <- values[[1]]
+         values <- list()
     optionNames <- c("cache", "cachePolicy", "cacheKeepFun", "writeToDisk", "maintainSummary",
                      "alwaysSaveSummary", "recordAccesses", "summaryTimes", "summaryAccess",
                      "RDataSuffix", "debug", "autoTrackExcludePattern", "autoTrackExcludeClass",
@@ -165,9 +162,9 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
                         f <- eval(f)
                     }
                 }
-                if (!is.function(f))
+                if (!is.function(f) && !is.null(f))
                     stop("cacheKeepFun must be a function or the name of a function")
-                if (!all(is.element(c("objs", "envname"), names(formals(f)))))
+                if (!is.null(f) && !all(is.element(c("objs", "inmem", "envname"), names(formals(f)))))
                     stop("cacheKeepFun must have an arguments namd 'objs' and 'envname'")
             } else if (opt=="readonly") {
                 if (!is.logical(values[[opt]]))
@@ -238,7 +235,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), save=FALSE, cle
             dir <- getTrackingDir(trackingEnv)
             file <- file.path(getDataDir(dir), paste(".trackingOptions", currentOptions$RDataSuffix, sep="."))
             ## if we did change any options, they will have been saved in .trackingOptions in trackingEnv
-            save.res <- try(save(list=".trackingOptions", file=file, envir=trackingEnv))
+            save.res <- try(save(list=".trackingOptions", file=file, envir=trackingEnv), silent=TRUE)
             if (is(save.res, "try-error"))
                 stop("unable to save .trackingOptions in ", file)
         }

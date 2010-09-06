@@ -8,9 +8,9 @@
   changed indpendently.   Global default values can be set in \code{options("global.track.options")}.
 }
 \usage{
-track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
-        clear=FALSE, delete=FALSE,
-        trackingEnv, only.preprocess = FALSE, old.options = list())
+track.options(..., pos = 1, envir = as.environment(pos),
+              values=list(...), save = FALSE, clear=FALSE, delete=FALSE,
+              trackingEnv, only.preprocess = FALSE, old.options = list())
 }
 
 \arguments{
@@ -21,7 +21,11 @@ track.options(..., pos = 1, envir = as.environment(pos), save = FALSE,
     (default is 1 for the global environment)}
   \item{envir}{ The environment being tracked.  This is an alternate way
     (to the use of \code{pos=})
-  of specifying the environment being tracked, but should be rarely needed.}
+  of specifying the environment being tracked, but should be rarely
+  needed.}
+  \item{values}{A named list of option values to set.
+    \code{track.options(readonly=T)} is equivalent to
+    \code{track.options(values=list(readonly=TRUE))}}
   \item{save}{If \code{TRUE}, current options are saved to disk and will
     be used in future.  Note that all current options settings are saved,
     not just the new settings made in this call.}

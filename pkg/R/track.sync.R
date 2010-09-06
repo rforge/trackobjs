@@ -34,23 +34,59 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (master=="files")
         return(track.rescan(envir=envir, forgetModified=TRUE, level="low"))
 
+    ## Get info about the state of things
+    autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
+    fileMap <- getFileMapObj(trackingEnv)
+    all.objs <- .Internal(ls(envir, TRUE))
+    untracked <- setdiff(all.objs, names(fileMap))
+    reserved <- isReservedName(untracked)
+    ## .trackingEnv will always exist -- don't warn about it
+    warn.reserved <- setdiff(untracked[reserved], ".trackingEnv")
+    if (verbose && length(warn.reserved))
+        cat("track.sync: cannot track variables with reserved names: ", paste(warn.reserved, collapse=", "), "\n", sep="")
+    untracked <- untracked[!reserved]
+    activeBindings <- sapply(untracked, bindingIsActive, envir)
+    if (verbose && any(activeBindings))
+        cat("track.sync: cannot track variables that have active bindings: ", paste(untracked[activeBindings], collapse=", "), "\n", sep="")
+    untracked <- untracked[!activeBindings]
+    if (length(opt$autoTrackExcludeClass)) {
+        excludedClass <- sapply(untracked, function(o) any(is.element(class(get(o, envir=envir, inherits=FALSE)), opt$autoTrackExcludeClass)))
+        if (any(excludedClass)) {
+            if (verbose)
+                cat("track.sync: not tracking variables from excluded classes: ",
+                    paste(untracked[excludedClass], collapse=", "), "\n", sep="")
+            untracked <- untracked[!excludedClass]
+        }
+    }
+    for (re in opt$autoTrackExcludePattern)
+        untracked <- grep(re, untracked, invert=TRUE, value=TRUE)
+    deleted <- setdiff(names(fileMap), all.objs)
+
     ## If there is a cacheKeepFun, see what it says...
     ## Record what variables it says to not keep in purgeVars.
     ## purgeVars is NULL if there is no cacheKeepFun
     purgeVars <- NULL
     if (taskEnd && opt$cachePolicy=="eotPurge" && length(opt$cacheKeepFun)
         && exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
+        ## the object summary
         objs <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
-        keep <- try(do.call(opt$cacheKeepFun, list(objs=objs, envname=envname(envir))))
-        if (is(keep, "try-error")) {
-            warning("opt$cacheKeepFun stopped with an error: ", keep)
-        } else if (!is.logical(keep) || length(keep)!=nrow(objs) || any(is.na(keep))) {
-            warning("opt$cacheKeepFun did not return a TRUE/FALSE vector of the correct length")
-        } else {
-            purgeVars <- rownames(objs)[!keep]
+        ## which variables are currently cached
+        inmem <- is.element(rownames(objs), .Internal(ls(trackingEnv, TRUE)))
+        if (any(inmem)) {
+            keep <- try(do.call(opt$cacheKeepFun, list(objs=objs, inmem=inmem, envname=envname(envir))), silent=TRUE)
+            if (is(keep, "try-error")) {
+                warning("opt$cacheKeepFun stopped with an error: ", keep)
+            } else if (!is.logical(keep) || length(keep)!=nrow(objs) || any(is.na(keep))) {
+                warning("opt$cacheKeepFun did not return a TRUE/FALSE vector of the correct length")
+            } else {
+                purgeVars <- rownames(objs)[inmem & !keep]
+            }
         }
     }
 
+    ## Special shortcut for readonly envs; work on removing this...
+    ## (make sure code following will do the same thing and won't
+    ## touch a readonly env)
     if (opt$readonly && !isTRUE(full)) {
         ## The only thing to do for a readonly env is
         ## to flush cached objects out of memory.
@@ -64,7 +100,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                         paste(purgeVars, collapse=", "), "\n")
                 } else {
                     if (opt$debug)
-                        cat("track.sync: purging", length(purgeVars), "vars with call to track.flush(envir=",
+                        cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
                             envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
                     if (length(purgeVars))
                         track.flush(envir=envir, list=purgeVars)
@@ -85,35 +121,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         warning("readonly=TRUE will prevent writing anything to files, but will show what will happen")
         dryRun <- TRUE
     }
-    autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
-    fileMap <- getFileMapObj(trackingEnv)
-    all.objs <- .Internal(ls(envir, TRUE))
-    untracked <- setdiff(all.objs, names(fileMap))
-    reserved <- isReservedName(untracked)
-    ## .trackingEnv will always exist -- don't warn about it
-    warn.reserved <- setdiff(untracked[reserved], ".trackingEnv")
-    if (verbose && length(warn.reserved))
-        cat("track.sync: cannot track variables with reserved names: ", paste(untracked[reserved], collapse=", "), "\n", sep="")
-    untracked <- untracked[!reserved]
-    activeBindings <- sapply(untracked, bindingIsActive, envir)
-    if (verbose && any(activeBindings))
-        cat("track.sync: cannot track variables that have active bindings: ", paste(untracked[activeBindings], collapse=", "), "\n", sep="")
-    untracked <- untracked[!activeBindings]
-    if (length(opt$autoTrackExcludeClass)) {
-        excludedClass <- sapply(untracked, function(o) any(is.element(class(get(o, envir=envir, inherits=FALSE)), opt$autoTrackExcludeClass)))
-        if (any(excludedClass)) {
-            if (verbose)
-                cat("track.sync: not tracking variables from excluded classes: ",
-                    paste(untracked[excludedClass], collapse=", "), "\n", sep="")
-            untracked <- untracked[!excludedClass]
-        }
-    }
-    for (re in opt$autoTrackExcludePattern)
-        untracked <- grep(re, untracked, invert=TRUE, value=TRUE)
-    deleted <- setdiff(names(fileMap), all.objs)
+    ## Deal with new (untracked) and deleted variables
     if (length(untracked)) {
         if (opt$readonly) {
-            warning("variables have been created in a readonly tracking env, these will not be written out to the files: ",
+            warning(length(untracked), " variables created in a readonly tracking env, these will not be written out to the files: ",
                     paste(untracked, collapse=", "))
         } else if (dryRun) {
             cat("track.sync(dryRun): would track ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
@@ -128,7 +139,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     }
     if (length(deleted)) {
         if (opt$readonly) {
-            warning("variables have been deleted from a readonly tracking env, these will not be deleted from the files: ",
+            warning(length(deleted), "variables deleted from a readonly tracking env, these will not be deleted from the files: ",
                     paste(deleted, collapse=", "))
         } else if (dryRun) {
             cat("track.sync(dryRun): would remove ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
@@ -154,7 +165,9 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     }
     retrack <- character(0)
     if (full) {
-        # find the vars that look like they are tracked but don't have active bindings
+        ## Find the vars that look like they are tracked but don't have active bindings
+        ## This can be time consuming -- need to call bindingIsActive for each tracked
+        ## var.
         tracked <- intersect(names(fileMap), all.objs)
         reserved <- isReservedName(tracked)
         if (verbose && any(reserved))
@@ -218,7 +231,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                     paste(purgeVars, collapse=", "), "\n")
             } else {
                 if (opt$debug)
-                    cat("track.sync: purging", length(purgeVars), "vars with call to track.flush(envir=",
+                    cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
                         envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
                 if (length(purgeVars))
                     track.flush(envir=envir, list=purgeVars)
@@ -289,6 +302,8 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ## Don't repeat the work an explicit call to track.sync()
     if (is.call(expr) && as.character(expr[[1]]) == "track.sync")
         return(TRUE)
-    track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir", taskEnd=TRUE)
+    res <- try(track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir", taskEnd=TRUE), silent=TRUE)
+    if (is(try, "try-error"))
+        warning("oops: track.sync() had a problem (use track.auto(FALSE) to turn off): ", res)
     return(TRUE) # to keep this callback active
 }

@@ -180,7 +180,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         gopt$RDataSuffixes <- NULL
         old.options <- gopt
     }
-    opt <- track.options(options, envir=NULL, only.preprocess=TRUE, old.options=old.options)
+    opt <- track.options(values=options, envir=NULL, only.preprocess=TRUE, old.options=old.options)
     if (!is.null(readonly))
         opt$readonly <- readonly
     assign(".trackingOptions", opt, envir=trackingEnv)
@@ -241,7 +241,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                 alreadyExists <- setdiff(alreadyExists, clobberFirst)
                 remove(list=clobberFirst, envir=envir)
             }
-            i <- F
+            i <- FALSE
             for (re in opt$autoTrackExcludePattern)
                 i <- i | grep(re, names(fileMap))
             if (any(i))

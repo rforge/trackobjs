@@ -1,13 +1,13 @@
 track.remove <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=FALSE, force=FALSE)
     trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="remove", who="track.remove()", force=force)
 
-track.save <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr))
+track.save <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr) && missing(list) && missing(pattern) && missing(glob))
     trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="save", resave=FALSE, who="track.save()")
 
-track.resave <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr))
+track.resave <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr) && missing(list) && missing(pattern) && missing(glob))
     trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="save", resave=TRUE, who="track.resave()")
 
-track.flush <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr))
+track.flush <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr) && missing(list) && missing(pattern) && missing(glob))
     trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="flush", who="track.flush()")
 
 track.forget <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=FALSE)
@@ -125,7 +125,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
             if (exists(objname, envir=trackingEnv, inherits=FALSE))
                 remove(list=objname, envir=trackingEnv)
             if (file.exists(filePath)) {
-                rm.res <- try(file.remove(filePath))
+                rm.res <- try(file.remove(filePath), silent=TRUE)
                 if (is(rm.res, "try-error"))
                     warning("could not remove file for tracked var '", objname, "'")
             }
@@ -137,7 +137,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         } else if (is.element(op, c("save", "flush", "forget", "lift"))) {
             if (is.element(op, c("flush", "save", "lift")) && exists(objname, envir=trackingEnv, inherits=FALSE)
                 && (resave || is.element(objname, unsaved))) {
-                save.res <- try(save(list=objname, envir=trackingEnv, file=filePath))
+                save.res <- try(save(list=objname, envir=trackingEnv, file=filePath), silent=TRUE)
                 if (is(save.res, "try-error"))
                     stop("could not save '", objname, "' in ", filePath, ": fix file problem and try again")
             }
@@ -166,7 +166,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         writeFileMapFile(fileMap, trackingEnv, dataDir, FALSE)
     if ((needSaveObjSummary || resave) && !opt$readonly) {
         assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-        save2.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))))
+        save2.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))), silent=TRUE)
         if (!is(save2.res, "try-error"))
             assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     }
