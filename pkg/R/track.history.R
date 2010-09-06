@@ -64,7 +64,7 @@ track.history.writer <- function(expr, value, ok, visible) {
     if (is.null(style) || nchar(style)==0)
         style <- Sys.getenv("R_INCR_HIST_STYLE")
     if (is.null(style) || nchar(style)==0)
-        style <- "fast"
+        style <- "full"
     times <- getOption("incr.hist.times")
     if (is.null(times) || nchar(times)==0)
         times <- Sys.getenv("R_INCR_HIST_TIMES")
@@ -78,6 +78,10 @@ track.history.writer <- function(expr, value, ok, visible) {
     ## But, haven't yet programmed a way of identifying the full
     ## command without inserting time stamps into the history, so
     ## keep the "fast" style until figure that out.
+    ## DOUBLE BUT: there is a bug in R-2.11.1 that makes R crash
+    ## if this function is called back after sourcing an empty
+    ## file (because it leaves expr=0x0 in the C-code.)
+    ## So, turn the default back to "full"
     if (style=="fast") {
         width <- getOption("incr.hist.width")
         if (is.null(width) || nchar(width)==0)
