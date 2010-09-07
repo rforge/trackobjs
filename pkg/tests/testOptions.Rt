@@ -192,6 +192,22 @@ $autoTrackExcludeClass
 $autoTrackExcludeClass
 [1] "RODBC"
 
+> track.options(cacheKeepFun=function(objs, inmem, envname) {keep <- rep(FALSE, length(inmem)); browser(); return(keep)})
+> track.options("cacheKeepFun")
+$cacheKeepFun
+function (objs, inmem, envname) 
+{
+    keep <- rep(FALSE, length(inmem))
+    browser()
+    return(keep)
+}
+
+> track.options(cacheKeepFun=NULL)
+> track.options("cacheKeepFun")
+$cacheKeepFun
+NULL
+
+> 
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
