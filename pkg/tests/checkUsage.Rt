@@ -3,5 +3,6 @@
 > library(trackObjs)
 > library(codetools)
 > # run codetools code quality checking
-> checkUsagePackage("trackObjs")
+> # this is no longer necessary because it is run by R CMD check
+> # checkUsagePackage("trackObjs")
 > 
