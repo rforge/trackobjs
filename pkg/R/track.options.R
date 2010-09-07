@@ -84,7 +84,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     if (length(currentOptions)==0) ## in case someone supplied old.options=NULL
         currentOptions <- list()
     ## If we were called like track.options(values=NULL), make this like track.options()
-    if (length(values)==1 && is.null(values[[1]]))
+    if (length(values)==1 && is.null(names(values)) && is.null(values[[1]]))
          values <- list()
     optionNames <- c("cache", "cachePolicy", "cacheKeepFun", "writeToDisk", "maintainSummary",
                      "alwaysSaveSummary", "recordAccesses", "summaryTimes", "summaryAccess",
