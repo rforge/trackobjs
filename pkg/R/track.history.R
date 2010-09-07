@@ -25,6 +25,7 @@ track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, m
     cat("##------*", message, "at", date(), "*------##\n", file=file, append=TRUE)
     invisible(res)
 }
+
 track.history.stop <- function() {
     if (is.element("track.history.writer", getTaskCallbackNames()))
         removeTaskCallback("track.history.writer")
@@ -55,6 +56,10 @@ track.history.load <- function(times=FALSE) {
 }
 
 track.history.writer <- function(expr, value, ok, visible) {
+    method <- "last" # set the internal algorithm
+    ## Always write time stamps to the incremental history file -- but
+    ## do it in a way that prevents the time stamps from appearing in
+    ## the interactive history.
     file <- getOption("incr.hist.file")
     if (is.null(file) || nchar(file)==0)
         file <- Sys.getenv("R_INCR_HIST_FILE")
@@ -83,6 +88,8 @@ track.history.writer <- function(expr, value, ok, visible) {
     ## file (because it leaves expr=0x0 in the C-code.)
     ## So, turn the default back to "full"
     if (style=="fast") {
+        ## Fast style deparse last expr.
+        ## This will cause R-2.11.1 to crash after sourcing an empty file!!
         width <- getOption("incr.hist.width")
         if (is.null(width) || nchar(width)==0)
             width <- Sys.getenv("R_INCR_HIST_WIDTH")
@@ -91,33 +98,85 @@ track.history.writer <- function(expr, value, ok, visible) {
         cat(c(if (times) paste("##------", date(), "------##"),
               deparse(expr, width)), sep="\n", file=file, append=TRUE)
     } else {
-        ## slow style
+        ## Slow style -- write raw history out to a file, then read it
+        ## back in and identify the last command, which can be multi-line.
         file1 <- tempfile("Rrawhist")
         savehistory(file1)
-        ## What I don't like about timestamp() is that the time stamps
-        ## appear within the interactive history in the R session, which
-        ## is just annoying.  However, we need some way in the history
-        ## of identifying the last command, and it can be multi-line.
-        ## Could remember the previous command, and look for that.
-        ## Could look for the last complete R expression in the file.
-        ## Could look for the last expression in the file that matches
+        ## There are multiple ways of doing this:
+        ## (1) use timestamps - makes things easy.  However what's not nice
+        ## about timestamp() is that the time stamps appear within the
+        ## interactive history in the R session, which is just annoying.
+        ## (2) remember the previous command, and look for that.
+        ## (3) look for the last complete R expression in the file.
+        ## (4) look for the last expression in the file that matches
         ## the value of the expr arg to this function.
         ## For the moment, use timestamp().
-        timestamp(quiet=TRUE)
+        if (method=="timestamps")
+            timestamp(quiet=TRUE)
         ## cat(c(if (times) paste("##------", date(), "------##"),
         ##      deparse(expr, width)), sep="\n", file=file, append=TRUE)
         rawhist <- readLines(file1)
         unlink(file1)
-        posns <- grep("^##------.*------##$", rawhist)
-        stamp.lines <- NA
-        if (length(posns))
-            stamp.lines <- max(posns)
-        if (is.na(stamp.lines))
-            stamp.lines <- 1
-        else if (!times)
-            stamp.lines <- stamp.lines + 1
-        if (stamp.lines <= length(rawhist))
-            cat(rawhist[seq(stamp.lines, length(rawhist))], sep="\n", file=file, append=TRUE)
+        if (method=="timestamps") {
+            posns <- grep("^##------.*------##$", rawhist)
+            stamp.lines <- NA
+            if (length(posns))
+                stamp.lines <- max(posns)
+            if (is.na(stamp.lines))
+                stamp.lines <- 1
+            else if (!times)
+                stamp.lines <- stamp.lines + 1
+            if (stamp.lines <= length(rawhist))
+                cat(rawhist[seq(stamp.lines, length(rawhist))], sep="\n", file=file, append=TRUE)
+        } else {
+            ## Use the last lines to limit the possible starts
+            last <- history.last.lines$get()
+            lines <- find.expr.lines.following(rawhist, last)
+            if (length(lines)) {
+                cat(c(if (times) paste("##------", date(), "------##"),
+                      lines), sep="\n", file=file, append=TRUE)
+                history.last.lines$set(lines)
+            }
+        }
     }
     TRUE
 }
+
+find.expr.lines.following <- function(rawhist, last) {
+    pstarts <- integer(0)
+    if (length(last)) {
+        last.starts <- which(last[1] == rawhist)
+        pstarts <- rep(NA, length(last.starts))
+        if (length(last)>1) {
+            for (i in seq(along=last.starts)) {
+                if (last.starts[i]+length(last) < length(rawhist)
+                    && all(last == rawhist[seq(last.starts[i], len=length(last))]))
+                    pstarts[i] <- last.starts[i] + length(last)
+            }
+        } else {
+            pstarts <- last.starts + 1
+            pstarts[pstarts > length(rawhist)] <- NA
+        }
+        pstarts <- pstarts[!is.na(pstarts)]
+    }
+    if (length(pstarts)==0)
+        pstarts <- seq(along=rawhist)
+    # work backwards, trying so see what parses
+    for (i in rev(pstarts)) {
+        lines <- rawhist[seq(from=i, to=length(rawhist))]
+        if (!is(try(parse(text=lines), silent=TRUE), "try-error"))
+            return(lines)
+    }
+    # couldn't find any complete expression?
+    return(character(0))
+}
+
+## Set up a function closure to remember the last history lines,
+## along the lines of demo("closure").
+## Use it like this:
+## > history.last.lines$set("foo")
+## > history.last.lines$get()
+## [1] "foo"
+history.last.lines <- (function(last=NULL) list(set=function(lines) last <<- lines,
+                                               get=function() last))()
+
