@@ -300,8 +300,11 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     if (!isTRUE(autoTrack$on))
         return(FALSE)
     ## Don't repeat the work an explicit call to track.sync()
-    if (is.call(expr) && as.character(expr[[1]]) == "track.sync")
-        return(TRUE)
+    ## BUT, expr in a callback can be an invalid object and cause
+    ## a crash when it is accessed, so don't touch it until R is fixed!
+    if (FALSE)
+        if (is.call(expr) && as.character(expr[[1]]) == "track.sync")
+            return(TRUE)
     res <- try(track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir", taskEnd=TRUE), silent=TRUE)
     if (is(try, "try-error"))
         warning("oops: track.sync() had a problem (use track.auto(FALSE) to turn off): ", res)
