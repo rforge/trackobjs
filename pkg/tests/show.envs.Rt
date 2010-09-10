@@ -1,0 +1,15 @@
+> x <- data.frame(a=1:10, b=10:1)
+> m <- lm(a ~ b, data=x)
+> str.envs(m)
+<env R_GlobalEnv>: attr(m$terms, ".Environment")
+<env R_GlobalEnv>: attr(attr(m$model, "terms"), ".Environment")
+[1] 2
+> 
+> # see discussion in R-devel July 2010: Re: [Rd] Large discrepancies in the same object being saved to .RData
+> f1 <- function() {
++ junk <- rnorm(10000000)
++ x <- 1:3
++ y <- rnorm(3)
++ lm(y ~ x)
++ }
+> 
