@@ -1,15 +1,48 @@
 > x <- data.frame(a=1:10, b=10:1)
 > m <- lm(a ~ b, data=x)
-> str.envs(m)
+> show.envs(m)
 <env R_GlobalEnv>: attr(m$terms, ".Environment")
 <env R_GlobalEnv>: attr(attr(m$model, "terms"), ".Environment")
 [1] 2
 > 
 > # see discussion in R-devel July 2010: Re: [Rd] Large discrepancies in the same object being saved to .RData
-> f1 <- function() {
-+ junk <- rnorm(10000000)
+> f1 <- function(a = 1, FUN=function(x) x^2, b = FALSE) {
++ f3 <- function(x) x^3
++ junk <- rnorm(10)
 + x <- 1:3
 + y <- rnorm(3)
-+ lm(y ~ x)
++ m <- lm(y ~ x)
++ if (b) browser()
++ m
 + }
+> m2 <- f1(2)
+> show.envs(m2)
+#@ gsub("0x[0-9a-f]+", "0xXXXX", both)
+<environment: 0x00f27484>: attr(m2$terms, ".Environment")
+<environment: 0x00f27484>: attr(attr(m2$model, "terms"), ".Environment")
+[1] 2
+> 
+> x <- list(a=new.env(), b=new.env())
+> assign("c", new.env(), envir=x$a)
+> x
+#@ gsub("0x[0-9a-f]+", "0xXXXX", both)
+$a
+<environment: 0x03e36514>
+
+$b
+<environment: 0x03e362e4>
+
+> ls(env=x$a)
+[1] "c"
+> # There are more environments inside environments inside x,
+> # but we don't see them unless we explicitly peek
+> show.envs(x)
+#@ gsub("0x[0-9a-f]+", "0xXXXX", both)
+<environment: 0x03e36514>: x$a
+<environment: 0x03e362e4>: x$b
+[1] 2
+> show.envs(get("c", env=x$a))
+#@ gsub("0x[0-9a-f]+", "0xXXXX", both)
+<environment: 0x042f19e4>: get("c", env = x$a)
+[1] 1
 > 

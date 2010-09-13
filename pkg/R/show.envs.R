@@ -1,25 +1,37 @@
 show.envs <- function(x, obj=substitute(x)) {
+    # Recurse through x and show the environments found within it.
+    # Does NOT recursively enter environments -- once it finds an
+    # environment it just prints the name of that environment
+    # and doesn't look inside the environment.
     n <- 0
     if (is.environment(x)) {
-        cat(envname(x), " ", paste(deparse(obj), collapse="\n  "), "\n", sep="")
+        cat(envname(x), ": ", paste(deparse(obj), collapse="\n  "), "\n", sep="")
+        n <- 1
+    } else if (typeof(x) %in% c("externalptr", "weakref")) {
+        # not sure what's useful here; output could change
+        cat("<", typeof(x), ">: ", paste(deparse(obj), collapse="\n  "), "\n", sep="")
+        n <- 1
+    } else if (typeof(x) %in% c("closure")) {
+        # x is a function
+        show.envs(environment(x), call("environment", obj))
         n <- 1
     } else {
         if (isS4(x)) {
-            n <- lapply(slotNames(x), function(i) str.envs(x@i, call("@", obj, i)))
+            n <- lapply(slotNames(x), function(i) show.envs(x@i, call("@", obj, i)))
         } else if (is.list(x)) {
             if (is.null(names(x)))
-                n <- lapply(seq(len=length(x)), function(i) str.envs(x[[i]], call("[[", obj, i)))
+                n <- lapply(seq(len=length(x)), function(i) show.envs(x[[i]], call("[[", obj, i)))
             else
-                n <- lapply(names(x), function(i) str.envs(x[[i]], call("$", obj, i)))
+                n <- lapply(names(x), function(i) show.envs(x[[i]], call("$", obj, i)))
         }
         attr.names <- names(attributes(x))
-        m <- lapply(attr.names, function(a) str.envs(attr(x, a), call("attr", obj, a)))
+        m <- lapply(attr.names, function(a) show.envs(attr(x, a), call("attr", obj, a)))
         n <- sum(unlist(n), unlist(m))
     }
     n
 }
 
-# str.default function from base R - use a model for str.envs (change to show.envs)
+# str.default function from base R - use a model for show.envs (change to show.envs)
 base.R.str.default <- function (object, max.level = NA, vec.len = strO$vec.len, digits.d = strO$digits.d,
     nchar.max = 128, give.attr = TRUE, give.head = TRUE, give.length = give.head,
     width = getOption("width"), nest.lev = 0, indent.str = paste(rep.int(" ",
