@@ -44,19 +44,27 @@ environment.)  The results of some modeling functions contain
 environments, e.g., \code{lm} stores several references to the
 environment that contains the data.  When such objects are
 \code{save}'ed, the environment containing the data, and all the other
-objects in that environment, are saved in the same file.  To work with
-large data objects and modeling functions, consider creating a tracking
-database that contains the data objects, and then attaching this at
-pos=2 in the R session where the modeling is conducted, and don't use
-tracking for that session.  Alternatively, use modeling functions that
-do not store references to environments.
+objects in that environment, can be saved in the same file.  To work
+with large data objects and modeling functions, consider first creating
+a tracking database that contains the data objects.  Then, in a
+different R session (which can be running at the same time), use
+\code{track.attach} to attach the db of data objects at \code{pos=2} on
+the search list.  When working in this way, the data objects will only
+be kept in memory when being used, and modeling functions that record
+environments in their results can be successful used (though beware of
+modeling functions that store large amounts of data in their results.)
+Alternatively, use modeling functions that do not store references to
+environments.  The utility function \code{\link{show.envs}} will show
+what environments are referenced within an object (though it is not
+guaranteed to find them all.)
 
 The trackObjs package also provides a self-contained incremental history
 saving function that writes the most recent command to the file
-\code{.Rincr_history} at the end of each top-level task. (The standard
+\code{.Rincr_history} at the end of each top-level task, along with a
+time stamp that does not appear in the interactive history. The standard
 history functionality (savehistory/loadhistory) in R writes the history
 only at the end of the session.  Thus, if the R session terminates
-abnormally, history is lost.)
+abnormally, history is lost.
 
 }
 \details{
