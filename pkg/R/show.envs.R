@@ -31,6 +31,7 @@ show.envs <- function(x, obj=substitute(x)) {
     n
 }
 
+if (FALSE) {
 # str.default function from base R - use a model for show.envs (change to show.envs)
 base.R.str.default <- function (object, max.level = NA, vec.len = strO$vec.len, digits.d = strO$digits.d,
     nchar.max = 128, give.attr = TRUE, give.head = TRUE, give.length = give.head,
@@ -440,4 +441,5 @@ base.R.str.default <- function (object, max.level = NA, vec.len = strO$vec.len, 
         }
     }
     invisible()
+}
 }
