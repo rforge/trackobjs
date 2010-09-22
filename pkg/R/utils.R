@@ -586,17 +586,29 @@ find.relative.path <- function(path, file) {
     }
     path.comp <- strsplit(path, split="/", fixed=TRUE)[[1]]
     file.comp <- strsplit(file, split="/", fixed=TRUE)[[1]]
+    ## Windows doesn't normalize drive letters to all caps,
+    ## which can result in a mismatch
+    if (.Platform$OS.type == "windows") {
+        if (length(grep("^[a-zA-Z]:$", path.comp[1])))
+            path.comp[1] <- casefold(path.comp[1], upper=FALSE)
+        if (length(grep("^[a-zA-Z]:$", file.comp[1])))
+            file.comp[1] <- casefold(file.comp[1], upper=FALSE)
+    }
     i <- 1
     while (i <= min(length(path.comp), length(file.comp))
            && path.comp[i] == file.comp[i])
         i <- i+1
-    file.rel <- file.comp[seq(to=length(file.comp), len=length(file.comp)-(i-1))]
-    ## path.use <- path.comp[seq(from=1, len=i-1)]
-    if (i <= length(path.comp))
-        file.rel <- c(rep("..", length(path.comp)-(i-1)), file.rel)
-    if (length(file.rel)==0)
-        file.rel <- "."
-    return(paste(file.rel, collapse=.Platform$file.sep))
+    if (i>1) {
+        file.rel <- file.comp[seq(to=length(file.comp), len=length(file.comp)-(i-1))]
+        ## path.use <- path.comp[seq(from=1, len=i-1)]
+        if (i <= length(path.comp))
+            file.rel <- c(rep("..", length(path.comp)-(i-1)), file.rel)
+        if (length(file.rel)==0)
+            file.rel <- "."
+        return(paste(file.rel, collapse=.Platform$file.sep))
+    } else {
+        return(paste(file.comp, collapse=.Platform$file.sep))
+    }
 }
 
 if (FALSE) {
