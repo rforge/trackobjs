@@ -33,18 +33,27 @@ track.info <- function(pos=1, envir=as.environment(pos), all=TRUE) {
             warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs masks others and they will not run.")
     }
 
-    if (nrow(res))
-        return(cbind(res, data.frame(row.names=NULL, do.call("rbind", lapply(env.list,
-               function(e) c(unlist(track.options(envir=e, c("readonly", "cache"))),
-                             auto=mget(".trackAuto", ifnotfound=list(list(on=FALSE)),
-                             envir=getTrackingEnv(e))[[1]]$on,
-                             dir=track.dir(envir=e)
-                             ))))))
-    else
-        return(data.frame(env.name=character(0),
+    if (nrow(res)) {
+        callback.names <- getTaskCallbackNames()
+        res <-  cbind(res, data.frame(row.names=NULL, do.call("rbind", lapply(env.list,
+                                      function(e) {
+                                          auto <- mget(".trackAuto", ifnotfound=list(list(on=FALSE)),
+                                                       envir=getTrackingEnv(e))[[1]]$on
+                                          if (auto && !is.element(paste("track.auto:", envname(e), sep=""), callback.names)) {
+                                              pos <- which(sapply(envirs, function(ee) identical(as.environment(ee), e)))
+                                              warning("Task callback ", paste("track.auto:", envname(e), sep=""),
+                                                      " is missing; do track.auto(TRUE, pos=", pos, ") to reinstate")
+                                          }
+                                          c(unlist(track.options(envir=e, c("readonly", "cache"))),
+                                            auto=auto, dir=track.dir(envir=e))}
+                                      ))))
+    } else {
+        res <- data.frame(env.name=character(0),
                           pos=integer(0),
                           readonly=logical(0),
                           cache=logical(0),
                           auto=logical(0),
-                          dir=character(0)))
+                          dir=character(0))
+    }
+    return(res)
 }

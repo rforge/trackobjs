@@ -307,6 +307,8 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
             return(TRUE)
     res <- try(track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir", taskEnd=TRUE), silent=TRUE)
     if (is(try, "try-error"))
-        warning("oops: track.sync() had a problem (use track.auto(FALSE) to turn off): ", res)
+        warning("oops: track.sync() had a problem (use track.auto(FALSE, pos=) to turn off): ", res)
+    if (!is.element("track.auto.monitor", getTaskCallbackNames()))
+        addTaskCallback(track.auto.monitor, name="track.auto.monitor")
     return(TRUE) # to keep this callback active
 }
