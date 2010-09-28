@@ -13,10 +13,16 @@ track.auto.monitor <- function(expr, ok, vlaue, visible) {
             if (auto.on) {
                 callback.name <- paste("track.auto:", envname(as.environment(i)), sep="")
                 if (!is.element(callback.name, callback.names)) {
-                    cat("Task callback", callback.name, "seems to have disappeared; reinstating...\n")
+                    cat("track.auto.monitor: Task callback", callback.name, "seems to have disappeared; reinstating...\n")
                     try(track.auto(TRUE, pos=i))
                 }
             }
+        }
+    }
+    if (identical(getOption("incr.hist.active", FALSE), TRUE)) {
+        if (!is.element("track.history.writer", getTaskCallbackNames())) {
+            cat("track.auto.monitor: Task callback track.history.writer seems to have disappeared; reinstating...\n")
+            addTaskCallback(track.history.writer, name="track.history.writer")
         }
     }
     TRUE

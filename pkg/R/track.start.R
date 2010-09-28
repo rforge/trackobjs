@@ -367,6 +367,8 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     ## in by mistake (probably as a result of saving and
     ## reloading an entire environment.)
     assign(".trackingPid", Sys.getpid(), envir=trackingEnv)
+    if (!is.element("track.auto.monitor", getTaskCallbackNames()))
+        addTaskCallback(track.auto.monitor, name="track.auto.monitor")
     return(invisible(NULL))
 }
 
