@@ -275,7 +275,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     }
     if (full & !dryRun) {
         ## save the time that we did this full sync
-        assign(".trackAuto", list(on=TRUE, last=now), envir=trackingEnv)
+        autoTrack$last <- now
+        assign(".trackAuto", autoTrack, envir=trackingEnv)
     }
     return(invisible(list(new=untracked, removed=deleted)))
 }
