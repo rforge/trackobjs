@@ -138,33 +138,49 @@ track.history.writer <- function(expr, value, ok, visible) {
     TRUE
 }
 
-find.expr.lines.following <- function(rawhist, last) {
-    pstarts <- integer(0)
-    if (length(last)) {
-        last.starts <- which(last[1] == rawhist)
-        pstarts <- rep(NA, length(last.starts))
-        if (length(last)>1) {
-            for (i in seq(along=last.starts)) {
-                if (last.starts[i]+length(last) < length(rawhist)
-                    && all(last == rawhist[seq(last.starts[i], len=length(last))]))
-                    pstarts[i] <- last.starts[i] + length(last)
-            }
-        } else {
-            pstarts <- last.starts + 1
-            pstarts[pstarts > length(rawhist)] <- NA
-        }
-        pstarts <- pstarts[!is.na(pstarts)]
-    }
-    if (length(pstarts)==0)
-        pstarts <- seq(along=rawhist)
-    # work backwards, trying so see what parses
-    for (i in rev(pstarts)) {
-        lines <- rawhist[seq(from=i, to=length(rawhist))]
-        if (!is(try(parse(text=lines), silent=TRUE), "try-error"))
-            return(lines)
-    }
-    # couldn't find any complete expression?
-    return(character(0))
+find.expr.lines.following <- function (rawhist, last) {
+   pstarts <- integer(0)
+   if (length(last)) {
+       last.starts <- which(last[1] == rawhist)
+       pstarts <- rep(NA, length(last.starts))
+       if (length(last) > 1) {
+           for (i in seq(along = last.starts)) {
+               if (last.starts[i] + length(last) < length(rawhist) &&
+                 all(last == rawhist[seq(last.starts[i], len = length(last))]))
+                 pstarts[i] <- last.starts[i] + length(last)
+           }
+       }
+       else {
+           pstarts <- last.starts + 1
+           pstarts[pstarts > length(rawhist)] <- NA
+       }
+       pstarts <- pstarts[!is.na(pstarts)]
+   }
+   for (i in rev(pstarts)) {
+       lines <- rawhist[seq(from = i, to = length(rawhist))]
+       if (!is(try(parse(text = lines), silent = TRUE), "try-error"))
+           return(lines)
+   }
+   if (length(pstarts))
+       return(rawhist[seq(from=max(pstarts), to=length(rawhist))])
+   # There was no match - look for the most recent full expression in the last 20 lines
+   pstarts <- seq(to = length(rawhist), len = min(20, length(rawhist)))
+   for (i in rev(pstarts)) {
+       lines <- rawhist[seq(from = i, to = length(rawhist))]
+       if (!is(try(parse(text = lines), silent = TRUE), "try-error"))
+           return(lines)
+   }
+   # If we can't find any parsable expression in a tail of the history file,
+   # and out last history entry written doesn't match the history file,
+   # then just return the last line of the history file.
+   # A condition under which we would get here is that there was a single
+   # command longer than the current history length, so that none of the
+   # previous command is in the history, and the history is not parsable.
+   # This would only happen under cutting-and-pasting large chunks of code,
+   # in which case the user probably wouldn't care about the history
+   # anyway (and in any case, the ordinary history mechanism is not keeping
+   # it.)
+   return(rawhist[length(rawhist)])
 }
 
 ## Set up a function closure to remember the last history lines,
