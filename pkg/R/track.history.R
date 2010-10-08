@@ -56,6 +56,9 @@ track.history.writer <- function(expr, value, ok, visible) {
     ## Always write time stamps to the incremental history file -- but
     ## do it in a way that prevents the time stamps from appearing in
     ## the interactive history.
+    trace <- getOption("track.callbacks.trace", FALSE)
+    if (trace)
+        cat("track.history.writer: entered at ", date(), "\n", sep="")
     file <- getOption("incr.hist.file")
     if (is.null(file) || nchar(file)==0)
         file <- Sys.getenv("R_INCR_HIST_FILE")
@@ -135,6 +138,8 @@ track.history.writer <- function(expr, value, ok, visible) {
             }
         }
     }
+    if (trace)
+        cat("track.history.writer: exited at ", date(), "\n", sep="")
     TRUE
 }
 

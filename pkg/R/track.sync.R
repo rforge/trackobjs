@@ -287,6 +287,11 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ## and
     ##   assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
     ## 'data' arg is 'envir' - the tracked env
+    trace <- getOption("track.callbacks.trace", FALSE)
+    if (trace) {
+        cat("track.sync.callback: entered at ", date(), "\n", sep="")
+        on.exit(cat("track.sync.callback: exited at ", date(), "\n", sep=""))
+    }
     trackingEnv <- getTrackingEnv(data, stop.on.not.tracked = FALSE)
     ## trackingEnv will be missing on the callback following the completion
     ## of the command track.stop()
@@ -309,6 +314,7 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     res <- try(track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir", taskEnd=TRUE), silent=TRUE)
     if (is(try, "try-error"))
         warning("oops: track.sync() had a problem (use track.auto(FALSE, pos=) to turn off): ", res)
+    ## Check that the monitor is alive -- this is a mutual back-scratching exercise
     if (!is.element("track.auto.monitor", getTaskCallbackNames()))
         addTaskCallback(track.auto.monitor, name="track.auto.monitor")
     return(TRUE) # to keep this callback active

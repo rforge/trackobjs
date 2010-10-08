@@ -1,9 +1,12 @@
-track.auto.monitor <- function(expr, ok, vlaue, visible) {
+track.auto.monitor <- function(expr, value, ok, visible) {
     ## Monitors existence of task callbacks for track.sync and re-adds them if
     ## they have gone missing (they do seem to go missing occasionally -- hard
     ## to diagnose, seems to be associated with file system problems.)
     ## Try to be fast -- only look at environments on the search path that
     ## are candidates for tracking (i.e., not packages).
+    trace <- getOption("track.callbacks.trace", FALSE)
+    if (trace)
+        cat("track.auto.monitor: entered at ", date(), "\n", sep="")
     envs <- search()
     callback.names <- getTaskCallbackNames()
     envs.look <- grep("^(package:|pkgcode:|Autoloads$)", envs, invert=TRUE)
@@ -25,5 +28,7 @@ track.auto.monitor <- function(expr, ok, vlaue, visible) {
             addTaskCallback(track.history.writer, name="track.history.writer")
         }
     }
+    if (trace)
+        cat("track.auto.monitor: exited at ", date(), "\n", sep="")
     TRUE
 }
