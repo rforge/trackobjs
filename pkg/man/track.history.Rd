@@ -31,10 +31,9 @@ track.history.writer(expr, value, ok, visible)
 }
 \item{style}{
   Two styles are possible: \itemize{
-  \item \code{full}: (default) write history to a file and read back commands to
-  find the recent ones.  This is slower, but it records everything typed
+  \item \code{full}: (default) Use the internal R history mechanism.  This is slower, but it records everything typed
   at the command prompt, in the original formatting.
-  \item \code{fast}: use deparsed version of
+  \item \code{fast}: Use deparsed version of the
   most recently executed command.  This is fast, but it doesn't record
   comments and some commands with errors, and it changes formatting.
   }
@@ -79,13 +78,17 @@ track.history.writer(expr, value, ok, visible)
   values are remembered in \code{options()} and used for the remainder
   of the session or until changed.
 
-  To read in history for a different file, use \code{loadhistory(file)}.
 
-  The operation of history mechanism with \code{style="full"}
-  unavoidably results in timestamps being inserted into the interactive
-  history.  These are needed to identify how much of the history has
-  been written to the incremental history file so far.  There may be
-  ways to avoid their use - patches are welcome.
+The history stored using \code{style="full"} is more complete and
+accurate, in that it includes comments, unparseable commands, and
+original formatting.  It is somewhat slower because it is based
+on the internal history mechanism, which doesn't provide an easy way of
+identifying which are the new commands.  Consequently, when using
+\code{style="full"} \code{track.history.writer()} must inspect the
+entire internal history at the end of each command to work out which
+lines in it have been added since the last time history was written.
+However, the time difference seems negligible for interactive use on
+ordinary workstations circa 2010.
 
   To set up incremental history tracking automatically, put the
   following in your \code{.Rprofile}:
@@ -105,7 +108,8 @@ if (interactive()) {
 }
 \seealso{
 \code{\link{addTaskCallback}}
-\code{\link{loadhistory}}
+To read in command history that is stored in a particular file, use
+\code{\link{loadhistory}(file)}.
 \code{\link{savehistory}}
 }
 \examples{
