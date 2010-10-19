@@ -57,8 +57,10 @@ track.history.writer <- function(expr, value, ok, visible) {
     ## do it in a way that prevents the time stamps from appearing in
     ## the interactive history.
     trace <- getOption("track.callbacks.trace", FALSE)
-    if (trace)
+    if (trace) {
         cat("track.history.writer: entered at ", date(), "\n", sep="")
+        stime <- proc.time()
+    }
     file <- getOption("incr.hist.file")
     if (is.null(file) || nchar(file)==0)
         file <- Sys.getenv("R_INCR_HIST_FILE")
@@ -79,13 +81,11 @@ track.history.writer <- function(expr, value, ok, visible) {
     ## "full" style is nicer because it gets the commands
     ## as typed (incl formatting & comments), while "fast" style gets
     ## the deparsed form of the parse expression.
-    ## But, haven't yet programmed a way of identifying the full
-    ## command without inserting time stamps into the history, so
-    ## keep the "fast" style until figure that out.
-    ## DOUBLE BUT: there is a bug in R-2.11.1 that makes R crash
-    ## if this function is called back after sourcing an empty
+    ## There is a bug in R-2.11.1 that makes R crash
+    ## if this function uses 'expr' when it called back after sourcing an empty
     ## file (because it leaves expr=0x0 in the C-code.)
-    ## So, turn the default back to "full"
+    ## This bug has been fixed in R-2.12.0.
+    ## But for safety, turn the default back to "full"
     if (style=="fast") {
         ## Fast style deparse last expr.
         ## This will cause R-2.11.1 to crash after sourcing an empty file!!
@@ -138,8 +138,10 @@ track.history.writer <- function(expr, value, ok, visible) {
             }
         }
     }
-    if (trace)
-        cat("track.history.writer: exited at ", date(), "\n", sep="")
+    if (trace) {
+        cat("track.history.writer: exited at ", date(),
+             " (", paste(round(1000*(proc.time()-stime)[1:3]), c("u", "s", "e"), sep="", collapse=" "), ")\n", sep="")
+    }
     TRUE
 }
 

@@ -153,6 +153,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             cat("track.sync: no deleted variables\n")
     }
     now <- as.numeric(proc.time()[3])
+    full.orig <- full
     if (is.na(full)) {
         if (opt$autoTrackFullSyncWait==0) {
             full <- TRUE
@@ -165,6 +166,11 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     }
     retrack <- character(0)
     if (full) {
+        trace <- is.na(full.orig) && getOption("track.callbacks.trace", FALSE)
+        if (trace) {
+            cat("track.sync.callback", envname(envir), ": look for vars without active bindings at ", date(), "\n", sep="")
+            stime <- proc.time()
+        }
         ## Find the vars that look like they are tracked but don't have active bindings
         ## This can be time consuming -- need to call bindingIsActive for each tracked
         ## var.
@@ -175,6 +181,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         tracked <- tracked[!reserved]
         if (length(tracked))
             retrack <- tracked[!sapply(tracked, bindingIsActive, envir)]
+        if (trace) {
+            cat("track.sync.callback: finished looking for vars without active bindings",
+                        " (", paste(round(1000*(proc.time()-stime)[1:3]), c("u", "s", "e"), sep="", collapse=" "), " ms)\n", sep="")
+        }
     }
     if (length(retrack))
         for (re in opt$autoTrackExcludePattern)
@@ -289,8 +299,10 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ## 'data' arg is 'envir' - the tracked env
     trace <- getOption("track.callbacks.trace", FALSE)
     if (trace) {
-        cat("track.sync.callback: entered at ", date(), "\n", sep="")
-        on.exit(cat("track.sync.callback: exited at ", date(), "\n", sep=""))
+        cat("track.sync.callback", envname(data), ": entered at ", date(), "\n", sep="")
+        stime <- proc.time()
+        on.exit(cat("track.sync.callback: exited at ", date(),
+                    " (", paste(round(1000*(proc.time()-stime)[1:3]), c("u", "s", "e"), sep="", collapse=" "), " ms)\n", sep=""))
     }
     trackingEnv <- getTrackingEnv(data, stop.on.not.tracked = FALSE)
     ## trackingEnv will be missing on the callback following the completion
