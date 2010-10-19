@@ -20,10 +20,10 @@ z tracked FALSE        z       TRUE  TRUE
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE
 y tracked FALSE        y       TRUE  TRUE
-> track.summary(pos=2, time=0)
-    class    mode extent length size TA TW
-x numeric numeric    [1]      1   32  0  1
-y numeric numeric    [1]      1   32  0  1
+> track.summary(pos=2, time=0, size=F)
+    class    mode extent length TA TW
+x numeric numeric    [1]      1  0  1
+y numeric numeric    [1]      1  0  1
 > track.detach(pos=2)
 Stopping tracking on <env track:tmp14>
 Removing <env track:tmp14> from the search path
@@ -42,10 +42,10 @@ Attaching tracking db in 'tmp14' to env in pos 2 (writable)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE
 y tracked FALSE        y       TRUE  TRUE
-> track.summary(pos=2, time=0)
-    class    mode extent length size TA TW
-x numeric numeric    [1]      1   32  0  1
-y numeric numeric    [1]      1   32  0  1
+> track.summary(pos=2, time=0, size=F)
+    class    mode extent length TA TW
+x numeric numeric    [1]      1  0  1
+y numeric numeric    [1]      1  0  1
 > track.detach(pos=2)
 Stopping tracking on <env track:tmp14>
 Removing <env track:tmp14> from the search path
@@ -68,10 +68,10 @@ Attaching tracking db in 'tmp14' to env in pos 2 (readonly)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE
 y tracked FALSE        y       TRUE  TRUE
-> track.summary(pos=2, time=0)
-    class    mode extent length size TA TW
-x numeric numeric    [1]      1   32  0  1
-y numeric numeric    [1]      1   32  0  1
+> track.summary(pos=2, time=0, size=F)
+    class    mode extent length TA TW
+x numeric numeric    [1]      1  0  1
+y numeric numeric    [1]      1  0  1
 > assign("x", 123, pos=2)
 Error in setTrackedVar("x", v, <environment>) : 
   variable 'x' cannot be changed -- it is in a readonly tracking environment
@@ -97,8 +97,12 @@ Removing <env track:tmp14> from the search path
 [1] TRUE
 > track.attach("tmp14", name="track:tmp14", readonly=TRUE, pos=2)
 Attaching tracking db in 'tmp14' to env in pos 2 (readonly)
-Error in track.start(trackingDir, pos = pos, readonly = readonly, create = create,  : 
-  missing files for some variables in the fileMap (use track.rebuild() to repair): y
+Warning message:
+In track.start(trackingDir, pos = pos, readonly = readonly, create = create,  :
+  missing files for some variables in the fileMap (remove or assign variables to repair): y
+> track.stop(pos=2)
+Stopping tracking on <env track:tmp14>
+Removing <env track:tmp14> from the search path
 > track.rebuild(dir="tmp14", level='all', dryRun=FALSE)
 Rebuilding an inactive tracking database
 Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'

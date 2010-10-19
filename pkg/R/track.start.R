@@ -25,6 +25,10 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     track.stop.finalizer <- function(trackingEnv) {
         ## Finalizer is difficult because it can be called long
         ## after a tracking environment has been disconnected.
+        ## Had the checks in here because I thought I was seeing some
+        ## problems with invalid calls to the finalizer, but they all
+        ## turned out to be calling the finalizer on the object long
+        ## after it had stopped being used.
         if (exists(".trackingFinished", envir=trackingEnv, inherits=FALSE))
             return(NULL)
         if (!exists(".trackingEnv", env=envir, inherits=FALSE)) {
@@ -226,7 +230,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             if (length(fileMap)) {
                 fileExists <- file.exists(file.path(dataDir, paste(fileMap, sep=".", opt$RDataSuffix)))
                 if (any(!fileExists))
-                    stop("missing files for some variables in the fileMap (use track.rebuild() to repair): ",
+                    warning("missing files for some variables in the fileMap (remove or assign variables to repair): ",
                          paste(names(fileMap)[!fileExists], collapse=", "))
             }
             alreadyExists <- logical(0)
