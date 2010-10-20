@@ -19,7 +19,6 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     ## track new objects and removed deleted objects, so want it to be fast.
 
     ## Do check for untrackable objects (isReservedName())
-
     opt <- track.options(trackingEnv=trackingEnv)
     verbose <- dryRun || opt$debug > 0
     if (verbose)
@@ -132,6 +131,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             if (opt$debug > 0)
                 cat("track.sync: tracking ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
             track(list=untracked, envir=envir)
+            fileMap <- getFileMapObj(trackingEnv)
         }
     } else {
         if (verbose)
@@ -147,6 +147,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             if (opt$debug > 0)
                 cat("track.sync: removing ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
             track.remove(list=deleted, envir=envir, force=TRUE)
+            fileMap <- getFileMapObj(trackingEnv)
         }
     } else {
         if (verbose)
@@ -234,32 +235,43 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         environment(f) <- parent.env(environment(f))
         makeActiveBinding(objname, env=envir, fun=f)
     }
+    ## Do we need to re-read the fileMap?
+    if (length(retrack))
+        fileMap <- getFileMapObj(trackingEnv)
     if (taskEnd && opt$cachePolicy=="eotPurge") {
         if (!is.null(purgeVars)) {
             if (dryRun) {
                 cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
                     paste(purgeVars, collapse=", "), "\n")
             } else {
-                if (opt$debug)
+                if (verbose)
                     cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
                         envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
                 if (length(purgeVars))
                     track.flush(envir=envir, list=purgeVars)
             }
         } else {
+            ## which variables are currently cached?
+            ## used to call track.flush(envir=envir, all=TRUE)
+            ## but that's slow compared to working out purgeVars here
+            purgeVars <- .Internal(ls(trackingEnv, TRUE))
+            purgeVars <- purgeVars[is.element(purgeVars, names(fileMap))]
             if (dryRun) {
-                cat("track.sync(dryRun): Would flush all vars\n")
+                cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
+                    paste(purgeVars, collapse=", "), "\n")
             } else {
-                if (opt$debug)
-                    cat("track.sync: calling track.flush(envir=", envname(envir), ", all=TRUE)\n", sep="")
-                track.flush(envir=envir, all=TRUE)
+                if (verbose)
+                    cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
+                        envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
+                if (length(purgeVars))
+                    track.flush(envir=envir, list=purgeVars)
             }
         }
     } else {
         if (dryRun) {
             cat("track.sync(dryRun): Would save all vars\n")
         } else {
-            if (opt$debug)
+            if (verbose)
                 cat("track.sync: calling track.save(envir=", envname(envir), ")\n", sep="")
             track.save(envir=envir, all=TRUE)
         }
@@ -273,7 +285,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             } else {
                 dir <- getTrackingDir(trackingEnv)
                 file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-                if (opt$debug)
+                if (verbose)
                     cat("track.sync: saving .trackingSummary for envir=", envname(envir), " to ", dir, "\n", sep="")
                 save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
                 if (is(save.res, "try-error"))

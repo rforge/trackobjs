@@ -55,7 +55,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     }
     i <- which(isReservedName(list))
     if (length(i)) {
-        warning("cannot ", op, " ", length(i), "vars (these are used in implementing tracking): ",
+        warning("cannot ", op, " ", length(i), " vars (these are used in implementing tracking): ",
                 paste("'", list[i], "'", sep="", collapse=", "))
         list <- list[-i]
     }
