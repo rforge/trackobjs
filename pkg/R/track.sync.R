@@ -91,26 +91,36 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ## to flush cached objects out of memory.
         ## Well..., perhaps we should also check that
         ## no new variables have been created, and if
-        ## they have, warn about them.
+        ## they have, warn about them.  But, that takes
+        ## time, and this function is called after every
+        ## top level task...
         if (taskEnd && opt$cachePolicy=="eotPurge") {
             if (!is.null(purgeVars)) {
                 if (dryRun) {
                     cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
                         paste(purgeVars, collapse=", "), "\n")
                 } else {
-                    if (opt$debug)
+                    if (verbose)
                         cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
                             envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
                     if (length(purgeVars))
                         track.flush(envir=envir, list=purgeVars)
                 }
             } else {
+                ## which variables are currently cached?
+                ## used to call track.flush(envir=envir, all=TRUE)
+                ## but that's slow compared to working out purgeVars here
+                purgeVars <- .Internal(ls(trackingEnv, TRUE))
+                purgeVars <- purgeVars[is.element(purgeVars, names(fileMap))]
                 if (dryRun) {
-                    cat("track.sync(dryRun): Would flush all vars\n")
+                    cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
+                        paste(purgeVars, collapse=", "), "\n")
                 } else {
-                    if (opt$debug)
-                        cat("track.sync: calling track.flush(envir=", envname(envir), ", all=TRUE)\n", sep="")
-                    track.flush(envir=envir, all=TRUE)
+                    if (verbose)
+                        cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
+                            envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
+                    if (length(purgeVars))
+                        track.flush(envir=envir, list=purgeVars)
                 }
             }
         }
@@ -128,7 +138,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         } else if (dryRun) {
             cat("track.sync(dryRun): would track ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
         } else {
-            if (opt$debug > 0)
+            if (verbose > 0)
                 cat("track.sync: tracking ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
             track(list=untracked, envir=envir)
             fileMap <- getFileMapObj(trackingEnv)
@@ -144,7 +154,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         } else if (dryRun) {
             cat("track.sync(dryRun): would remove ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
         } else {
-            if (opt$debug > 0)
+            if (verbose > 0)
                 cat("track.sync: removing ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
             track.remove(list=deleted, envir=envir, force=TRUE)
             fileMap <- getFileMapObj(trackingEnv)
