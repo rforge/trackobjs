@@ -10,8 +10,12 @@ track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, 
     } else if (file.exists(file.path(dir, "rdatadir", "filemap.txt"))) {
         trackingDir <- file.path(dir, "rdatadir")
     } else {
-        if (!create || readonly)
-            stop("dir '", dir, "' does not exist and create=FALSE or readonly=TRUE")
+        if (!create)
+            stop("tracking db does not exist in '", dir, "' or '", file.path(dir, "rdatadir"),
+                 "' and cannot create because create=FALSE")
+        else if (readonly)
+            stop("tracking db does not exist in '", dir, "' or '", file.path(dir, "rdatadir"),
+                 "' and cannot create because readonly=TRUE")
         trackingDir <- dir
     }
     if (is.null(name))
