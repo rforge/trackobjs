@@ -18,7 +18,7 @@
 [1] 12  7 19
 > remove(list=c("x", "Y", "z"))
 > 
-> library(trackObjs)
+> library(track)
 > # Set the locale used by order() so that track.status() & track.summary() put
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))

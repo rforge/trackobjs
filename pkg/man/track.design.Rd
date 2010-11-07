@@ -147,11 +147,11 @@ The tracking directory is organized as an R package.  It's layout is as follows 
 One could describe a tracking environment as "attached" to the tracked
 environment, but that using that term would risk confusion with the role
 of the \code{attach()} function and search path in R.  So, instead the
-\code{trackObjs} package says that a tracking environment is "linked" to
+\code{track} package says that a tracking environment is "linked" to
 the tracked environment.
 
   \describe{
-    \item{track:}{The \code{trackObjs} \emph{tracks} variables, by
+    \item{track:}{The \code{track} \emph{tracks} variables, by
       setting up a one-to-one relationship between R objects and files
       on disks so that when an object in R is modified, the file on disk
       is automatically updated.}
@@ -165,7 +165,7 @@ the tracked environment.
       environment is an ordinary object that is not tracked and has no
       corresponding file.}
     \item{tracking environment:}{A \emph{tracking} environment is a
-      special environment used by the \code{trackObjs} package to track
+      special environment used by the \code{track} package to track
       objects in the \emph{tracked} environment}
     \item{linked:}{A tracking environment is \emph{linked} to a tracked
       environment (by the \code{trackingEnv} attribute on the tracked
@@ -214,8 +214,8 @@ from the visible environment and the underlying tracking environment
 
 Object tracking was intended to be used in situations where large
 numbers of large objects must be manipulated.  Consequently, there is a
-good chance of exhausting resources while using the \code{trackObjs}
-package.  The \code{trackObjs} code tries to check return codes when
+good chance of exhausting resources while using the \code{track}
+package.  The \code{track} code tries to check return codes when
 creating objects or writing files, and in cases where it is unable to
 complete an operation it tries leave the tracking environment in a state
 from which objects can be salvaged.  The functions
@@ -228,7 +228,7 @@ rewritten after resolving file system problems.
 
 The R functions \code{exists()} should be used with care on tracked
 objects, because it will actually fetch the object, possibly needing to
-read it from disk.  In the \code{trackObjs} code, the \code{exists("x")}
+read it from disk.  In the \code{track} code, the \code{exists("x")}
 function is not used to check existence of a possibly tracked object
 \code{x}, instead an idiom like \code{is.element("x", objects(all=TRUE))}
 is used.
@@ -280,7 +280,7 @@ David E. Brahm. Delayed data packages. R News, 2(3):11-12, December
 \author{Tony Plate <tplate@acm.org>}
 
 \seealso{
-\link[=trackObjs-package]{Overview} of the \code{trackObjs} package.
+\link[=track-package]{Overview} of the \code{track} package.
 
 Documentation for \code{\link[base]{makeActiveBinding}} and related
 functions (in 'base' package).

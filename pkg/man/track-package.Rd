@@ -1,23 +1,23 @@
-\name{trackObjs-package}
-\alias{trackObjs-package}
-\alias{trackObjs}
+\name{track-package}
+\alias{track-package}
+\alias{track}
 \docType{package}
 \title{
-Overview of trackObjs package
+Overview of track package
 }
 \description{
 
-The trackObjs package sets up a link between R objects in memory and
+The track package sets up a link between R objects in memory and
 files on disk so that objects are automatically saved to files when
 they are changed.  R objects in files are read in on demand and do not
-consume memory prior to being referenced.  The trackObjs package also
+consume memory prior to being referenced.  The track package also
 tracks times when objects are created and modified, and caches some
 basic characteristics of objects to allow for fast summaries of objects.
 
 Each object is stored in a separate RData file using the standard
 format as used by \code{save()}, so that objects can be manually
-picked out of or added to the trackObjs database if needed.  The
-trackObjs database is a directory usually named \code{rdatadir} that
+picked out of or added to the track database if needed.  The
+track database is a directory usually named \code{rdatadir} that
 contains a RData file for each object and several housekeeping files
 that are either plain text or RData files.
 
@@ -60,10 +60,10 @@ environments in their results can be successful used (though beware of
 modeling functions that store large amounts of data in their results.)
 Alternatively, use modeling functions that do not store references to
 environments.  The utility function \code{\link{show.envs}} from the
-\code{trackObjs} package will show what environments are referenced
+\code{track} package will show what environments are referenced
 within an object (though it is not guaranteed to find them all.)
 
-The trackObjs package also provides a self-contained incremental history
+The track package also provides a self-contained incremental history
 saving function that writes the most recent command to the file
 \code{.Rincr_history} at the end of each top-level task, along with a
 time stamp that does not appear in the interactive history. The standard
@@ -73,7 +73,7 @@ abnormally, history is lost.
 
 }
 \details{
-There are four main reasons to use the \code{trackObjs} package:
+There are four main reasons to use the \code{track} package:
 \itemize{
   \item conveniently handle many moderately-large objects that would
   collectively exhaust memory or be inconvenient to manage in
@@ -103,7 +103,7 @@ in access counts and times that are recorded in the tracking summary.
 Here is a brief example of tracking some variables in the global environment:
 
 \preformatted{
-> library(trackObjs)
+> library(track)
 > track.start()
 > x <- 123                  # Variable 'x' is now tracked
 > y <- matrix(1:6, ncol=2)  # 'y' is assigned & tracked
@@ -163,7 +163,7 @@ There are several points to note:
 
 \section{List of basic functions and common calling patterns}{
 
-For straightforward use of the trackObjs package, only a single
+For straightforward use of the track package, only a single
 call to \code{track.start()} need be made to start automatically tracking the global
 environment.  If it is desired to save untrackable variables at the end
 of the session, \code{track.stop()} should be called before calling
@@ -226,7 +226,7 @@ For the non-automatic mode, four other functions cover the majority of common us
 
 \section{Complete list of functions and common calling patterns}{
 
-The \code{trackObjs} package provides many additional functions for
+The \code{track} package provides many additional functions for
 controlling how tracking is performed (e.g., whether or not tracked variables
 are cached in memory), examining the state of tracking (show which
 variables are tracked, untracked, orphaned, masked, etc.) and repairing
@@ -353,9 +353,9 @@ David E. Brahm. Delayed data packages. R News, 2(3):11-12, December
 }
 
 \seealso{
-\link[=track.design]{Design} of the \code{trackObjs} package.
+\link[=track.design]{Design} of the \code{track} package.
 
-Potential \link[=track.future]{future features} of the \code{trackObjs} package.
+Potential \link[=track.future]{future features} of the \code{track} package.
 
 Documentation for \code{\link{save}} and \code{\link{load}} (in 'base' package).
 
@@ -374,7 +374,7 @@ time R returns to the prompt after completing a command):
 }
 \examples{
 \dontrun{
-library(trackObjs)
+library(track)
 # start tracking the global environment using directory 'rdatadir'
 # inside dontrun to avoid creating/removing rdatadir
 track.start()

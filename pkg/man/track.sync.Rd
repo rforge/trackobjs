@@ -78,7 +78,7 @@ track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(p
   that is attached at a position 2 or greater after the files on disk
   have changed.
 
-  \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }
+  \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ data }

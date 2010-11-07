@@ -1,8 +1,8 @@
 
 
-> library(trackObjs)
+> library(track)
 > library(codetools)
 > # run codetools code quality checking
 > # this is no longer necessary because it is run by R CMD check
-> # checkUsagePackage("trackObjs")
+> # checkUsagePackage("track")
 > 

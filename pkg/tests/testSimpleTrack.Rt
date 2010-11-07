@@ -1,11 +1,11 @@
 
 
-> library(trackObjs)
+> library(track)
 > # Set the locale used by order() so that track.status() & track.summary() put
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > options(width=100)
-> trackObjs:::create.fake.Sys.time(0)
+> track:::create.fake.Sys.time(0)
 > unlink("tmp8", recursive=TRUE)
 > track.start("tmp8")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp8'

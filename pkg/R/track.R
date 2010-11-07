@@ -92,9 +92,9 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
         ##   * emptyenv() doesn't work because then the binding can't find
         ##     any defns
         ##   * baseenv() doesn't work because then the function in the
-        ##     binding can't find functions from trackObjs
+        ##     binding can't find functions from track
         ##   * globalenv() doesn't work because the function in the
-        ##     binding can't find non-exported functions from trackObjs
+        ##     binding can't find non-exported functions from track
         ##   * parent.env(environment(f)) works!
         environment(f) <- parent.env(environment(f))
         makeActiveBinding(objname, env=envir, fun=f)

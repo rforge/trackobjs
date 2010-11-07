@@ -315,7 +315,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         ## Only use a "DESCRIPTION" file when we use a 'data' subdirectory
         ## in the tracking dir.
         dfn <- file.path(dir, "DESCRIPTION")
-        write.res <- try(cat(trackObjs.package.desc(basename(dir)), "\n", sep="\n", file=dfn), silent=TRUE)
+        write.res <- try(cat(track.package.desc(basename(dir)), "\n", sep="\n", file=dfn), silent=TRUE)
         if (is(write.res, "try-error"))
             warning("had problem writing ", dfn, " (", as.character(write.res), ")")
     }
@@ -343,9 +343,9 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     if (check.Last) {
         if (length(i <- find(".Last.sys")) > 1)
             if (i[1] != find("track.start")[1])
-                warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs will is masked and will not run.  This may affect the saving of tracked environments.\n")
+                warning("There are more than one .Last.sys() functions on the search path -- the one from track will is masked and will not run.  This may affect the saving of tracked environments.\n")
             else
-                warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs masks others and they will not run\n")
+                warning("There are more than one .Last.sys() functions on the search path -- the one from track masks others and they will not run\n")
     }
     ## Note that locking the environment is irreversible, and it prevents
     ## rescaning (because the main reason to do that would be to pick up
@@ -376,7 +376,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     return(invisible(NULL))
 }
 
-trackObjs.package.desc <- function(pkg)
+track.package.desc <- function(pkg)
     c(paste("Package:",pkg), "Version: 1.0", paste("Date:",date()),
-      "Title: Tracked R Objects", "Author: trackObjs package", "Maintainer: trackObjs package",
-      "Description: package of saved objects created by trackObjs package", "License: None specified")
+      "Title: Tracked R Objects", "Author: track package", "Maintainer: track package",
+      "Description: package of saved objects created by track package", "License: None specified")

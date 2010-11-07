@@ -101,7 +101,7 @@ track.Last()
   (because can't delete or add bindings)}
 
   \item{check.Last}{By default, a warning is issued if the \code{.Last}
-  function in the \code{trackObjs} package is masked by any other
+  function in the \code{track} package is masked by any other
   \code{.Last} function.  Supplying \code{check.Last=FALSE}
   inhibits this check and warning.}
 
@@ -170,9 +170,9 @@ available.
    and removes tracked variables from the environment.}
 }
 \author{Tony Plate <tplate@acm.org>}
-\seealso{ \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }
+\seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \examples{
-library(trackObjs)
+library(track)
 unlink("tmp1", recursive=TRUE)
 track.start("tmp1")
 x <- 33

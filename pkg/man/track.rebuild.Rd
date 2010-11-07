@@ -73,10 +73,10 @@ track.rebuild(pos = 1, envir = as.environment(pos), dir = NULL,
 }
 
 \author{Tony Plate <tplate@acm.org>}
-\seealso{ \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }
+\seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \examples{
 # Rebuild a damaged tracking database
-library(trackObjs)
+library(track)
 unlink("tmp1", recursive=TRUE)
 # first build a tracking dir populated with some variables
 track.start("tmp1")

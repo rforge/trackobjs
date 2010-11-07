@@ -24,13 +24,13 @@ track.info <- function(pos=1, envir=as.environment(pos), all=TRUE) {
     }
 
     ## This code was for when .Last.sys was a function in the
-    ## trackObjs package env, but .Last/.Last.sys don't appear
+    ## track package env, but .Last/.Last.sys don't appear
     ## to be run when they live in an attached package.
     if (FALSE && length(i <- find(".Last.sys")) > 1 && !isTRUE(options("global.track.options")$inhibit.Last)) {
         if (i != find("track.start")[1])
-            warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs will is masked and will not run.  This may affect the saving of tracked environments.")
+            warning("There are more than one .Last.sys() functions on the search path -- the one from track will is masked and will not run.  This may affect the saving of tracked environments.")
         else
-            warning("There are more than one .Last.sys() functions on the search path -- the one from trackObjs masks others and they will not run.")
+            warning("There are more than one .Last.sys() functions on the search path -- the one from track masks others and they will not run.")
     }
 
     if (nrow(res)) {

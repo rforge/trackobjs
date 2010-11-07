@@ -1,6 +1,6 @@
 > # want to make sure creation & mod times are carried over when copying
 > # so use fake times to make test output always the same
-> trackObjs:::create.fake.Sys.time(0)
+> track:::create.fake.Sys.time(0)
 > invisible(if (file.exists("tmp19")) unlink("tmp19", recursive=TRUE))
 > invisible(if (file.exists("tmp20")) unlink("tmp20", recursive=TRUE))
 > track.start(dir="tmp19")

@@ -1,7 +1,7 @@
 ## Doesn't work properly to have track.stop() in .Last.sys or
 ## .Last in the tracking package -- need to assign .Last in
 ## the global environment.
-## If .Last or .Last.sys exist in the trackObjs package, they
+## If .Last or .Last.sys exist in the track package, they
 ## appear to get called after saveimage() in the
 ## Windows GUI (if at all), which results in all objects being saved
 ## in .RData as well as in the tracking DB, which results

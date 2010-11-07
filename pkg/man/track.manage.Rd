@@ -12,7 +12,7 @@
 \description{
   Functions to start and stop tracking objects, remove them, load objects from
   RData files, and manage cached and saved copies of objects.  These
-  functions should not be needed in plain vanilla use of the trackObjs package.
+  functions should not be needed in plain vanilla use of the track package.
 }
 \usage{
 track(expr, pos = 1, envir = as.environment(pos), list = NULL,
@@ -116,9 +116,9 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
   }
 }
 \author{Tony Plate <tplate@acm.org>}
-\seealso{ \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }
+\seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \examples{
-library(trackObjs)
+library(track)
 unlink("tmp1", recursive=TRUE)
 track.start("tmp1")
 x <- 33

@@ -2,11 +2,11 @@
 \alias{track.future}
 \docType{package}
 \title{
-Potential future features of the trackObjs package
+Potential future features of the track package
 }
 \description{
 
-Potential future features of the trackObjs package, in some vague order
+Potential future features of the track package, in some vague order
 of feasibility and priority ('easy', 'medium' and 'hard' are an estimate
 of design and coding difficulty):
 
@@ -133,5 +133,5 @@ X[1]
 X[2] <- 1 # 'X' is fetched twice
 X
 }
-\seealso{ \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }
+\seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \keyword{ data }

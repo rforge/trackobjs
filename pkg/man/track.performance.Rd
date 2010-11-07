@@ -2,10 +2,10 @@
 \alias{track.performance}
 \docType{package}
 \title{
-  Performance tuning with trackObjs.
+  Performance tuning with track.
 }
 \description{
-  Performance tuning with trackObjs involves trading off memory use for
+  Performance tuning with track involves trading off memory use for
   faster access times to objects.  Access time is fastest when all
   objects are cached in memory, but memory can be exhausted if this is
   done.  Memory use is minimized when objects are not cached in memory
@@ -13,7 +13,7 @@
   referenced, and the whole file must be read or written even if only a
   small part of the object is actually used or changed.
 
-  The default mode of operation of trackObjs balances memory use and
+  The default mode of operation of track balances memory use and
   access times by keeping objects in memory for the duration of a
   top-level task, and flushing them out at the end of the task.
 
@@ -42,10 +42,10 @@
 }
 
 Performance tuning is a possible area of future development of the
-trackObjs package, at as version 0.9-9, the defaults settings of
+track package, at as version 0.9-9, the defaults settings of
 \code{cache=TRUE}, \code{cachePolicy="tltPurge"}, and
 \code{writeToDisk=TRUE} work well.  However, smarter caching based on
 access patterns to objects is certainly possible.
 }
-\seealso{ \link[=trackObjs-package]{Overview} and \link[=track.design]{design} of the \code{trackObjs} package. }
+\seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \keyword{ data }
