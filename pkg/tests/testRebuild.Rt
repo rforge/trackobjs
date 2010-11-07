@@ -721,8 +721,8 @@ x1     tracked FALSE       x1       TRUE  TRUE
 x1.1   tracked FALSE     x1.1       TRUE  TRUE
 x2     tracked FALSE       x2       TRUE  TRUE
 x3     tracked FALSE       x3       TRUE  TRUE
+> 
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp7", recursive=TRUE)
 > 
-> 
-Stopping all tracking via call from .Last()
-Stopping tracking on <env R_GlobalEnv>

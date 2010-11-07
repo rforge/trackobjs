@@ -45,4 +45,5 @@ $b
 #@ gsub("0x[0-9a-f]+", "0xXXXX", both)
 <environment: 0x042f19e4>: get("c", env = x$a)
 [1] 1
+> remove(list=c("f1", "m", "m2", "x"))
 > 

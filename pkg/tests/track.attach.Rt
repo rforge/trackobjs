@@ -7,6 +7,8 @@ Attaching tracking db in 'tmp14' to env in pos 2 (writable)
 [1] ".GlobalEnv"  "track:tmp14"
 > is.element("track:tmp14", search())
 [1] TRUE
+> track.info()
+#@ignore-output
 > assign("x", 1, pos=2)
 > assign("y", 2, pos=2)
 > assign("z", 3, pos=2)

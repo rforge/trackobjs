@@ -44,7 +44,9 @@ z tracked FALSE        z       TRUE  TRUE
 Error: object 'y' not found
 > z
 [1] 3
-> 
+> # want tracking to stop automatically on quitting R
+> # but if run test interactively have to stop manually
+> invisible(if (interactive()) {track.stop(); unlink("tmp16.hid", recursive=TRUE); unlink("tmp16", recursive=TRUE)})
 > 
 Stopping all tracking via call from .Last()
 Stopping tracking on <env track:tmp16>

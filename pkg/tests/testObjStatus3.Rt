@@ -268,4 +268,5 @@ In track.load("tmp5y.rda", clobber = TRUE, pos = 2) :
 Stopping tracking on <env testenv>
 > unlink("tmp5", recursive=TRUE)
 > remove(list=ls(all=TRUE))
+> detach("testenv")
 >

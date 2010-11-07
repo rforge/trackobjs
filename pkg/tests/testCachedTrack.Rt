@@ -8,6 +8,8 @@
 > unlink("tmp1", recursive=TRUE)
 > track.start("tmp1", cache=TRUE, auto=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp1'
+> list.files("tmp1")
+[1] "filemap.txt"
 > track(x <- 33)
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved

@@ -210,4 +210,5 @@ NULL
 > 
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
+> unlink("tmp6", recursive=TRUE)
 > 
