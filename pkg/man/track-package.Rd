@@ -1,6 +1,5 @@
 \name{track-package}
 \alias{track-package}
-\alias{track}
 \docType{package}
 \title{
 Overview of track package
