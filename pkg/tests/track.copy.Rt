@@ -1,0 +1,137 @@
+> # want to make sure creation & mod times are carried over when copying
+> # so use fake times to make test output always the same
+> trackObjs:::create.fake.Sys.time(0)
+> invisible(if (file.exists("tmp19")) unlink("tmp19", recursive=TRUE))
+> invisible(if (file.exists("tmp20")) unlink("tmp20", recursive=TRUE))
+> track.start(dir="tmp19")
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp19'
+> track.attach("tmp20", name="track:tmp20", readonly=FALSE, pos=2, create=TRUE)
+Attaching tracking db in 'tmp20' to env in pos 2 (writable)
+> assign("x1", 1, pos=2)
+> assign("x2", 2, pos=2)
+> assign("y3", 3, pos=2)
+> assign("y4", 4, pos=2)
+> assign("z5", 5)
+> track.status(1)
+    Status InMem FileBase FileExists Saved
+z5 tracked FALSE       z5       TRUE  TRUE
+> track.status(2)
+    Status InMem FileBase FileExists Saved
+x1 tracked FALSE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+y3 tracked FALSE       y3       TRUE  TRUE
+y4 tracked FALSE       y4       TRUE  TRUE
+> track.summary(pos=2, time=3, size=F)
+     class    mode extent length            modified             created
+x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y3 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
+y4 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+              accessed TA TW
+x1 2001-01-01 09:00:06  0  1
+x2 2001-01-01 09:00:07  0  1
+y3 2001-01-01 09:00:08  0  1
+y4 2001-01-01 09:00:09  0  1
+> x1
+[1] 1
+> x2
+[1] 2
+> x2
+[1] 2
+> y4
+[1] 4
+> track.summary(pos=2, time=3, size=F)
+     class    mode extent length            modified             created
+x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y3 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
+y4 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+              accessed TA TW
+x1 2001-01-01 09:00:11  1  1
+x2 2001-01-01 09:00:13  2  1
+y3 2001-01-01 09:00:08  0  1
+y4 2001-01-01 09:00:14  1  1
+> track.copy(from=2, pat="^x")
+Copying 'x1'...
+Copying 'x2'...
+> ls(1)
+[1] "x1" "x2" "z5"
+> ls(2)
+[1] "x1" "x2" "y3" "y4"
+> track.summary(pos=1, time=3, size=F)
+     class    mode extent length            modified             created
+x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+z5 numeric numeric    [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:10
+              accessed TA TW
+x1 2001-01-01 09:00:11  1  1
+x2 2001-01-01 09:00:13  2  1
+z5 2001-01-01 09:00:10  0  1
+> track.summary(pos=2, time=3, size=F)
+     class    mode extent length            modified             created
+x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y3 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
+y4 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+              accessed TA TW
+x1 2001-01-01 09:00:11  1  1
+x2 2001-01-01 09:00:13  2  1
+y3 2001-01-01 09:00:08  0  1
+y4 2001-01-01 09:00:14  1  1
+> track.move(from=2, pat="^y")
+Moving 'y3'...
+Moving 'y4'...
+> track.move(from=1, to=2, pat="^z")
+Moving 'z5'...
+> ls(1)
+[1] "x1" "x2" "y3" "y4"
+> ls(2)
+[1] "x1" "x2" "z5"
+> c(x1, x2, y3, y4)
+[1] 1 2 3 4
+> track.move(from=2, pat="^x", clobber=TRUE)
+Moving 'x1'...
+Moving 'x2'...
+> ls(1)
+[1] "x1" "x2" "y3" "y4"
+> ls(2)
+[1] "z5"
+> c(x1, x2, y3, y4)
+[1] 1 2 3 4
+> track.summary(pos=1, time=3, size=F)
+     class    mode extent length            modified             created
+x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y3 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
+y4 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+              accessed TA TW
+x1 2001-01-01 09:00:19  2  1
+x2 2001-01-01 09:00:20  3  1
+y3 2001-01-01 09:00:21  2  1
+y4 2001-01-01 09:00:22  3  1
+> track.summary(pos=2, time=3, size=F)
+     class    mode extent length            modified             created
+z5 numeric numeric    [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:10
+              accessed TA TW
+z5 2001-01-01 09:00:10  0  1
+> ls(1)
+[1] "x1" "x2" "y3" "y4"
+> ls(2)
+[1] "z5"
+> c(x1, x2, y3, y4)
+[1] 1 2 3 4
+> track.status(1)
+    Status InMem FileBase FileExists Saved
+x1 tracked FALSE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+y3 tracked FALSE       y3       TRUE  TRUE
+y4 tracked FALSE       y4       TRUE  TRUE
+> track.status(2)
+    Status InMem FileBase FileExists Saved
+z5 tracked FALSE       z5       TRUE  TRUE
+> track.detach(2)
+Stopping tracking on <env track:tmp20>
+Removing <env track:tmp20> from the search path
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> 
