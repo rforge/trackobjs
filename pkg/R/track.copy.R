@@ -71,11 +71,20 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL, glob=NULL, delete=FA
         deleteThis <- FALSE
         if (delete) {
             deleteThis <- TRUE
+            # rename is nicest, but won't work across file systems, so just try it
             ok <- file.rename(file.from.abs, file.to.abs)
             if (!ok) {
                 ok <- file.copy(file.from.abs, file.to.abs, overwrite=TRUE)
                 if (!ok)
                     stop("could not copy file '", file.to.abs, "' for obj '", objName, "'")
+                # confirm that we were able to copy the file ok
+                if (!file.exists(file.to.abs))
+                    stop("failed to copy file '", file.to.abs, "' for obj '", objName, "'")
+                info.from <- file.info(file.from.abs)
+                info.to <- file.info(file.to.abs)
+                if (info.from$size != info.to$size)
+                    stop("copied file '", file.to.abs, "' for obj '", objName, "', but size of copy (",
+                         info.to$size, " bytes) does not match size of original (", info.from$size, " bytes)")
                 ok <- file.remove(file.from.abs)
                 if (!ok) {
                     warning("could not remove file '", file.from.abs, "' for obj '", objName, "'")
