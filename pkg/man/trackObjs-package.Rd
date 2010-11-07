@@ -308,6 +308,8 @@ Functions for managing tracking and tracked variables:
   values from disk (can forget all cached vars, remove no-longer existing tracked vars)
   \item \code{\link{track.load}()}: load variables from a
   saved RData file into the tracking session
+  \item \code{\link{track.copy}()} and \code{\link{track.move}()}: copy
+  or move variables from one tracking db to another
 }
 
 Functions for recovering from errors:
