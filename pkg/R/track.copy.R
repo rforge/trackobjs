@@ -3,15 +3,19 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL, glob=NULL, delete=FA
         stop("only implemented for numeric or char values for 'from'")
     if (!is.numeric(to) && !is.character(to))
         stop("only implemented for numeric or char values for 'to'")
-    trackingEnv.to <- getTrackingEnv(as.environment(to))
-    trackingEnv.from <- getTrackingEnv(as.environment(from))
+    env.to <- as.environment(to)
+    env.from <- as.environment(from)
+    if (identical(env.to, env.from))
+        stop("'from' and 'to' are the same")
+    trackingEnv.to <- getTrackingEnv(env.to)
+    trackingEnv.from <- getTrackingEnv(env.from)
     opt.to <- track.options(trackingEnv=trackingEnv.to)
     opt.from <- track.options(trackingEnv=trackingEnv.from)
     if (opt.to$readonly)
         stop("cannot copy into a readonly tracking env '", to, "'")
     if (opt.from$readonly && delete)
-        stop("cannot copy & delete from readonly tracking env '", from, "'")
-    all.objs.from <- ls(pos=from, all=TRUE)
+        stop("cannot move (i.e., copy & delete) from readonly tracking env '", from, "'")
+    all.objs.from <- ls(envir=env.from, all=TRUE)
     all.objs.from <- all.objs.from[!isReservedName(all.objs.from)]
     all.objs.from <- setdiff(all.objs.from, c(".Last", ".Last.sys"))
     fileMap.from <- getFileMapObj(trackingEnv.from)
@@ -34,7 +38,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL, glob=NULL, delete=FA
         return(invisible(list))
     }
     fileMap.to <- getFileMapObj(trackingEnv.to)
-    all.objs.to <- ls(pos=to, all=TRUE)
+    all.objs.to <- ls(envir=env.to, all=TRUE)
     all.objs.to <- all.objs.to[!isReservedName(all.objs.to)]
     # limit to just tracked objs
     all.objs.to <- intersect(all.objs.to, names(fileMap.to))
@@ -89,7 +93,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL, glob=NULL, delete=FA
             if (deleteThis)
                 objSmy.from <- objSmy.from[-match(objName, rownames(objSmy.from)), , drop=FALSE]
         } else {
-            # shouldn't happen...
+            # shouldn't happen, but if there was no summary row for this object, create one
             smyRow <- summaryRow(objName, NULL, obj=NULL, file=NULL, change=NULL, time=NULL)
         }
         if (objName %in% rownames(objSmy.to)) {
@@ -114,8 +118,9 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL, glob=NULL, delete=FA
         # remove any cached object in the 'to' envir
         if (exists(objName, envir=trackingEnv.to, inherits=FALSE))
             remove(list=objName, envir=trackingEnv.to)
-        if (exists(objName, envir=as.environment(to), inherits=FALSE))
-            remove(list=objName, pos=to)
+        # and remove the active binding if it exists
+        if (exists(objName, envir=env.to, inherits=FALSE))
+            remove(list=objName, envir=env.to)
         # create an active binding for the 'to' variable
         f <- substitute(function(v) {
             if (missing(v))
@@ -125,9 +130,10 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL, glob=NULL, delete=FA
         }, list(x=objName, envir=trackingEnv.to))
         mode(f) <- "function"
         environment(f) <- parent.env(environment(f))
-        makeActiveBinding(objName, env=as.environment(to), fun=f)
+        makeActiveBinding(objName, env=env.to, fun=f)
         # update fileMap.from & objSmy.from
         if (deleteThis) {
+            # can only get here if opt.from$readonly==TRUE
             assign.res <- try(assign(".trackingSummary", objSmy.from, envir=trackingEnv.from), silent=TRUE)
             if (is(assign.res, "try-error")) {
                 stop("unable to assign .trackingSummary back to tracking env on ",
@@ -142,8 +148,8 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL, glob=NULL, delete=FA
                     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv.from)
             }
             writeFileMapFile(fileMap.from, trackingEnv=trackingEnv.from, dataDir=getDataDir(dir.from))
-            if (exists(objName, where=from, inherits=FALSE))
-                remove(list=objName, pos=from)
+            if (exists(objName, envir=env.from, inherits=FALSE))
+                remove(list=objName, envir=env.from)
             if (exists(objName, envir=trackingEnv.from, inherits=FALSE))
                 remove(list=objName, envir=trackingEnv.from)
         }
