@@ -341,6 +341,7 @@ makeObjFileName <- function(objname, fileNames) {
 }
 
 setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackingEnv=trackingEnv), times=NULL, file=NULL, doAssign=TRUE) {
+    ## 'file' should be without path or suffix
     if (opt$readonly)
         stop("variable '", objName, "' cannot be changed -- it is in a readonly tracking environment")
     ## Set the tracked var, and write it to disk if required
@@ -418,7 +419,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
                     if (is.null(fullFile))
                         fullFile <- file.path(getDataDir(dir), paste(file, opt$RDataSuffix, sep="."))
                     if (!file.exists(fullFile)) {
-                        warning("file '", fullFile, "' does not exist (for obj '", objName, "')")
+                        warning("file '", fullFile, "' does not yet exist (for obj '", objName, "') - will create it when needed")
                         fullFile <- NULL
                     }
                 }
