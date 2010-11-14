@@ -1,4 +1,4 @@
-track.remove <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=FALSE, force=FALSE)
+track.remove <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=FALSE, force=TRUE)
     trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="remove", who="track.remove()", force=force)
 
 track.save <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr) && missing(list) && missing(pattern) && missing(glob))
@@ -46,7 +46,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     if (length(list)) {
         isTracked <- objIsTracked(list, envir, trackingEnv, all.objs)
         if (!force && !all(isTracked)) {
-            cat("the following objects are not tracked: ",
+            cat("The following objects are not tracked: ",
                 paste("'", list[which(!isTracked)[seq(len=min(3,sum(!isTracked)))]], "'", sep="", collapse=", "),
                 if (sum(!isTracked) > 3) ", ...",
                 "\n", sep="")
@@ -76,7 +76,12 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         }
         fileMapPos <- match(objname, names(fileMap))
         if (is.na(fileMapPos)) {
-            warning("cannot ", op, " tracked var '", objname, "' because it is not in the file map in ", envname(envir))
+            if (objIsTracked(objname, envir, trackingEnv, all.objs)) {
+                warning("cannot ", op, " tracked var '", objname, "' because it is not in the file map in ", envname(envir))
+            } else {
+                if (op=="remove")
+                    remove(list=objname, envir=envir, inherits=FALSE)
+            }
             next
         }
         file <- paste(fileMap[fileMapPos], opt$RDataSuffix, sep=".")

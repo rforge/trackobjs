@@ -20,7 +20,7 @@ track(expr, pos = 1, envir = as.environment(pos), list = NULL,
 untrack(expr, pos = 1, envir = as.environment(pos), list = NULL,
         pattern = NULL, glob = NULL, all = FALSE, keep.in.db = FALSE)
 track.remove(expr, pos = 1, envir = as.environment(pos), list = NULL,
-        pattern = NULL, glob = NULL, all = FALSE, force = FALSE)
+        pattern = NULL, glob = NULL, all = FALSE, force = TRUE)
 track.save(expr, pos = 1, envir = as.environment(pos), list = NULL,
         pattern = NULL, glob = NULL,
         all = missing(expr) && missing(list) && missing(pattern) && missing(glob))
@@ -79,7 +79,7 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
     all trace of the variable is completely removed from the tracking
     environment.
   \item \code{track.remove}: completely remove all
-  traces of a tracked variable
+  traces of a tracked variable (also removes untracked variables)
   \item \code{track.save}: write unsaved variables to disk
   \item \code{track.flush}: write unsaved variables to disk, and remove from memory
   \item \code{track.forget}: delete cached
