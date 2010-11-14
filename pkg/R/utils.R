@@ -611,6 +611,19 @@ find.relative.path <- function(path, file) {
     }
 }
 
+exclude.from.tracking <- function(objName, objClasses=NULL, opt) {
+    exclude <- rep(FALSE, length(objName))
+    if (length(objName) > 1 && length(objClasses) && (!is.list(objClasses) || length(objClasses)!=length(objName)))
+        stop("objClasses must be list the same length as objName when objName is a vector")
+    if (length(objName)==1 && !is.list(objClasses) && length(objClasses))
+        objClasses <- list(objClasses)
+    if (length(opt$autoTrackExcludeClass) && length(objClasses))
+        exclude <- sapply(objClasses, is.element, opt$autoTrackExcludeClass)
+    for (re in opt$autoTrackExcludePattern)
+        exclude <- exclude | regexpr(re, objName) >= 1
+    exclude
+}
+
 if (FALSE) {
     ## Code in here was an alternate, worse way to override Sys.time() for testing purposes
     ## (worse because it introduced permanent overhead for Sys.time(), even in normal operation)
