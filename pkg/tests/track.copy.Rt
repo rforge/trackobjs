@@ -135,3 +135,257 @@ Removing <env track:tmp20> from the search path
 > track.stop()
 Stopping tracking on <env R_GlobalEnv>
 > 
+> # Use auto=FALSE, and check that tracked and untracked vars are handled correctly
+> track.start(dir="tmp19", auto=FALSE)
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp19'
+> track.attach("tmp20", name="track:tmp20", readonly=FALSE, pos=2, create=TRUE, auto=FALSE)
+Attaching tracking db in 'tmp20' to env in pos 2 (writable)
+> assign("a", "a", pos=2)
+> assign("b", "b", pos=2)
+> track(a, pos=2)
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked FALSE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+y3 tracked FALSE       y3       TRUE  TRUE
+y4 tracked FALSE       y4       TRUE  TRUE
+> track.status(2)
+      Status InMem FileBase FileExists Saved
+a    tracked  TRUE        a      FALSE FALSE
+b  untracked    NA     <NA>         NA    NA
+z5   tracked FALSE       z5       TRUE  TRUE
+> track.copy(list=c("a", "b"), from=2)
+Copying 'a'...
+Copying 'b'...
+> track.status()
+      Status InMem FileBase FileExists Saved
+a    tracked FALSE        a       TRUE  TRUE
+b  untracked    NA     <NA>         NA    NA
+x1   tracked FALSE       x1       TRUE  TRUE
+x2   tracked FALSE       x2       TRUE  TRUE
+y3   tracked FALSE       y3       TRUE  TRUE
+y4   tracked FALSE       y4       TRUE  TRUE
+> track.status(2)
+      Status InMem FileBase FileExists Saved
+a    tracked FALSE        a       TRUE  TRUE
+b  untracked    NA     <NA>         NA    NA
+z5   tracked FALSE       z5       TRUE  TRUE
+> c(a,b)
+[1] "a" "b"
+> rm(list=c("b"))
+> track.remove(list=c("a"))
+> track.move(list=c("a", "b"), from=2)
+Moving 'a'...
+Moving 'b'...
+> track.status()
+      Status InMem FileBase FileExists Saved
+a    tracked FALSE        a       TRUE  TRUE
+b  untracked    NA     <NA>         NA    NA
+x1   tracked FALSE       x1       TRUE  TRUE
+x2   tracked FALSE       x2       TRUE  TRUE
+y3   tracked FALSE       y3       TRUE  TRUE
+y4   tracked FALSE       y4       TRUE  TRUE
+> track.status(2)
+    Status InMem FileBase FileExists Saved
+z5 tracked FALSE       z5       TRUE  TRUE
+> track.remove(list=c("a"))
+> remove(b)
+> 
+> track.detach(2)
+Stopping tracking on <env track:tmp20>
+Removing <env track:tmp20> from the search path
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> 
+> # Use auto=FALSE, and check that tracked and untracked vars are handled correctly
+> # when we use an exclude pattern or class.
+> track.start(dir="tmp19", auto=TRUE)
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp19'
+> track.options(autoTrackExcludePattern=c("z", "^y"))
+> track.options(autoTrackExcludeClass=c("list"))
+> track.attach("tmp20", name="track:tmp20", readonly=FALSE, pos=2, create=TRUE, auto=FALSE)
+Attaching tracking db in 'tmp20' to env in pos 2 (writable)
+> # variables with a "2" in their name shouldn't be tracked after being moved
+> # variables with a "b" in their name are untracked in the source db
+> assign("a1", "a1", pos=2)
+> assign("a2", list("a2"), pos=2)
+> assign("a2z", "a2z", pos=2)
+> assign("a1y", "a2y", pos=2)
+> assign("ya2", "ya2", pos=2)
+> track(a1, pos=2)
+> track(a2, pos=2)
+> track(a2z, pos=2)
+> track(a1y, pos=2)
+> track(ya2, pos=2)
+> assign("b1", "b1", pos=2)
+> assign("b2", list("b2"), pos=2)
+> assign("b2z", "b2z", pos=2)
+> assign("b1y", "b2y", pos=2)
+> assign("yb2", "yb2", pos=2)
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked FALSE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+y3 tracked FALSE       y3       TRUE  TRUE
+y4 tracked FALSE       y4       TRUE  TRUE
+> track.status(2)
+       Status InMem FileBase FileExists Saved
+a1    tracked  TRUE       a1      FALSE FALSE
+a1y   tracked  TRUE      a1y      FALSE FALSE
+a2    tracked  TRUE       a2      FALSE FALSE
+a2z   tracked  TRUE      a2z      FALSE FALSE
+b1  untracked    NA     <NA>         NA    NA
+b1y untracked    NA     <NA>         NA    NA
+b2  untracked    NA     <NA>         NA    NA
+b2z untracked    NA     <NA>         NA    NA
+ya2   tracked  TRUE      ya2      FALSE FALSE
+yb2 untracked    NA     <NA>         NA    NA
+z5    tracked FALSE       z5       TRUE  TRUE
+> track.summary(pos=2, time=3, size=F)
+        class      mode extent length            modified             created
+a1  character character    [1]      1 2001-01-01 09:00:43 2001-01-01 09:00:43
+a1y character character    [1]      1 2001-01-01 09:00:46 2001-01-01 09:00:46
+a2       list      list  [[1]]      1 2001-01-01 09:00:44 2001-01-01 09:00:44
+a2z character character    [1]      1 2001-01-01 09:00:45 2001-01-01 09:00:45
+ya2 character character    [1]      1 2001-01-01 09:00:47 2001-01-01 09:00:47
+z5    numeric   numeric    [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:10
+               accessed TA TW
+a1  2001-01-01 09:00:43  0  1
+a1y 2001-01-01 09:00:46  0  1
+a2  2001-01-01 09:00:44  0  1
+a2z 2001-01-01 09:00:45  0  1
+ya2 2001-01-01 09:00:47  0  1
+z5  2001-01-01 09:00:10  0  1
+> track.copy(pat="[ab]", from=2)
+Copying 'a1'...
+Copying 'a1y'...
+Copying 'a2'...
+Copying 'a2z'...
+Copying 'b1'...
+Copying 'b1y'...
+Copying 'b2'...
+Copying 'b2z'...
+Copying 'ya2'...
+Copying 'yb2'...
+> track.status(pos=2)
+       Status InMem FileBase FileExists Saved
+a1    tracked FALSE       a1       TRUE  TRUE
+a1y   tracked FALSE      a1y       TRUE  TRUE
+a2    tracked  TRUE       a2       TRUE  TRUE
+a2z   tracked  TRUE      a2z       TRUE  TRUE
+b1  untracked    NA     <NA>         NA    NA
+b1y untracked    NA     <NA>         NA    NA
+b2  untracked    NA     <NA>         NA    NA
+b2z untracked    NA     <NA>         NA    NA
+ya2   tracked  TRUE      ya2       TRUE  TRUE
+yb2 untracked    NA     <NA>         NA    NA
+z5    tracked FALSE       z5       TRUE  TRUE
+> track.status()
+       Status InMem FileBase FileExists Saved
+a1    tracked FALSE       a1       TRUE  TRUE
+a1y   tracked FALSE      a1y       TRUE  TRUE
+a2  untracked    NA     <NA>         NA    NA
+a2z untracked    NA     <NA>         NA    NA
+b1    tracked FALSE       b1       TRUE  TRUE
+b1y   tracked FALSE      b1y       TRUE  TRUE
+b2  untracked    NA     <NA>         NA    NA
+b2z untracked    NA     <NA>         NA    NA
+x1    tracked FALSE       x1       TRUE  TRUE
+x2    tracked FALSE       x2       TRUE  TRUE
+y3    tracked FALSE       y3       TRUE  TRUE
+y4    tracked FALSE       y4       TRUE  TRUE
+ya2 untracked    NA     <NA>         NA    NA
+yb2 untracked    NA     <NA>         NA    NA
+> track.summary(time=3, size=F)
+        class      mode extent length            modified             created
+a1  character character    [1]      1 2001-01-01 09:00:43 2001-01-01 09:00:43
+a1y character character    [1]      1 2001-01-01 09:00:46 2001-01-01 09:00:46
+b1  character character    [1]      1 2001-01-01 09:00:50 2001-01-01 09:00:50
+b1y character character    [1]      1 2001-01-01 09:00:51 2001-01-01 09:00:51
+x1    numeric   numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+x2    numeric   numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y3    numeric   numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
+y4    numeric   numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+               accessed TA TW
+a1  2001-01-01 09:00:43  0  1
+a1y 2001-01-01 09:00:46  0  1
+b1  2001-01-01 09:00:50  0  1
+b1y 2001-01-01 09:00:51  0  1
+x1  2001-01-01 09:00:23  3  1
+x2  2001-01-01 09:00:24  4  1
+y3  2001-01-01 09:00:25  3  1
+y4  2001-01-01 09:00:26  4  1
+> track.remove(list=ls(pat="[ab]"))
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked FALSE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+y3 tracked FALSE       y3       TRUE  TRUE
+y4 tracked FALSE       y4       TRUE  TRUE
+> 
+> track.move(pat="[ab]", from=2)
+Moving 'a1'...
+Moving 'a1y'...
+Moving 'a2'...
+Moving 'a2z'...
+Moving 'b1'...
+Moving 'b1y'...
+Moving 'b2'...
+Moving 'b2z'...
+Moving 'ya2'...
+Moving 'yb2'...
+> track.status(pos=2)
+    Status InMem FileBase FileExists Saved
+z5 tracked FALSE       z5       TRUE  TRUE
+> track.status()
+       Status InMem FileBase FileExists Saved
+a1    tracked FALSE       a1       TRUE  TRUE
+a1y   tracked FALSE      a1y       TRUE  TRUE
+a2  untracked    NA     <NA>         NA    NA
+a2z untracked    NA     <NA>         NA    NA
+b1    tracked FALSE       b1       TRUE  TRUE
+b1y   tracked FALSE      b1y       TRUE  TRUE
+b2  untracked    NA     <NA>         NA    NA
+b2z untracked    NA     <NA>         NA    NA
+x1    tracked FALSE       x1       TRUE  TRUE
+x2    tracked FALSE       x2       TRUE  TRUE
+y3    tracked FALSE       y3       TRUE  TRUE
+y4    tracked FALSE       y4       TRUE  TRUE
+ya2 untracked    NA     <NA>         NA    NA
+yb2 untracked    NA     <NA>         NA    NA
+> track.summary(time=3, size=F)
+        class      mode extent length            modified             created
+a1  character character    [1]      1 2001-01-01 09:00:43 2001-01-01 09:00:43
+a1y character character    [1]      1 2001-01-01 09:00:46 2001-01-01 09:00:46
+b1  character character    [1]      1 2001-01-01 09:00:58 2001-01-01 09:00:58
+b1y character character    [1]      1 2001-01-01 09:00:59 2001-01-01 09:00:59
+x1    numeric   numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+x2    numeric   numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y3    numeric   numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
+y4    numeric   numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+               accessed TA TW
+a1  2001-01-01 09:00:43  0  1
+a1y 2001-01-01 09:00:46  0  1
+b1  2001-01-01 09:00:58  0  1
+b1y 2001-01-01 09:00:59  0  1
+x1  2001-01-01 09:00:23  3  1
+x2  2001-01-01 09:00:24  4  1
+y3  2001-01-01 09:00:25  3  1
+y4  2001-01-01 09:00:26  4  1
+> track.remove(list=ls(pat="[ab]"))
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked FALSE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+y3 tracked FALSE       y3       TRUE  TRUE
+y4 tracked FALSE       y4       TRUE  TRUE
+> 
+> track.detach(2)
+Stopping tracking on <env track:tmp20>
+Removing <env track:tmp20> from the search path
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> 
+> invisible(if (file.exists("tmp19")) unlink("tmp19", recursive=TRUE))
+> invisible(if (file.exists("tmp20")) unlink("tmp20", recursive=TRUE))
+> 
