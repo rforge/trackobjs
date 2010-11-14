@@ -37,6 +37,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
     fileMap <- getFileMapObj(trackingEnv)
     all.objs <- .Internal(ls(envir, TRUE))
+    ## 'untracked' will be the untracked vars that we want to track
     untracked <- setdiff(all.objs, names(fileMap))
     reserved <- isReservedName(untracked)
     ## .trackingEnv will always exist -- don't warn about it
@@ -49,12 +50,12 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         cat("track.sync: cannot track variables that have active bindings: ", paste(untracked[activeBindings], collapse=", "), "\n", sep="")
     untracked <- untracked[!activeBindings]
     if (length(opt$autoTrackExcludeClass)) {
-        excludedClass <- sapply(untracked, function(o) any(is.element(class(get(o, envir=envir, inherits=FALSE)), opt$autoTrackExcludeClass)))
-        if (any(excludedClass)) {
+        hasExcludedClass <- sapply(untracked, function(o) any(is.element(class(get(o, envir=envir, inherits=FALSE)), opt$autoTrackExcludeClass)))
+        if (any(hasExcludedClass)) {
             if (verbose)
                 cat("track.sync: not tracking variables from excluded classes: ",
-                    paste(untracked[excludedClass], collapse=", "), "\n", sep="")
-            untracked <- untracked[!excludedClass]
+                    paste(untracked[hasExcludedClass], collapse=", "), "\n", sep="")
+            untracked <- untracked[!hasExcludedClass]
         }
     }
     for (re in opt$autoTrackExcludePattern)
