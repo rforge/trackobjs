@@ -6,12 +6,12 @@
 }
 \description{
   Copy or move objects from one tracking db to another.
-  \code{track.move} calls \code{track.copy} with a default of
-  \code{delete=TRUE} to remove the source object.
 }
 \usage{
-track.copy(from, to = 1, list = NULL, pattern = NULL, glob = NULL, delete = FALSE, clobber = FALSE, verbose = TRUE)
-track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL, delete = TRUE, clobber = FALSE, verbose = TRUE)
+track.copy(from, to = 1, list = NULL, pattern = NULL, glob = NULL,
+           delete = FALSE, clobber = FALSE, verbose = TRUE, do.untrackable = FALSE)
+track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL,
+           delete = TRUE, clobber = FALSE, verbose = TRUE, do.untrackable = FALSE)
 }
 \arguments{
   \item{from}{
@@ -41,13 +41,19 @@ track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL, delete = TRUE
 \item{verbose}{
   If \code{TRUE}, write out what is being done.
 }
+\item{do.untrackable}{
+  If \code{TRUE}, also copy untrackable objects.
+}
 }
 \details{
-  \code{track.copy} copies objects by copying their underlying files from
-  the source tracking db to the destination tracking db.  It also copies
-  the object summary (preserving modification times etc.)  Objects are
-  not loaded in R when copied, and if a copied object is cached in the
-  source or destination db, the cached copy will be removed.
+
+  \code{track.copy} copies objects by copying their underlying files
+  from the source tracking db to the destination tracking db (behavior
+  for untracked or untrackable objects is different -- see below).  It
+  also copies the object summary (preserving modification times etc.)
+  Objects are not loaded in R when copied, and if a copied object is
+  cached in the source or destination db, the cached copy will be
+  removed.
 
   The readonly status of both tracking dbs will be respected -- the
   function will stop with an error before doing anything if a readonly
@@ -58,6 +64,20 @@ track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL, delete = TRUE
   Thus, if an error occurs during copying, e.g., due to filesystem
   permissions or lack of space, the source and destination dbs will be
   left in a consistent state.
+
+  \code{track.move} calls \code{track.copy} with a default of
+  \code{delete=TRUE} to remove the source object.
+
+  By default, untrackable objects in the source tracking db will not be
+  copied or moved, and a warning will be given.  The rules for
+  untrackability are those of the destination db, as specified by the
+  tracking options \code{autoTrackExcludePattern} and
+  \code{autoTrackExcludeClass} in that db.  If
+  \code{do.untrackable=TRUE}, untrackable objects will be copied or
+  moved (with \code{delete} still controlling whether the original is
+  left or removed.)  Untrackable objects that are copied are left as an
+  ordinary untracked object in the destination db.
+
 }
 \value{
   A character vector of the objects copied or moved.
