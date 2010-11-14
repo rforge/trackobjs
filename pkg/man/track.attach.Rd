@@ -12,7 +12,7 @@
 \usage{
 track.attach(dir, pos = 2, name = NULL,
              create = FALSE, readonly = !create,
-             lockEnv = FALSE, verbose = TRUE)
+             lockEnv = FALSE, verbose = TRUE, auto = NULL)
 track.detach(pos = NULL, name = NULL, detach = TRUE)
 }
 \arguments{
@@ -46,6 +46,9 @@ track.detach(pos = NULL, name = NULL, detach = TRUE)
   all tracked variables.  If \code{detach="force"}, the attached
   environment will be removed even if there are variables remaining in
   it (though not if it was not created by \code{track.attach}).}
+  \item{auto}{
+    Should auto-tracking be used? (see \code{\link{track.start}}).
+}
 }
 \details{
   \code{track.attach} attaches a new environment to the search path at the specified

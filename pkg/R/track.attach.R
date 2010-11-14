@@ -1,4 +1,4 @@
-track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, lockEnv=FALSE, verbose=TRUE) {
+track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, lockEnv=FALSE, verbose=TRUE, auto=NULL) {
     ## if (missing(dir) && missing(pos) && is.null(name) && !readonly && !lockEnv)
     ##    return(track.start())
     if (pos < 2)
@@ -25,5 +25,5 @@ track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, 
     if (verbose)
         cat("Attaching tracking db in '", dir, "' to env in pos ", pos,
             if (readonly) " (readonly)" else " (writable)", "\n", sep="")
-    return(track.start(trackingDir, pos=pos, readonly=readonly, create=create, lockEnv=lockEnv, check.Last=FALSE, verbose=FALSE))
+    return(track.start(trackingDir, pos=pos, readonly=readonly, create=create, lockEnv=lockEnv, check.Last=FALSE, verbose=FALSE, auto=auto))
 }
