@@ -262,7 +262,7 @@ writeFileMapFile <- function(fileMap, trackingEnv, dataDir, assignObj=TRUE) {
         return(FALSE)
     }
     on.exit(close(con))
-    save.res <- try(writeLines(text=fileData, con=con, sep="\n"), silen=TRUE)
+    save.res <- try(writeLines(text=fileData, con=con, sep="\n"), silent=TRUE)
     if (is(save.res, "try-error")) {
         warning("failed to save filemap.txt: try to fix problem, then do 'track.resave()'")
         return(FALSE)
