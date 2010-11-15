@@ -1,0 +1,108 @@
+> # want to make sure creation & mod times are carried over when renaming
+> # so use fake times to make test output always the same
+> track:::create.fake.Sys.time(0)
+> invisible(if (file.exists("tmp21")) unlink("tmp21", recursive=TRUE))
+> track.start(dir="tmp21")
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp21'
+> a <- 1
+> b <- rep(2, 2)
+> # don't use name 'c' -- only works when track is attached as a package
+> d <- rep(4, 4)
+> e <- rep(5, 5)
+> track.status()
+   Status InMem FileBase FileExists Saved
+a tracked FALSE        a       TRUE  TRUE
+b tracked FALSE        b       TRUE  TRUE
+d tracked FALSE        d       TRUE  TRUE
+e tracked FALSE        e       TRUE  TRUE
+> track.summary(size=F, time=3)
+    class    mode extent length            modified             created
+a numeric numeric    [1]      1 2001-01-01 09:00:03 2001-01-01 09:00:03
+b numeric numeric    [2]      2 2001-01-01 09:00:04 2001-01-01 09:00:04
+d numeric numeric    [4]      4 2001-01-01 09:00:05 2001-01-01 09:00:05
+e numeric numeric    [5]      5 2001-01-01 09:00:06 2001-01-01 09:00:06
+             accessed TA TW
+a 2001-01-01 09:00:03  0  1
+b 2001-01-01 09:00:04  0  1
+d 2001-01-01 09:00:05  0  1
+e 2001-01-01 09:00:06  0  1
+> 
+> c(a, b, d, e)
+ [1] 1 2 2 4 4 4 4 5 5 5 5 5
+> track.rename(c("a", "b", "d"), c("d", "a", "b"), clobber=TRUE)
+Renaming 'a' to 'd'...
+Renaming 'b' to 'a'...
+Renaming 'd' to 'b'...
+> c(a, b, d, e)
+ [1] 2 2 4 4 4 4 1 5 5 5 5 5
+> track.summary(time=3, size=F)
+    class    mode extent length            modified             created
+a numeric numeric    [2]      2 2001-01-01 09:00:04 2001-01-01 09:00:04
+b numeric numeric    [4]      4 2001-01-01 09:00:05 2001-01-01 09:00:05
+d numeric numeric    [1]      1 2001-01-01 09:00:03 2001-01-01 09:00:03
+e numeric numeric    [5]      5 2001-01-01 09:00:06 2001-01-01 09:00:06
+             accessed TA TW
+a 2001-01-01 09:00:11  2  1
+b 2001-01-01 09:00:12  2  1
+d 2001-01-01 09:00:13  2  1
+e 2001-01-01 09:00:14  2  1
+> track.status()
+   Status InMem FileBase FileExists Saved
+a tracked FALSE        a       TRUE  TRUE
+b tracked FALSE        b       TRUE  TRUE
+d tracked FALSE        d       TRUE  TRUE
+e tracked FALSE        e       TRUE  TRUE
+> track.rename(c("a", "b"), c("b", "a"), clobber=T)
+Renaming 'a' to 'b'...
+Renaming 'b' to 'a'...
+> track.summary(time=3, size=F)
+    class    mode extent length            modified             created
+a numeric numeric    [4]      4 2001-01-01 09:00:05 2001-01-01 09:00:05
+b numeric numeric    [2]      2 2001-01-01 09:00:04 2001-01-01 09:00:04
+d numeric numeric    [1]      1 2001-01-01 09:00:03 2001-01-01 09:00:03
+e numeric numeric    [5]      5 2001-01-01 09:00:06 2001-01-01 09:00:06
+             accessed TA TW
+a 2001-01-01 09:00:12  2  1
+b 2001-01-01 09:00:11  2  1
+d 2001-01-01 09:00:13  2  1
+e 2001-01-01 09:00:14  2  1
+> c(a, b)
+[1] 4 4 4 4 2 2
+> track.rename(c("a", "b"), c("b", "a"), clobber=T)
+Renaming 'a' to 'b'...
+Renaming 'b' to 'a'...
+> track.summary(time=3, size=F)
+    class    mode extent length            modified             created
+a numeric numeric    [2]      2 2001-01-01 09:00:04 2001-01-01 09:00:04
+b numeric numeric    [4]      4 2001-01-01 09:00:05 2001-01-01 09:00:05
+d numeric numeric    [1]      1 2001-01-01 09:00:03 2001-01-01 09:00:03
+e numeric numeric    [5]      5 2001-01-01 09:00:06 2001-01-01 09:00:06
+             accessed TA TW
+a 2001-01-01 09:00:16  3  1
+b 2001-01-01 09:00:15  3  1
+d 2001-01-01 09:00:13  2  1
+e 2001-01-01 09:00:14  2  1
+> c(a, b)
+[1] 2 2 4 4 4 4
+> # rename as self (i.e., no-op)
+> track.rename(c("a", "b"), c("a", "b"), clobber=T)
+Renaming 'a' to 'a'...
+Renaming 'b' to 'b'...
+> track.summary(time=3, size=F)
+    class    mode extent length            modified             created
+a numeric numeric    [2]      2 2001-01-01 09:00:04 2001-01-01 09:00:04
+b numeric numeric    [4]      4 2001-01-01 09:00:05 2001-01-01 09:00:05
+d numeric numeric    [1]      1 2001-01-01 09:00:03 2001-01-01 09:00:03
+e numeric numeric    [5]      5 2001-01-01 09:00:06 2001-01-01 09:00:06
+             accessed TA TW
+a 2001-01-01 09:00:17  4  1
+b 2001-01-01 09:00:18  4  1
+d 2001-01-01 09:00:13  2  1
+e 2001-01-01 09:00:14  2  1
+> c(a, b)
+[1] 2 2 4 4 4 4
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> 
+> invisible(if (file.exists("tmp21")) unlink("tmp21", recursive=TRUE))
+> 

@@ -309,6 +309,7 @@ Functions for managing tracking and tracked variables:
   saved RData file into the tracking session
   \item \code{\link{track.copy}()} and \code{\link{track.move}()}: copy
   or move variables from one tracking db to another
+  \item \code{\link{track.rename}()} rename variables in a tracking db
 }
 
 Functions for recovering from errors:
