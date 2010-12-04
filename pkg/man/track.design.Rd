@@ -267,14 +267,39 @@ different in R.)
   and completely portable across different operating systems.
 }
 
+\section{Compression}{
+
+  Saved R objects are compressed by default in R and by the \code{track}
+  package.  Decompression speed is
+  very important for interactive response when using track, because each
+  time an object is accessed, it is read from its file (unless the
+  object is cached).  Of the compression algorithms available as of
+  R-2.12.0, which are gzip, bzip2, and xz, gzip is the winner in terms
+  of speed.  The default compression level in R for gzip is 6, but level
+  1 gives faster compression with slightly larger files (though
+  decompression is not faster).  The lzop compression algorithm
+  \url{http://www.lzop.org} is still faster but it is not yet available in R.
+
+  Here are some comparisons and benchmarks of various compression
+  programs:
+  \itemize{
+      \item \url{http://www.linuxjournal.com/node/8051/print}
+      \item \url{http://tukaani.org/lzma/benchmarks.html}
+      \item \url{http://stephane.lesimple.fr/wiki/blog/lzop_vs_compress_vs_gzip_vs_bzip2_vs_lzma_vs_lzma2-xz_benchmark_reloaded}
+      \item \url{http://aliver.wordpress.com/2010/06/22/huge-unix-file-compresser-shootout-with-tons-of-datagraphs}
+      \item \url{http://www.maximumcompression.com/index.html}
+      \item \url{http://mattmahoney.net/dc/text.html}
+    }
+}
+
 \references{
 Roger D. Peng. Interacting with data using the filehash package. R
 News, 6(4):19-24, October
-2006. \code{http://cran.r-project.org/doc/Rnews} and
-\code{http://sandybox.typepad.com/software}
+2006. \url{http://cran.r-project.org/doc/Rnews} and
+\url{http://sandybox.typepad.com/software}
 
 David E. Brahm. Delayed data packages. R News, 2(3):11-12, December
-2002.  \code{http://cran.r-project.org/doc/Rnews}
+2002.  \url{http://cran.r-project.org/doc/Rnews}
 }
 
 \author{Tony Plate <tplate@acm.org>}
