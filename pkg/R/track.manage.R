@@ -142,7 +142,8 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         } else if (is.element(op, c("save", "flush", "forget", "lift"))) {
             if (is.element(op, c("flush", "save", "lift")) && exists(objname, envir=trackingEnv, inherits=FALSE)
                 && (resave || is.element(objname, unsaved))) {
-                save.res <- try(save(list=objname, envir=trackingEnv, file=filePath), silent=TRUE)
+                save.res <- try(save(list=objname, envir=trackingEnv, file=filePath,
+                                     compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
                 if (is(save.res, "try-error"))
                     stop("could not save '", objname, "' in ", filePath, ": fix file problem and try again")
             }
@@ -171,7 +172,9 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         writeFileMapFile(fileMap, trackingEnv, dataDir, FALSE)
     if ((needSaveObjSummary || resave) && !opt$readonly) {
         assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-        save2.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))), silent=TRUE)
+        save2.res <- try(save(list=".trackingSummary", envir=trackingEnv,
+                              file=file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep=".")),
+                              compress=FALSE), silent=TRUE)
         if (!is(save2.res, "try-error"))
             assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     }

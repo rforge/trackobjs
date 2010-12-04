@@ -108,6 +108,12 @@ $clobberVars
 $readonly
 [1] FALSE
 
+$compress
+[1] TRUE
+
+$compression_level
+[1] 1
+
 > track.options()
 $cache
 [1] TRUE
@@ -156,6 +162,12 @@ $clobberVars
 
 $readonly
 [1] FALSE
+
+$compress
+[1] TRUE
+
+$compression_level
+[1] 1
 
 > find("x")
 character(0)
@@ -262,6 +274,12 @@ $clobberVars
 
 $readonly
 [1] FALSE
+
+$compress
+[1] TRUE
+
+$compression_level
+[1] 1
 
 > find("x")
 character(0)

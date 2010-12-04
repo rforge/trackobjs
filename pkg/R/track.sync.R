@@ -298,7 +298,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
                 if (verbose)
                     cat("track.sync: saving .trackingSummary for envir=", envname(envir), " to ", dir, "\n", sep="")
-                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
+                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
                 if (is(save.res, "try-error"))
                     warning("unable to save .trackingSummary to ", dir)
                 else

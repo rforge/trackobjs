@@ -158,7 +158,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv.to)
                 file <- file.path(getDataDir(dir.to), paste(".trackingSummary", opt.to$RDataSuffix, sep="."))
-                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv.to), silent=TRUE)
+                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv.to, compress=FALSE), silent=TRUE)
                 if (is(save.res, "try-error"))
                     stop("unable to save .trackingSummary to ", dir.to)
                 else
@@ -180,7 +180,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
                 } else {
                     assign(".trackingSummaryChanged", TRUE, envir=trackingEnv.from)
                     file <- file.path(getDataDir(dir.from), paste(".trackingSummary", opt.from$RDataSuffix, sep="."))
-                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv.from), silent=TRUE)
+                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv.from, compress=FALSE), silent=TRUE)
                     if (is(save.res, "try-error"))
                         stop("unable to save .trackingSummary to ", dir.from)
                     else

@@ -75,6 +75,14 @@ track.options(..., pos = 1, envir = as.environment(pos),
     the summary on any change}
     \item{RDataSuffix:}{character (default \code{"rda"}) suffix to use for files
       containing saved R objects}
+    \item{compress:}{character or logical (default \code{TRUE})
+  passed to \code{save()}.  Possible values are \code{"none"},
+  \code{"gzip"}, \code{"xz"}, \code{"bzip2"}.  \code{save()} currently
+  uses gzip by default (i.e., when \code{compress=TRUE}), which
+  offers the best tradeoff of filesize and compression and decompression
+  times.}
+    \item{compression_level:}{numeric (default \code{1})
+  passed to \code{save()}}
 }
 
   The option settings are saved as a list in an object called

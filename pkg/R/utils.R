@@ -383,7 +383,8 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
         fullFile <- file.path(getDataDir(dir), paste(file, opt$RDataSuffix, sep="."))
         if (opt$debug)
             cat("saving '", objName, "' to file ", fullFile, "\n", sep="")
-        save.res <- try(save(list=objName, file=fullFile, envir=trackingEnv), silent=TRUE)
+        save.res <- try(save(list=objName, file=fullFile, envir=trackingEnv,
+                             compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
         if (!is(save.res, "try-error")) {
             if (!opt$cache)
                 remove(list=objName, envir=trackingEnv)
@@ -441,7 +442,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
                 if (opt$writeToDisk && !is.element("eotPurge", opt$cachePolicy)) {
                     file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
+                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
                     if (is(save.res, "try-error"))
                         warning("unable to save .trackingSummary to ", dir)
                     else
@@ -529,7 +530,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
                     if (is.null(dir))
                         dir <- getTrackingDir(trackingEnv)
                     file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
+                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
                     if (is(save.res, "try-error"))
                         warning("unable to save .trackingSummary to ", dir, ": ", save.res)
                     else

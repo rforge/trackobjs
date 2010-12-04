@@ -306,7 +306,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     assign(".trackingSummary", objSummary, envir=trackingEnv)
     assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
     if (!opt$readonly) {
-        save.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=objSummaryPath))
+        save.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=objSummaryPath, compress=FALSE), silent=TRUE)
         if (is(save.res, "try-error"))
             stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again")
     }

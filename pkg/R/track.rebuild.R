@@ -179,81 +179,90 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         suffixRegExp <- gopt$RDataSuffixes
     else
         suffixRegExp <- paste("(", paste(gopt$RDataSuffixes, collapse="|", sep=""), ")", sep="")
-    if (file.exists(file.path(dataDir))) {
-        ## Try to work out the suffix being used
-        ## First look for .trackingOptions file
-        suffix <- NULL
-        x <- list.files(path=dataDir, pattern=paste("^\\.trackingOptions\\.", suffixRegExp, "$", sep=""), all.files=TRUE)
+    if (!file.exists(file.path(dataDir)))
+        stop("dataDir does not exist: \"", dataDir, "\"")
+
+    ## Try to work out the suffix being used
+    ## First look for .trackingOptions file
+    suffix <- NULL
+    x <- list.files(path=dataDir, pattern=paste("^\\.trackingOptions\\.", suffixRegExp, "$", sep=""), all.files=TRUE)
+    if (length(x)>1)
+        stop("have multiple options files in '", dataDir, "': ", paste(x, collapse=", "))
+    if (length(x)==1) {
+        suffix <- sub(".*\\.", "", x)
+        cat("Guessing RDataSuffix to be '", suffix, "' from name '", x, "'\n", sep="")
+    }
+    if (is.null(suffix)) {
+        ## next look for .trackingSummary file
+        x <- list.files(path=dataDir, pattern=paste("^\\.trackingSummary\\.", suffixRegExp, "$", sep=""), all.files=TRUE)
         if (length(x)>1)
-            stop("have multiple options files in '", dataDir, "': ", paste(x, collapse=", "))
+            stop("have multiple summary files in '", dataDir, "': ", paste(x, collapse=", "))
         if (length(x)==1) {
             suffix <- sub(".*\\.", "", x)
             cat("Guessing RDataSuffix to be '", suffix, "' from name '", x, "'\n", sep="")
         }
-        if (is.null(suffix)) {
-            ## next look for .trackingSummary file
-            x <- list.files(path=dataDir, pattern=paste("^\\.trackingSummary\\.", suffixRegExp, "$", sep=""), all.files=TRUE)
-            if (length(x)>1)
-                stop("have multiple summary files in '", dataDir, "': ", paste(x, collapse=", "))
-            if (length(x)==1) {
-                suffix <- sub(".*\\.", "", x)
-                cat("Guessing RDataSuffix to be '", suffix, "' from name '", x, "'\n", sep="")
-            }
-        }
-        if (is.null(suffix)) {
-            ## next look for any files with possible RData suffix
-            x <- list.files(path=dataDir, pattern=paste("^.*\\.", suffixRegExp, "$", sep=""), all.files=TRUE)
-            if (length(x)>0) {
-                suffix <- unique(sub(".*\\.", "", x))
-                if (length(suffix)>1)
-                    stop("have files with multiple RData suffixes in '", dataDir, "': ", paste(x, collapse=", "))
-                cat("Guessing RDataSuffix to be '", suffix, "' from names of various RData files: ",
-                    paste("'", x[max(length(x), 2)], "'", collapse=", ", sep=""),
-                    if (length(x)>2) "...", "\n", sep="")
-            } else {
-                if (!is.null(RDataSuffix)) {
-                    suffix <- RDataSuffix
-                    cat("Using RDataSuffix '", suffix, "' from supplied argument\n", sep="")
-                } else {
-                    suffix <- gopt$RDataSuffixes[1]
-                    cat("Using RDataSuffix '", suffix, "' from options('global.track.options')\n", sep="")
-                }
-            }
-        }
-        if (!is.element(suffix, gopt$RDataSuffixes))
-            stop("internal error: ended up with an illegal suffix?? (", suffix, ")")
-        if (!is.null(RDataSuffix) && RDataSuffix != suffix)
-            stop("suffix in use '", suffix, "' differs from supplied RDataSuffix ('", RDataSuffix, "')")
-    } else {
-        if (is.null(RDataSuffix))
-            suffix <- gopt$RDataSuffixes[1]
-        else
-            suffix <- RDataSuffix
     }
+    if (is.null(suffix)) {
+        ## next look for any files with possible RData suffix
+        x <- list.files(path=dataDir, pattern=paste("^.*\\.", suffixRegExp, "$", sep=""), all.files=TRUE)
+        if (length(x)>0) {
+            suffix <- unique(sub(".*\\.", "", x))
+            if (length(suffix)>1)
+                stop("have files with multiple RData suffixes in '", dataDir, "': ", paste(x, collapse=", "))
+            cat("Guessing RDataSuffix to be '", suffix, "' from names of various RData files: ",
+                paste("'", x[max(length(x), 2)], "'", collapse=", ", sep=""),
+                if (length(x)>2) "...", "\n", sep="")
+        } else {
+            if (!is.null(RDataSuffix)) {
+                suffix <- RDataSuffix
+                cat("Using RDataSuffix '", suffix, "' from supplied argument\n", sep="")
+            } else {
+                suffix <- gopt$RDataSuffixes[1]
+                cat("Using RDataSuffix '", suffix, "' from options('global.track.options')\n", sep="")
+            }
+        }
+    }
+    if (!is.element(suffix, gopt$RDataSuffixes))
+        stop("internal error: ended up with an illegal suffix?? (", suffix, ")")
+    if (!is.null(RDataSuffix) && RDataSuffix != suffix)
+        stop("suffix in use '", suffix, "' differs from supplied RDataSuffix ('", RDataSuffix, "')")
 
     if (activeTracking) {
         opt <- track.options(trackingEnv=trackingEnv)
         if (opt$readonly)
             stop("cannot rebuild a readonly tracking environment")
-        if (opt$RDataSuffix != suffix) {
-            if (fix) {
-                cat("Changing RDataSuffix saved in options to '", suffix, "'")
-                if (dryRun)
-                    opt$RDataSuffix <- suffix
-                else
-                    opt <- track.options(values=list(RDataSuffix=suffix), trackingEnv=trackingEnv)
-                if (opt$RDataSuffix != suffix)
-                    stop("Strange: was unable to change stored option RDataSuffix to '", suffix, "'")
-            } else {
-                stop("Deduced RDataSuffix '", suffix, "' is different to suffix '",
-                     opt$RDataSuffix,
-                     "' stored in trackingEnv.  Do either track.rebuild(..., RDataSuffix='",
-                     opt$RDataSuffix, "') to use the stored suffix, ",
-                     "or track.rebuild(..., fix=TRUE) to change the stored suffix to '", suffix, "'")
-            }
-        }
     } else {
         opt <- list(RDataSuffix=suffix)
+        opt <- list()
+        ## Read the options, using the suffix we found above
+        file <- file.path(dataDir, paste(".trackingOptions", suffix, sep="."))
+        if (file.exists(file)) {
+            tmpenv <- new.env(parent=emptyenv())
+            load.res <- try(load(file=file, envir=tmpenv), silent=TRUE)
+            if (is(load.res, "try-error") || length(load.res)!=1 || load.res!=".trackingOptions") {
+                warning(file, " does not contain a .trackingOptions object -- ignoring it and using system defaults")
+            } else {
+                opt <- get(".trackingOptions", envir=tmpenv, inherits=FALSE)
+            }
+        }
+        opt <- track.options(old.options=opt, envir=NULL, only.preprocess=TRUE)
+    }
+    if (opt$RDataSuffix != suffix) {
+        if (fix) {
+            cat("Changing RDataSuffix saved in options to '", suffix, "'")
+            if (dryRun)
+                opt$RDataSuffix <- suffix
+            else
+                opt <- track.options(values=list(RDataSuffix=suffix), trackingEnv=trackingEnv)
+            if (opt$RDataSuffix != suffix)
+                stop("Strange: was unable to change stored option RDataSuffix to '", suffix, "'")
+        } else {
+            stop("Deduced RDataSuffix '", suffix, "' is different to suffix '",
+                 opt$RDataSuffix,
+                 "' stored in trackingEnv.  Do either track.rebuild(..., RDataSuffix='",
+                 opt$RDataSuffix, "') to use the stored suffix, ",
+                 "or track.rebuild(..., fix=TRUE) to change the stored suffix to '", suffix, "'")
+        }
     }
     ##
     ## Now we have the options and directory and know if the db is active
@@ -642,7 +651,8 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                             cat(if (dryRun) "Would save" else "Saving",
                                 " object '", load.res[i], "' to '", abbrevWD(newFile), "'\n", sep="")
                             if (!dryRun) {
-                                save.res <- try(save(list=load.res[i], file=newFile, envir=tmpenv), silent=TRUE)
+                                save.res <- try(save(list=load.res[i], file=newFile, envir=tmpenv,
+                                                     compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
                                 if (is(save.res, "try-error")) {
                                     cat("Could not save obj '", load.res[i], "' in file '", abbrevWD(newFile), "' (error was '",
                                         formatMsg(save.res), "')\n", sep="")
@@ -811,11 +821,11 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         if (verbose>1)
             cat("Saving object summary to file.\n")
         if (activeTracking) {
-            save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
+            save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
         } else {
             ## Need to have newSummary in a variable named '.trackingSummary' to use save()
             assign(".trackingSummary", newSummary, envir=tmpenv)
-            save.res <- try(save(list=".trackingSummary", file=file, envir=tmpenv), silent=TRUE)
+            save.res <- try(save(list=".trackingSummary", file=file, envir=tmpenv, compress=FALSE), silent=TRUE)
         }
         if (is(save.res, "try-error"))
             warning("unable to save .trackingSummary to ", dir, " (error was '", formatMsg(save.res), "')")

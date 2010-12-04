@@ -29,6 +29,8 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     ##      not be auto-tracked (default "RODBC")
     ##   autoTrackFullSyncWait: wait this many seconds between doing a full sync
     ##   clobberVars: vector of string specifying variables to be clobbered silently when attaching a tracking db
+    ##   compress: character or logical, TRUE/FALSE, gzip, xz, bzip2, none
+    ##   compression_level: integer 1-9
     trackingEnvSupplied <- !missing(trackingEnv) && !is.null(trackingEnv)
     if (only.preprocess) {
         currentOptions <- old.options
@@ -89,7 +91,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     optionNames <- c("cache", "cachePolicy", "cacheKeepFun", "writeToDisk", "maintainSummary",
                      "alwaysSaveSummary", "recordAccesses", "summaryTimes", "summaryAccess",
                      "RDataSuffix", "debug", "autoTrackExcludePattern", "autoTrackExcludeClass",
-                     "autoTrackFullSyncWait", "clobberVars", "readonly")
+                     "autoTrackFullSyncWait", "clobberVars", "readonly", "compress", "compression_level")
     if (!is.null(names(values))) {
         ## Attempt to set some of the options (including saving to file)
         ## and return the old values.
@@ -135,7 +137,8 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
                                   debug=0, autoTrackExcludePattern=c("^\\.track", "^\\.required"),
                                   autoTrackExcludeClass=c("RODBC"),
-                                  autoTrackFullSyncWait=15, clobberVars=".Random.seed"))
+                                  autoTrackFullSyncWait=15, clobberVars=".Random.seed",
+                                  compress=TRUE, compression_level=1))
         currentOptions <- c(currentOptions, repaired)
     }
     option.values <- currentOptions[query.values]
@@ -204,6 +207,23 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                 single <- FALSE
                 if (!is.character(values[[opt]]))
                     values[[opt]] <- as.character(values[[opt]])
+            } else if (opt=="compress") {
+                if (!is.character(values[[opt]])) {
+                    if (!is.logical(values[[opt]]) || is.na(values[[opt]]))
+                        stop("compress must be TRUE/FALSE or the name of a compress technique")
+                } else {
+                    if (! values[[opt]] %in% c("none", "bzip", "gzip", "xz"))
+                        stop("compress as a string must be one of 'none', 'bzip', 'gzip', 'xz'")
+                    if (values[[opt]] == 'none')
+                        values[[opt]] <- FALSE
+                }
+            } else if (opt=="compression_level") {
+                if (!is.numeric(values[[opt]]) || is.na(values[[opt]]))
+                    stop("compression_level must be a number")
+                if (values[[opt]] < 1)
+                    values[[opt]] <- 1
+                if (values[[opt]] > 9)
+                    values[[opt]] <- 9
             } else {
                 stop("unrecognized option name '", opt, "'")
             }
@@ -235,7 +255,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
             dir <- getTrackingDir(trackingEnv)
             file <- file.path(getDataDir(dir), paste(".trackingOptions", currentOptions$RDataSuffix, sep="."))
             ## if we did change any options, they will have been saved in .trackingOptions in trackingEnv
-            save.res <- try(save(list=".trackingOptions", file=file, envir=trackingEnv), silent=TRUE)
+            save.res <- try(save(list=".trackingOptions", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
             if (is(save.res, "try-error"))
                 stop("unable to save .trackingOptions in ", file)
         }

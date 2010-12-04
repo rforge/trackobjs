@@ -146,11 +146,11 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
                     }
                     remove(list=oldObjName, envir=tmpEnv, inherits=FALSE)
                 }
-                res <- try(save(list=newObjName, file=newFile, envir=tmpEnv), silent=TRUE)
+                res <- try(save(list=newObjName, file=newFile, envir=tmpEnv,
+                                compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
                 if (is(res, "try-error")) {
                     warning("failed to rename obj '", oldObjName, "' to '", newObjName,
                             "' because could not save renamed obj in file '", oldFile, "': ", res)
-                    browser()
                     next
                 }
                 remove(list=newObjName, envir=tmpEnv, inherits=FALSE)
@@ -203,7 +203,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
                 file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
+                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
                 if (is(save.res, "try-error"))
                     stop("unable to save .trackingSummary to ", dir)
                 else
@@ -233,7 +233,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
         } else {
             assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
             file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-            save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv), silent=TRUE)
+            save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
             if (is(save.res, "try-error"))
                 stop("unable to save .trackingSummary to ", dir)
             else
