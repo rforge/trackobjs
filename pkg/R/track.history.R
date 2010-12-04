@@ -1,4 +1,4 @@
-track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, message="Session start") {
+track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, load=TRUE, verbose=FALSE, message="Session start") {
     if (!is.null(file))
         options(incr.hist.file=file)
     if (!is.null(width))
@@ -11,12 +11,30 @@ track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, m
         removeTaskCallback("track.history.writer")
     res <- addTaskCallback(track.history.writer, name="track.history.writer")
     options(incr.hist.active=TRUE)
-    # write a startup comment to the file
     file <- getOption("incr.hist.file")
     if (is.null(file) || nchar(file)==0)
         file <- Sys.getenv("R_INCR_HIST_FILE")
     if (is.null(file) || nchar(file)==0)
         file <- ".Rincr_history"
+    if (load) {
+        ## Load an existing history?
+        if (file.exists(file)) {
+            if (verbose)
+                cat("Loading incremental history file", file, "\n")
+            ## Specify namespace utils to make this function work
+            ## when called from .Rprofile
+            ## Don't load time stamps (if you want to load time stamps, use track.history.load())
+            file2 <- tempfile(file)
+            on.exit(unlink(file2))
+            writeLines(grep("^##------ .* ------##$",
+                            readLines(file, -1), invert=TRUE, value=TRUE), con=file2)
+            utils:::loadhistory(file2)
+        } else {
+            if (verbose)
+                cat("Incremental history file", file, "does not exist\n")
+        }
+    }
+    ## write a startup comment to the file
     cat("##------*", message, "at", date(), "*------##\n", file=file, append=TRUE)
     invisible(res)
 }
@@ -42,6 +60,7 @@ track.history.load <- function(times=FALSE) {
             utils:::loadhistory(file)
         } else {
             file2 <- tempfile(file)
+            on.exit(unlink(file2))
             writeLines(grep("^##------ .* ------##$",
                             readLines(file, -1), invert=TRUE, value=TRUE), con=file2)
             utils:::loadhistory(file2)

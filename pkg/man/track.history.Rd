@@ -16,7 +16,8 @@
   of an R session.
 }
 \usage{
-track.history.start(file = NULL, width = NULL, style = NULL, times = NULL, message="Session start")
+track.history.start(file = NULL, width = NULL, style = NULL, times =
+  NULL, load = TRUE, verbose = FALSE, message="Session start")
 track.history.stop()
 track.history.load(times = FALSE)
 track.history.writer(expr, value, ok, visible)
@@ -40,7 +41,15 @@ track.history.writer(expr, value, ok, visible)
 }
 \item{times}{
   Should time stamps be written to or read from the file?  The default
-  behavior for \code{track.history.start()} is \code{TRUE}.
+  behavior for \code{track.history.start()} is \code{TRUE}.  The default
+  when loading history is \code{FALSE}, so that time stamps do not
+  appear in the interactive history.
+}
+\item{load}{
+  Should existing history be loaded when starting incremental history?
+}
+\item{verbose}{
+  Should comments be printed?
 }
 \item{expr}{
   Provided by the task callback
