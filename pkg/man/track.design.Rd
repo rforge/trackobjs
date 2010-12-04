@@ -290,7 +290,16 @@ different in R.)
       \item \url{http://www.maximumcompression.com/index.html}
       \item \url{http://mattmahoney.net/dc/text.html}
     }
-}
+
+    Compression/decompression is nicely handled in R: only the call to
+    \code{save()} has arguments for compression.  Decompression in
+    \code{load()} is handled automatically using a standard code (magic)
+    at the start of the saved file.  Saved files can also be compressed
+    or decompressed outside of R, and \code{load()} will still handle
+    them correctly, provided the compression used is one of the types
+    that R knows about.
+
+  }
 
 \references{
 Roger D. Peng. Interacting with data using the filehash package. R
