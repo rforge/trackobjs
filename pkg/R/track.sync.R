@@ -63,15 +63,17 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     deleted <- setdiff(names(fileMap), all.objs)
 
     ## If there is a cacheKeepFun, see what it says...
-    ## Record what variables it says to not keep in purgeVars.
+    ## Record what variables it says to discard in purgeVars.
     ## purgeVars is NULL if there is no cacheKeepFun
     purgeVars <- NULL
+    saveVars <- NULL
     if (taskEnd && opt$cachePolicy=="eotPurge" && length(opt$cacheKeepFun)
         && exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
         ## the object summary
         objs <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
         ## which variables are currently cached
         inmem <- is.element(rownames(objs), .Internal(ls(trackingEnv, TRUE)))
+        purgeVars <- character(0)
         if (any(inmem)) {
             keep <- try(do.call(opt$cacheKeepFun, list(objs=objs, inmem=inmem, envname=envname(envir))), silent=TRUE)
             if (is(keep, "try-error")) {
@@ -80,6 +82,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 warning("opt$cacheKeepFun did not return a TRUE/FALSE vector of the correct length")
             } else {
                 purgeVars <- rownames(objs)[inmem & !keep]
+                saveVars <- intersect(rownames(objs)[inmem & keep], getUnsavedObj(trackingEnv))
             }
         }
     }
@@ -254,16 +257,20 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             if (dryRun) {
                 cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
                     paste(purgeVars, collapse=", "), "\n")
+                cat("track.sync(dryRun): Would save", length(saveVars), "vars:",
+                    paste(saveVars, collapse=", "), "\n")
             } else {
                 if (verbose)
                     cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
                         envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
                 if (length(purgeVars))
                     track.flush(envir=envir, list=purgeVars)
+                if (length(saveVars))
+                    track.save(envir=envir, list=saveVars)
             }
         } else {
-            ## which variables are currently cached?
-            ## used to call track.flush(envir=envir, all=TRUE)
+            ## Which variables are currently cached?
+            ## This code used to call track.flush(envir=envir, all=TRUE)
             ## but that's slow compared to working out purgeVars here
             purgeVars <- .Internal(ls(trackingEnv, TRUE))
             purgeVars <- purgeVars[is.element(purgeVars, names(fileMap))]
