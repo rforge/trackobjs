@@ -82,7 +82,9 @@ track.options(..., pos = 1, envir = as.environment(pos),
   offers the best tradeoff of filesize and compression and decompression
   times.}
     \item{compression_level:}{numeric (default \code{1})
-  passed to \code{save()}}
+      passed to \code{save()}}
+    \item{cacheKeepFun:}{A function that specifies which objects to keep
+  in memory. See "cache plugin functions" below.}
 }
 
   The option settings are saved as a list in an object called
@@ -136,6 +138,52 @@ track.options(..., pos = 1, envir = as.environment(pos),
   (unless \code{only.preprocess=TRUE} was supplied).  If no options were
   specified as arguments, the full list of current option values is returned.
 }
+\section{Cache plugin functions}{
+
+\code{track} contains an experimental feature that allows
+users to supply their own plugin functions that specify
+cache rules.  Currently, the plugin function can specify
+whether or not an object will be flushed from memory at the
+end of a top-level command.
+
+Here's an example of a cache plugin function that keeps in
+memory variables whose names begin with the letter 'x'.
+
+\preformatted{
+plugin <- function(objs, inmem, envname) {
+    keep <- regexpr("^x", rownames(objs))>0
+    # browser() # uncomment for debugging & development
+    return(keep)
+}
+}
+
+To use this function, supply it to \code{track.options()}:
+\preformatted{
+  track.options(cacheKeepFun=plugin, save=TRUE)
+  }
+
+The plugin function takes three arguments:
+\itemize{
+
+  \item{objs}: the object summary dataframe - same as returned by
+  \code{track.summary()}.  The names of the objects are in the rownames
+  of the dataframe.
+
+  \item{inmem}: a logical vector with length equal to the number of rows
+  in \code{objs}.  It will have value \code{TRUE} where the
+  corresponding object is in memory, and \code{FALSE} otherwise.
+
+  \item{envname}: a single string containing the name of the tracking
+  environment, in a form like \code{<env R_GlobalEnv>}.
+
+}
+
+The plugin function should return a logical vector the same length as
+\code{inmem}, with \code{TRUE} values where the corresponding objects
+should be kept in memory.
+
+}
+
 \author{Tony Plate <tplate@acm.org>}
 \seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \examples{
