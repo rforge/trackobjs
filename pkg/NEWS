@@ -5,6 +5,8 @@ ENHANCEMENTS
         and functionality (especially around auto-tracking).
     o   Added functions track.copy() and track.move()
     o   Added incremental history mechanism
+    o   Added plugin function feature for specifying which
+        objects should be cached.
 
                 CHANGES in trackObjs version 0.9-3 (2010-07-17)
 ENHANCEMENTS
