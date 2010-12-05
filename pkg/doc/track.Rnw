@@ -1,0 +1,217 @@
+\documentclass{article}
+\title{Object tracking in R}
+\author{Tony Plate}
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The track package sets up a link between R objects in memory and
+files on disk so that objects are automatically saved to files when
+they are changed.  R objects in files are read in on demand and do not
+consume memory prior to being referenced.  The track package also
+tracks times when objects are created and modified, and caches some
+basic characteristics of objects to allow for fast summaries of objects.
+
+Each object is stored in a separate RData file using the standard
+format as used by \texttt{save()}, so that objects can be manually
+picked out of or added to the track database if needed.  The
+track database is a directory usually named \texttt{rdatadir} that
+contains a RData file for each object and several housekeeping files
+that are either plain text or RData files.
+
+Tracking works by replacing a tracked variable by an
+\texttt{activeBinding}, which when accessed looks up information in an
+associated 'tracking environment' and reads or writes the corresponding
+RData file and/or gets or assigns the variable in the tracking
+environment.  In the default mode of operation, R variables that are
+accessed are stored in memory for the duration of the top level task
+(i.e., in one expression evaluated from the prompt.) A callback that is
+called each time a top-level-task completes does three major things:
+\begin{itemize}
+  \item detects newly created or deleted variables, and adds or removes
+  from the tracking database as appropriate, and
+  \item writes changed variables to the database, and
+  \item deletes cached objects from memory.
+\end{itemize}
+
+With the track package, R provides a similar user experience
+to the old S-PLUS in terms of how it stores variables (the
+good along with the bad).
+
+\subsection{How to use the track package}
+<<>>=
+library(track)
+track.start()
+# Good to go, variables will be saved as they are created.
+# Not necessary, but if you want to stop tracking, do this:
+track.stop()
+@
+
+\section{An example of tracking}
+
+Here is a brief example of tracking some variables in the global environment:
+
+<<>>=
+library(track)
+track.start()
+x <- 123                  # Variable 'x' is now tracked
+y <- matrix(1:6, ncol=2)  # 'y' is assigned & tracked
+z1 <- list("a", "b", "c")
+z2 <- Sys.time()
+track.summary()           # See a summary of tracked vars
+# (TA="total accesses", TW="total writes")
+ls(all=TRUE)
+track.stop()              # Stop tracking
+ls(all=TRUE)
+
+# Restart using the tracking dir -- the variables reappear
+track.start() # Start using the same tracking dir again ("rdatadir")
+ls(all=TRUE)
+track.summary()
+track.stop()
+
+# the files in the tracking directory:
+list.files("rdatadir", all=TRUE)
+@
+
+There are several points to note:
+\begin{itemize}
+  \item The global environment is the default environment for tracking
+  -- it is possible to track variables in other environments, but that
+  environment must be supplied as an argument to the track functions.
+  \item By default, newly created or deleted variables are automatically
+  added to or removed from the tracking database.  This feature can be
+  disabled by supplying \texttt{auto=FALSE} to \texttt{track.start()}, or by
+  calling \texttt{track.auto(FALSE)}.
+  \item When tracking is stopped, all
+  tracked variables are saved on disk and will be no longer accessible
+  until tracking is started again.
+  \item The objects are stored each in their own file in the
+  tracking dir, in the
+  format used by \texttt{save()}/\texttt{load()} (RData files).
+\end{itemize}
+
+\section{Why use the \texttt{track} package}
+
+There are four main reasons to use the \texttt{track} package:
+\begin{itemize}
+  \item conveniently handle many moderately-large objects that would
+  collectively exhaust memory or be inconvenient to manage in
+  files by manually using \texttt{save()}, \texttt{load()}, and/or
+  \texttt{save.image()}.
+  \item have changed or newly created objects saved automatically at the
+  end of each top-level command, which ensures objects are preserved
+  in the event of accidental or abnormal termination of the R session,
+  and which also makes startup and saving much faster when many large
+  objects in the global environment must be loaded or saved.
+  \item keep track of creation and modification times on objects
+  \item get fast summaries of basic characteristics of objects - class,
+  size, dimension, etc.
+\end{itemize}
+
+\section{Incremental history}
+
+The track package also provides a self-contained incremental history
+saving function that writes the most recent command to the file
+\texttt{.Rincr\_history} at the end of each top-level task, along with a
+time stamp that does not appear in the interactive history. The standard
+history functionality (savehistory/loadhistory) in R writes the history
+only at the end of the session.  Thus, if the R session terminates
+abnormally, history is lost.
+
+To turn on incremental history recording, issue the command
+<<>>=
+track.history.start()
+@
+
+To turn it off, issue the command
+<<>>=
+track.history.stop()
+@
+
+The history is stored in a simple text format with time
+stamps.  It can be viewed in an editor, but be careful not
+to view it in an editor that locks the file while the R
+session is active (many editors under Windows lock the file
+they have open, with the exception of emacs.)
+
+\section{Cache-policy plugins}
+
+There is an option to control whether tracked objects are
+cached in memory as well as being stored on disk.  By
+default, objects are cached in memory for the duration of a
+top-level task, but are flushed from memory at the end of a
+top-level task.  This means that when they are accessed
+again, they must be read from files.  To save time when
+working with collections of objects that will all fit in
+memory, turn on caching with and turn off cache-flushing
+\texttt{track.options(cache=TRUE, cachePolicy="none")},
+or start tracking with
+\texttt{track.start(..., cache=TRUE, cachePolicy="none")}.
+A possible future improvement is to
+allow conditional and/or more intelligent caching of
+objects.  Some data that would be needed for this is already
+collected in access counts and times that are recorded in
+the tracking summary.
+
+Along these lines, \texttt{track} contains an experimental
+feature that allows users to supply their own plugin
+functions that specify cache rules.  Currently, the plugin
+function can specify whether or not an object will be
+flushed from memory at the end of a top-level command.
+
+Here's an example of a cache plugin function that keeps in
+memory variables whose names begin with the letter 'x'.
+
+\begin{verbatim}
+plugin <- function(objs, inmem, envname) {
+    keep <- regexpr("^x", rownames(objs))>0
+    return(keep)
+}
+\end{verbatim}
+
+To use this function, supply it to \texttt{track.options()}:
+\begin{verbatim}
+track.options(cacheKeepFun=plugin, save=TRUE)
+\end{verbatim}
+
+The plugin function takes three arguments:
+\begin{itemize}
+  \item objs: the object summary dataframe - same as returned by \texttt{track.summary()}.  The names of the objects are in the rownames of the dataframe.
+  \item inmem: a logical vector with length equal to the number of rows in \texttt{objs}.  It will have value \texttt{TRUE} where the corresponding object is in memory, and \texttt{FALSE} otherwise.
+  \item envname: a single string containing the name of the tracking environment, in a form like \texttt{<env R\_GlobalEnv>}.
+\end{itemize}
+
+The plugin function should return a logical vector the same length as \texttt{inmem}, with \texttt{TRUE} values where the corresponding objects should be kept in memory.
+
+\section{What track is not good for}
+
+Tracking is not particularly suitable for storing objects that contain
+environments, because those environments and their contents will be
+fully written out in the saved file (in a live R session, environments
+are references, and there can be multiple references to one
+environment.)  Functions are one of the most common objects that contain
+environments, which can contain data objects local to the function
+(e.g., see the examples in the R FAQ in the section "Lexical scoping"
+under "What are the differences between R and S?"
+\texttt{http://cran.r-project.org/doc/FAQ/R-FAQ.html\#Lexical-scoping}).
+Additionally, the results of some modeling functions contain
+environments, e.g., \texttt{lm} holds several references to the
+environment that contains the data.  When an \texttt{lm} object is
+\texttt{save}'ed, the environment containing the data, and all the other
+objects in that environment, can be saved in the same file.  To work
+with large data objects and modeling functions, consider first creating
+a tracking database that contains the data objects.  Then, in a
+different R session (which can be running at the same time), use
+\texttt{track.attach} to attach the db of data objects at \texttt{pos=2} on
+the search list.  When working in this way, the data objects will only
+be kept in memory when being used, and modeling functions that record
+environments in their results can be successful used (though beware of
+modeling functions that store large amounts of data in their results.)
+Alternatively, use modeling functions that do not store references to
+environments.  The utility function \texttt{show.envs()} from the
+\texttt{track} package will show what environments are referenced
+within an object (though it is not guaranteed to find them all.)
+
+\end{document}
