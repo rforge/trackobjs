@@ -36,8 +36,8 @@ called each time a top-level-task completes does three major things:
 \end{itemize}
 
 With the track package, R provides a similar user experience
-to the old S-PLUS in terms of how it stores variables (the
-good along with the bad).
+to the old S-PLUS in terms of how it stores variables -- new
+and changed objects are immediately saved to disk.
 
 \subsection{How to use the track package}
 <<>>=
