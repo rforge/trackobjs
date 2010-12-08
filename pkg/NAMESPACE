@@ -32,6 +32,7 @@ export(track.start,
        track.rebuild,
        track.history.start,
        track.history.stop,
+       track.history.status,
        track.history.load,
        track.history.writer,
        show.envs)

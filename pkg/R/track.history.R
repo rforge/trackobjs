@@ -1,4 +1,4 @@
-track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, load=TRUE, verbose=FALSE, message="Session start") {
+track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, load=FALSE, verbose=FALSE, message="Session start") {
     if (!is.null(file))
         options(incr.hist.file=file)
     if (!is.null(width))
@@ -37,6 +37,10 @@ track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, l
     ## write a startup comment to the file
     cat("##------*", message, "at", date(), "*------##\n", file=file, append=TRUE)
     invisible(res)
+}
+
+track.history.status <- function() {
+    return(if (is.element("track.history.writer", getTaskCallbackNames())) "on" else "off")
 }
 
 track.history.stop <- function() {
@@ -128,7 +132,6 @@ track.history.writer <- function(expr, value, ok, visible) {
         ## (3) look for the last complete R expression in the file.
         ## (4) look for the last expression in the file that matches
         ## the value of the expr arg to this function.
-        ## For the moment, use timestamp().
         if (method=="timestamps")
             timestamp(quiet=TRUE)
         ## cat(c(if (times) paste("##------", date(), "------##"),
@@ -148,6 +151,19 @@ track.history.writer <- function(expr, value, ok, visible) {
                 cat(rawhist[seq(stamp.lines, length(rawhist))], sep="\n", file=file, append=TRUE)
         } else {
             ## Use the last lines to limit the possible starts
+            ## The tricky thing about searching for the prior command is
+            ## that commands can be multi-line.  For example, suppose we have
+            ## the following lines typed at the prompt:
+            ## 1> x
+            ## 2> (
+            ## 3+ 4 *
+            ## 4+ x
+            ## 5+ )
+            ## Now, after seeing the multiline command, we want to find the command
+            ## came after "x" (typed at the "1>" prompt here).  If we just search
+            ## for the most recent occurrence of the line "x" in the file, and
+            ## take what comes after it, we get just the line containing ")".  That's
+            ## why we need to try to group the file into full expressions.
             last <- history.last.lines$get()
             lines <- find.expr.lines.following(rawhist, last)
             if (length(lines)) {
@@ -215,6 +231,7 @@ find.expr.lines.following <- function (rawhist, last) {
 ## > history.last.lines$set("foo")
 ## > history.last.lines$get()
 ## [1] "foo"
-history.last.lines <- (function(last=NULL) list(set=function(lines) last <<- lines,
-                                               get=function() last))()
+history.last.lines <- (function(last=NULL, n=0) list(set=function(lines) {last <<- lines; n <<- n+1},
+                                                     get=function() last,
+                                                     getn=function() n))()
 

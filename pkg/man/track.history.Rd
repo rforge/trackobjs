@@ -2,6 +2,7 @@
 \alias{track.history}
 \alias{track.history.start}
 \alias{track.history.stop}
+\alias{track.history.status}
 \alias{track.history.load}
 \alias{track.history.writer}
 
@@ -17,8 +18,9 @@
 }
 \usage{
 track.history.start(file = NULL, width = NULL, style = NULL, times =
-  NULL, load = TRUE, verbose = FALSE, message="Session start")
+  NULL, load = FALSE, verbose = FALSE, message="Session start")
 track.history.stop()
+track.history.status()
 track.history.load(times = FALSE)
 track.history.writer(expr, value, ok, visible)
 }
@@ -110,7 +112,9 @@ if (interactive()) {
 
 }
 \value{
-  These functions currently provide no useful return values.
+  \code{track.history.status()} returns a character string: \code{"on"}
+  or \code{"off"}.
+  The other functions currently provide no useful return values.
 }
 \author{
   Tony Plate \email{tplate@acm.org}
