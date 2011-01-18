@@ -141,9 +141,9 @@ they have open, with the exception of emacs.)
 There is an option to control whether tracked objects are
 cached in memory as well as being stored on disk.  By
 default, objects are cached in memory for the duration of a
-top-level task, but are flushed from memory at the end of a
+top-level task, and are flushed from memory at the end of a
 top-level task.  This means that when they are accessed
-again, they must be read from files.  To save time when
+again, they must be read from files.  To get faster response when
 working with collections of objects that will all fit in
 memory, turn on caching with and turn off cache-flushing
 \texttt{track.options(cache=TRUE, cachePolicy="none")},
@@ -161,8 +161,10 @@ functions that specify cache rules.  Currently, the plugin
 function can specify whether or not an object will be
 flushed from memory at the end of a top-level command.
 
-Here's an example of a cache plugin function that keeps in
-memory variables whose names begin with the letter 'x'.
+Just for fun, here's an example of a cache plugin function
+that keeps in memory variables whose names begin with the
+letter 'x'.  This is only intended as an illustration of a
+cache plugin, not as a serious cache plugin function.
 
 \begin{verbatim}
 plugin <- function(objs, inmem, envname) {
@@ -183,35 +185,49 @@ The plugin function takes three arguments:
   \item envname: a single string containing the name of the tracking environment, in a form like \texttt{<env R\_GlobalEnv>}.
 \end{itemize}
 
-The plugin function should return a logical vector the same length as \texttt{inmem}, with \texttt{TRUE} values where the corresponding objects should be kept in memory.
+The plugin function should return a logical vector the same
+length as \texttt{inmem}, with \texttt{TRUE} values where
+the corresponding objects should be kept in memory.  For
+debugging purposes, it is possible to use \texttt{browser()}
+in the body of a plugin function.
 
 \section{What track is not good for}
 
-Tracking is not particularly suitable for storing objects that contain
-environments, because those environments and their contents will be
-fully written out in the saved file (in a live R session, environments
-are references, and there can be multiple references to one
-environment.)  Functions are one of the most common objects that contain
-environments, which can contain data objects local to the function
-(e.g., see the examples in the R FAQ in the section "Lexical scoping"
-under "What are the differences between R and S?"
+Tracking is not particularly suitable for storing objects
+that contain environments, because those environments and
+their contents will be fully written out in the saved files.
+In a live R session, environments are references, and there
+can be multiple references to one environment, without there
+being multiple copies of the environment.  However, when
+objects containing environments are saved to files, a copy of
+the environment is written in each file, resulting in
+duplication and the loss of links across environments.
+
+Functions are one of the most common objects that contain
+environments, which can contain data objects local to the
+function (e.g., see the examples in the R FAQ in the section
+"Lexical scoping" under "What are the differences between R
+and S?"
 \texttt{http://cran.r-project.org/doc/FAQ/R-FAQ.html\#Lexical-scoping}).
 Additionally, the results of some modeling functions contain
-environments, e.g., \texttt{lm} holds several references to the
-environment that contains the data.  When an \texttt{lm} object is
-\texttt{save}'ed, the environment containing the data, and all the other
-objects in that environment, can be saved in the same file.  To work
-with large data objects and modeling functions, consider first creating
-a tracking database that contains the data objects.  Then, in a
-different R session (which can be running at the same time), use
-\texttt{track.attach} to attach the db of data objects at \texttt{pos=2} on
-the search list.  When working in this way, the data objects will only
-be kept in memory when being used, and modeling functions that record
-environments in their results can be successful used (though beware of
-modeling functions that store large amounts of data in their results.)
-Alternatively, use modeling functions that do not store references to
-environments.  The utility function \texttt{show.envs()} from the
-\texttt{track} package will show what environments are referenced
-within an object (though it is not guaranteed to find them all.)
+environments, e.g., \texttt{lm} holds several references to
+the environment that contains the data.  When an \texttt{lm}
+object is \texttt{save}'ed, the environment containing the
+data, and all the other objects in that environment, can be
+saved in the same file.  To work with large data objects and
+modeling functions, consider first creating a tracking
+database that contains the data objects.  Then, in a
+different R session (which can be running at the same time),
+use \texttt{track.attach} to attach the db of data objects
+at \texttt{pos=2} on the search list.  When working in this
+way, the data objects will only be kept in memory when being
+used, and modeling functions that record environments in
+their results can be successful used (though beware of
+modeling functions that store large amounts of data in their
+results.)  Alternatively, use modeling functions that do not
+store references to environments.  The utility function
+\texttt{show.envs()} from the \texttt{track} package will
+show what environments are referenced within an object
+(though it is not guaranteed to find them all.)
 
 \end{document}
