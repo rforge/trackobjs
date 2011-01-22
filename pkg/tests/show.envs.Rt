@@ -17,6 +17,7 @@
 + }
 > m2 <- f1(2)
 > show.envs(m2)
+#@ warn-only
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
 <environment: 0x00f27484>: attr(m2$terms, ".Environment")
 <environment: 0x00f27484>: attr(attr(m2$model, "terms"), ".Environment")
@@ -25,6 +26,7 @@
 > x <- list(a=new.env(), b=new.env())
 > assign("c", new.env(), envir=x$a)
 > x
+#@ warn-only
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
 $a
 <environment: 0x03e36514>
@@ -37,11 +39,13 @@ $b
 > # There are more environments inside environments inside x,
 > # but we don't see them unless we explicitly peek
 > show.envs(x)
+#@ warn-only
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
 <environment: 0x03e36514>: x$a
 <environment: 0x03e362e4>: x$b
 [1] 2
 > show.envs(get("c", env=x$a))
+#@ warn-only
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
 <environment: 0x042f19e4>: get("c", env = x$a)
 [1] 1

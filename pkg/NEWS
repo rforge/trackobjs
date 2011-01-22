@@ -1,4 +1,9 @@
                 CHANGES in track version 1.0-0 (2010-11-07)
+FIXES
+    o   Make test-output mismatches in tests/show.envs.Rt into
+        warnings not errors (is failing to match on Solaris).
+
+                CHANGES in track version 1.0-0 (2010-11-07)
 ENHANCEMENTS
     o   Changed package name from 'trackObjs' to 'track'
     o   Many incremental improvments in efficiency, stability
