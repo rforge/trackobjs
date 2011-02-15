@@ -69,6 +69,9 @@ $cachePolicy
 $cacheKeepFun
 NULL
 
+$alwaysCache
+[1] ".Last"
+
 $writeToDisk
 [1] TRUE
 
@@ -123,6 +126,9 @@ $cachePolicy
 
 $cacheKeepFun
 NULL
+
+$alwaysCache
+[1] ".Last"
 
 $writeToDisk
 [1] TRUE
@@ -235,6 +241,9 @@ $cachePolicy
 
 $cacheKeepFun
 NULL
+
+$alwaysCache
+[1] ".Last"
 
 $writeToDisk
 [1] TRUE

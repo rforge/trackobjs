@@ -59,6 +59,9 @@ track.options(..., pos = 1, envir = as.environment(pos),
   \code{\link{track.summary}()} for the effect of these settings}
     \item{summaryAccess:}{logical, or integer value 0,1,2,3,4}
     \item{cache:}{logical (default TRUE): keep written objects in memory?}
+    \item{alwaysCache:}{character (default \code{".Last"}): vector of objects
+  to always keep in memory.  \code{".Last"} is here to avoid
+  difficulties quitting R if the tracking DB becomes unavailable.}
     \item{writeToDisk:}{logical (default TRUE): always write changed
       objects to disk?  If \code{TRUE}, when objects are written to disk depends on \code{cachePolicy}:
       \code{cachePolicy="none"}: write objects immediately on a change;

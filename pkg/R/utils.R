@@ -386,7 +386,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
         save.res <- try(save(list=objName, file=fullFile, envir=trackingEnv,
                              compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
         if (!is(save.res, "try-error")) {
-            if (!opt$cache)
+            if (!opt$cache && !is.element(objName, opt$alwaysCache))
                 remove(list=objName, envir=trackingEnv)
             unsaved <- getUnsavedObj(trackingEnv)
             if (length(unsaved) && is.element(objName, unsaved))

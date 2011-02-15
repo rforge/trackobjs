@@ -37,7 +37,7 @@ x6         tracked FALSE       x6       TRUE  TRUE
 > track.flush(x2)
 > track.status(reserved=TRUE)
                       Status InMem FileBase FileExists Saved
-.Last                tracked FALSE       _1       TRUE  TRUE
+.Last                tracked  TRUE       _1       TRUE  TRUE
 .trackingEnv     untrackable    NA     <NA>         NA    NA
 .trackingFileMap untrackable    NA     <NA>         NA    NA
 uncoop           untrackable    NA     <NA>         NA    NA

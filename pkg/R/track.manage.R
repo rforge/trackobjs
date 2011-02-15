@@ -147,7 +147,8 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
                 if (is(save.res, "try-error"))
                     stop("could not save '", objname, "' in ", filePath, ": fix file problem and try again")
             }
-            if (is.element(op, c("flush", "forget", "lift")) && exists(objname, envir=trackingEnv, inherits=FALSE))
+            if (is.element(op, c("flush", "forget", "lift")) && exists(objname, envir=trackingEnv, inherits=FALSE)
+                && !(op=="flush" && is.element(objname, opt$alwaysCache)))
                 remove(list=objname, envir=trackingEnv)
         } else {
             stop("what ", op, "???")

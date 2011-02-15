@@ -51,6 +51,9 @@ $cachePolicy
 $cacheKeepFun
 NULL
 
+$alwaysCache
+[1] ".Last"
+
 $writeToDisk
 [1] FALSE
 
@@ -198,6 +201,7 @@ $autoTrackExcludeClass
 $autoTrackExcludeClass
 [1] "RODBC"
 
+> browser <- function() NULL # just for automated testing -- omit this to really use the browser()
 > track.options(cacheKeepFun=function(objs, inmem, envname) {keep <- rep(FALSE, length(inmem)); browser(); return(keep)})
 > track.options("cacheKeepFun")
 $cacheKeepFun

@@ -10,6 +10,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     ##   summaryTimes: logical, or integer value 0,1,2,3
     ##   summaryAccess: logical, or integer value 0,1,2,3,4
     ##   cache: logical (default TRUE) (keep objects in memory?)
+    ##   alwaysCache: char vector (default ".Last") (objects to always keep in memory)
     ##   cachePolicy: char vector (default "eotPurge") (when to keep objects in memory)
     ##   cacheKeepFun: char vector or function (default NULL): function to call
     ##     to determine which objects to keep in cache
@@ -88,9 +89,10 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     ## If we were called like track.options(values=NULL), make this like track.options()
     if (length(values)==1 && is.null(names(values)) && is.null(values[[1]]))
          values <- list()
-    optionNames <- c("cache", "cachePolicy", "cacheKeepFun", "writeToDisk", "maintainSummary",
-                     "alwaysSaveSummary", "recordAccesses", "summaryTimes", "summaryAccess",
-                     "RDataSuffix", "debug", "autoTrackExcludePattern", "autoTrackExcludeClass",
+    optionNames <- c("cache", "cachePolicy", "cacheKeepFun", "alwaysCache",
+                     "writeToDisk", "maintainSummary", "alwaysSaveSummary",
+                     "recordAccesses", "summaryTimes", "summaryAccess", "RDataSuffix",
+                     "debug", "autoTrackExcludePattern", "autoTrackExcludeClass",
                      "autoTrackFullSyncWait", "clobberVars", "readonly", "compress", "compression_level")
     if (!is.null(names(values))) {
         ## Attempt to set some of the options (including saving to file)
@@ -131,6 +133,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
         repaired <- lapply(need.value, function(x)
                            switch(x, cache=TRUE, cachePolicy="eotPurge",
                                   cacheKeepFun=NULL,
+                                  alwaysCache=c(".Last"),
                                   readonly=FALSE, writeToDisk=TRUE,
                                   maintainSummary=TRUE, alwaysSaveSummary=FALSE,
                                   recordAccesses=TRUE,
@@ -197,6 +200,10 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                 if (!is.integer(values[[opt]]))
                     values[[opt]] <- as.integer(values[[opt]])
             } else if (opt=="autoTrackExcludePattern" || opt=="autoTrackExcludeClass") {
+                single <- FALSE
+                if (!is.character(values[[opt]]))
+                    values[[opt]] <- as.character(values[[opt]])
+            } else if (opt=="alwaysCache") {
                 single <- FALSE
                 if (!is.character(values[[opt]]))
                     values[[opt]] <- as.character(values[[opt]])
