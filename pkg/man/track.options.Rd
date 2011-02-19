@@ -12,11 +12,10 @@ track.options(..., pos = 1, envir = as.environment(pos),
               values=list(...), save = FALSE, clear=FALSE, delete=FALSE,
               trackingEnv, only.preprocess = FALSE, old.options = list())
 }
-
 \arguments{
   \item{\dots}{ Either option names as character data, or specifications
-    for setting options, as named arguments, or in
-    a named list }
+    for setting options as named arguments or in
+    a named list.  See DETAILS for descriptions of options. }
   \item{pos}{ The search path position of the environment being tracked
     (default is 1 for the global environment)}
   \item{envir}{ The environment being tracked.  This is an alternate way
@@ -50,45 +49,66 @@ track.options(..., pos = 1, envir = as.environment(pos),
 \details{
   Valid option names and values are as follows:
   \describe{
-    \item{readonly:}{logical (default TRUE for \code{track.attach()} and FALSE
-  for \code{track.start()}) should any changes be allowed to the files?
-  Note that this option is a function of how a tracking database is
-  accessed -- it is not a property of the database itself.  To
-  unconditionally protect a tracking database from modification, use file permissions.}
-    \item{summaryTimes:}{logical, or integer value 0,1,2,3 (see
-  \code{\link{track.summary}()} for the effect of these settings}
-    \item{summaryAccess:}{logical, or integer value 0,1,2,3,4}
-    \item{cache:}{logical (default TRUE): keep written objects in memory?}
     \item{alwaysCache:}{character (default \code{".Last"}): vector of objects
-  to always keep in memory.  \code{".Last"} is here to avoid
-  difficulties quitting R if the tracking DB becomes unavailable.}
+      to always keep in memory.  \code{".Last"} is here to avoid
+      difficulties quitting R if the tracking DB becomes unavailable.}
+    \item{alwaysSaveSummary:}{logical (default TRUE) if TRUE, always save
+      the summary on any change to the summary.  Summaries are not saved
+      for databases attached in a readonly mode.}
+    \item{autoTrackExcludeClass:}{character vector (default \code{"RODBC"}) variables
+      whose classes is in this vector are not auto-tracked}
+    \item{autoTrackExcludePattern:}{character vector (default \code{c("^\\.track", "^\\.required")}) variables
+      whose name matches any of these regular expressions are not
+      auto-tracked}
+    \item{autoTrackFullSyncWait:}{auto track will wait at least this
+      many seconds between doing full syncs}
+    \item{cache:}{logical (default TRUE): keep objects in memory?}
+    \item{cacheKeepFun:}{A function that specifies which objects to keep
+      in memory at the end of a top-level-task. See section on "Cache plugin functions" below.}
+    \item{cachePolicy:}{The higher-level policy to follow regarding
+      keeping objects in memory.  Currently has two possible values -
+      one of them allows special action at the end of a top-level-task:
+      \describe{
+	\item{\code{"none"}:}{No special action at end of task, i.e., follow option \code{cache}}
+	\item{\code{"eotPurge"}:}{Purge objects from memory at the end }
+	}
+      Also affects when changes to objects are written to disk - see option
+      \code{writeToDisk} below.}
+    \item{clobberVars:}{vector of string specifying variables to be
+      clobbered silently when attaching a tracking db}
+    \item{compress:}{character or logical (default \code{TRUE})
+      passed to \code{save()}.  Possible values are \code{"none"},
+      \code{"gzip"}, \code{"xz"}, \code{"bzip2"}.  \code{save()} currently
+      uses gzip by default (i.e., when \code{compress=TRUE}), which
+      according to \code{\link{save}()} offers the best tradeoff of
+      filesize and compression and decompression times.}
+    \item{compression_level:}{numeric (default \code{1})
+      passed to \code{save()}}
+    \item{debug:}{integer (default 0) if > 0, print some diagnostic debugging messages}
+    \item{maintainSummary:}{logical (default TRUE) if TRUE, record time
+      & number of changes and accesses}
+    \item{RDataSuffix:}{character (default \code{"rda"}) suffix to use for files
+      containing saved R objects}
+    \item{readonly:}{logical (default TRUE for \code{track.attach()} and FALSE
+      for \code{track.start()}) should any changes be allowed to the files?
+      Note that this option is a function of how a tracking database is
+      accessed -- it is not a property of the database itself.  A
+      particular tracking database can attached on one R session with
+      \code{readonly=TRUE} and at the same time be attached to another R
+      session with \code{readonly=FALSE}.  To
+      unconditionally protect a tracking database from modification, use file permissions.}
+    \item{recordAccesses:}{logical (default TRUE) if TRUE, record
+      counts and times for access ("get") operations on tracked variables}
+    \item{summaryAccess:}{logical, or integer value 0,1,2,3,4; controls
+      what info about accesses is output by \code{\link{track.summary}()}}
+    \item{summaryTimes:}{logical, or integer value 0,1,2,3 (see
+      \code{\link{track.summary}()} for the effect of these settings)}
     \item{writeToDisk:}{logical (default TRUE): always write changed
       objects to disk?  If \code{TRUE}, when objects are written to disk depends on \code{cachePolicy}:
       \code{cachePolicy="none"}: write objects immediately on a change;
       \code{cachePolicy="eotPurge"}: write changed objects at the end of a top-level task
     }
-    \item{recordAccesses:}{logical (default TRUE) if TRUE, record
-      counts and times for access ("get") operations on tracked variables}
-    \item{maintainSummary:}{logical (default TRUE) if TRUE, record time & number of accesses}
-    \item{autoTrackExcludePattern:}{character vector (default \code{c("^\\.track", "^\\.required")}) variables
-  whose name matches any of these regular expressions are not auto-tracked}
-    \item{autoTrackExcludeClass:}{character vector (default \code{"RODBC"}) variables
-  whose classes is in this vector are not auto-tracked}
-    \item{alwaysSaveSummary:}{logical (default TRUE) if TRUE, always save
-    the summary on any change}
-    \item{RDataSuffix:}{character (default \code{"rda"}) suffix to use for files
-      containing saved R objects}
-    \item{compress:}{character or logical (default \code{TRUE})
-  passed to \code{save()}.  Possible values are \code{"none"},
-  \code{"gzip"}, \code{"xz"}, \code{"bzip2"}.  \code{save()} currently
-  uses gzip by default (i.e., when \code{compress=TRUE}), which
-  offers the best tradeoff of filesize and compression and decompression
-  times.}
-    \item{compression_level:}{numeric (default \code{1})
-      passed to \code{save()}}
-    \item{cacheKeepFun:}{A function that specifies which objects to keep
-  in memory. See "cache plugin functions" below.}
-}
+  }
 
   The option settings are saved as a list in an object called
   \code{.trackingOptions} in the tracking environment (with a copy
@@ -168,8 +188,9 @@ To use this function, supply it to \code{track.options()}:
 The plugin function takes three arguments:
 \itemize{
 
-  \item{objs}: the object summary dataframe - same as returned by
-  \code{track.summary()}.  The names of the objects are in the rownames
+  \item{objs}: the object summary dataframe.  A subset of this data
+  frame is returned by \code{track.summary()}; invoke \code{track.summary(times=3, access=3,
+  size=T, all=T)} to get the entire data frame.  The names of the objects are in the rownames
   of the dataframe.
 
   \item{inmem}: a logical vector with length equal to the number of rows

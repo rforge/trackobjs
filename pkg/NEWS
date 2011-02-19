@@ -1,4 +1,17 @@
-                CHANGES in track version 1.0-0 (2010-11-07)
+                CHANGES in track version 1.0-3 (2011-02-19)
+ENHANCEMENTS
+    o   Revised order of options in track.options() to be
+        alphabetical, and cleaned up documentation of options
+        in ?track.options
+
+                CHANGES in track version 1.0-2 (2011-01-22)
+ENHANCEMENTS
+    o   Add an "alwaysCache" option and populate it with ".Last"
+        so that q() is possible from R even when globalenv
+	tracking env becomes unavailable (e.g., due to a
+	network drive becoming unavailable)
+
+                CHANGES in track version 1.0-1 (2011-01-22)
 FIXES
     o   Make test-output mismatches in tests/show.envs.Rt into
         warnings not errors (is failing to match on Solaris).

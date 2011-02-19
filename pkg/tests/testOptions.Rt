@@ -42,62 +42,62 @@ $cache
 [1] TRUE
 
 > track.options()
-$cache
-[1] TRUE
-
-$cachePolicy
-[1] "none"
-
-$cacheKeepFun
-NULL
-
 $alwaysCache
 [1] ".Last"
-
-$writeToDisk
-[1] FALSE
-
-$maintainSummary
-[1] TRUE
 
 $alwaysSaveSummary
 [1] FALSE
 
-$recordAccesses
-[1] TRUE
-
-$summaryTimes
-[1] 1
-
-$summaryAccess
-[1] 1
-
-$RDataSuffix
-[1] "rda"
-
-$debug
-[1] 0
+$autoTrackExcludeClass
+[1] "RODBC"
 
 $autoTrackExcludePattern
 [1] "^\\.track"    "^\\.required"
 
-$autoTrackExcludeClass
-[1] "RODBC"
-
 $autoTrackFullSyncWait
 [1] 15
 
+$cache
+[1] TRUE
+
+$cacheKeepFun
+NULL
+
+$cachePolicy
+[1] "none"
+
 $clobberVars
 [1] ".Random.seed"
-
-$readonly
-[1] FALSE
 
 $compress
 [1] TRUE
 
 $compression_level
 [1] 1
+
+$debug
+[1] 0
+
+$maintainSummary
+[1] TRUE
+
+$RDataSuffix
+[1] "rda"
+
+$readonly
+[1] FALSE
+
+$recordAccesses
+[1] TRUE
+
+$summaryAccess
+[1] 1
+
+$summaryTimes
+[1] 1
+
+$writeToDisk
+[1] FALSE
 
 > # see the effect of the changed options on the status of X (not saved to disk)
 > track.auto(FALSE)

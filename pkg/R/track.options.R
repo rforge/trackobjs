@@ -6,32 +6,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     ##
     ## only.preprocess: return a complete list of new options, with values as specified as arguments,
     ##   and others as defaults
-    ## valid options are:
-    ##   summaryTimes: logical, or integer value 0,1,2,3
-    ##   summaryAccess: logical, or integer value 0,1,2,3,4
-    ##   cache: logical (default TRUE) (keep objects in memory?)
-    ##   alwaysCache: char vector (default ".Last") (objects to always keep in memory)
-    ##   cachePolicy: char vector (default "eotPurge") (when to keep objects in memory)
-    ##   cacheKeepFun: char vector or function (default NULL): function to call
-    ##     to determine which objects to keep in cache
-    ##   writeToDisk: logical (default TRUE) (always write changed objects to disk?)
-    ##     when objects are written to disk depends on cachePolicy:
-    ##       cachePolicy='none': write objects immediately on a change
-    ##       cachePolicy='eotPurge': write changed objects at the end of a top-level task
-    ##   recordAccesses: logical (default TRUE) if TRUE, record time & number of get()'s
-    ##   maintainSummary: logical (default TRUE) if TRUE, record time & number of accesses
-    ##   alwaysSaveSummary: logical (default TRUE) if TRUE, always save the summary on any change
-    ##   RDataSuffix: character (default "rda")
-    ##   debug: integer (default 0) if > 0, print some diagnostic debugging messages
-    ##   readonly: logical (default FALSE for track.start(), TRUE for track.attach())
-    ##   autoTrackExcludePattern: vector of strings: regular expressions describing which variables not
-    ##      to auto-track (default "^\\.track", "^.required$")
-    ##   autoTrackExcludeClass: vector of strings: class names for objects that should
-    ##      not be auto-tracked (default "RODBC")
-    ##   autoTrackFullSyncWait: wait this many seconds between doing a full sync
-    ##   clobberVars: vector of string specifying variables to be clobbered silently when attaching a tracking db
-    ##   compress: character or logical, TRUE/FALSE, gzip, xz, bzip2, none
-    ##   compression_level: integer 1-9
+    ## See track.options.Rd DETAILS section for description of valid options
     trackingEnvSupplied <- !missing(trackingEnv) && !is.null(trackingEnv)
     if (only.preprocess) {
         currentOptions <- old.options
@@ -89,11 +64,11 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     ## If we were called like track.options(values=NULL), make this like track.options()
     if (length(values)==1 && is.null(names(values)) && is.null(values[[1]]))
          values <- list()
-    optionNames <- c("cache", "cachePolicy", "cacheKeepFun", "alwaysCache",
-                     "writeToDisk", "maintainSummary", "alwaysSaveSummary",
-                     "recordAccesses", "summaryTimes", "summaryAccess", "RDataSuffix",
-                     "debug", "autoTrackExcludePattern", "autoTrackExcludeClass",
-                     "autoTrackFullSyncWait", "clobberVars", "readonly", "compress", "compression_level")
+    optionNames <- c("alwaysCache", "alwaysSaveSummary", "autoTrackExcludeClass",
+                     "autoTrackExcludePattern", "autoTrackFullSyncWait", "cache",
+                     "cacheKeepFun", "cachePolicy", "clobberVars", "compress", "compression_level",
+                     "debug", "maintainSummary", "RDataSuffix", "readonly", "recordAccesses",
+                     "summaryAccess", "summaryTimes", "writeToDisk")
     if (!is.null(names(values))) {
         ## Attempt to set some of the options (including saving to file)
         ## and return the old values.
