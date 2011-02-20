@@ -64,7 +64,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     ## If we were called like track.options(values=NULL), make this like track.options()
     if (length(values)==1 && is.null(names(values)) && is.null(values[[1]]))
          values <- list()
-    optionNames <- c("alwaysCache", "alwaysSaveSummary", "autoTrackExcludeClass",
+    optionNames <- c("alwaysCache", "alwaysCacheClass", "alwaysSaveSummary", "autoTrackExcludeClass",
                      "autoTrackExcludePattern", "autoTrackFullSyncWait", "cache",
                      "cacheKeepFun", "cachePolicy", "clobberVars", "compress", "compression_level",
                      "debug", "maintainSummary", "RDataSuffix", "readonly", "recordAccesses",
@@ -109,6 +109,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                            switch(x, cache=TRUE, cachePolicy="eotPurge",
                                   cacheKeepFun=NULL,
                                   alwaysCache=c(".Last"),
+                                  alwaysCacheClass=c("ff"),
                                   readonly=FALSE, writeToDisk=TRUE,
                                   maintainSummary=TRUE, alwaysSaveSummary=FALSE,
                                   recordAccesses=TRUE,
@@ -174,7 +175,8 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
             } else if (opt=="debug") {
                 if (!is.integer(values[[opt]]))
                     values[[opt]] <- as.integer(values[[opt]])
-            } else if (opt=="autoTrackExcludePattern" || opt=="autoTrackExcludeClass") {
+            } else if (opt=="autoTrackExcludePattern" || opt=="autoTrackExcludeClass"
+                       || opt=="alwaysCacheClass") {
                 single <- FALSE
                 if (!is.character(values[[opt]]))
                     values[[opt]] <- as.character(values[[opt]])

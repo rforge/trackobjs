@@ -28,16 +28,16 @@ com7     tracked FALSE       _4       TRUE  TRUE
 nul      tracked FALSE       _3       TRUE  TRUE
 prn      tracked FALSE       _2       TRUE  TRUE
 x        tracked FALSE        x       TRUE  TRUE
-> track.summary(time=0, size=FALSE, access=1) # omit the 'size' column: it varies by machine
-           class    mode  extent length TA TW
-X          array numeric [2x3x4]     24  0  1
-com0     numeric numeric     [1]      1  0  1
-com1.2.3 numeric numeric     [1]      1  0  1
-com10    numeric numeric     [1]      1  0  1
-com7     numeric numeric     [1]      1  0  1
-nul      numeric numeric     [1]      1  0  1
-prn      numeric numeric     [1]      1  0  1
-x        numeric numeric     [1]      1  0  1
+> track.summary(time=0, size=FALSE, access=1, cache=TRUE) # omit the 'size' column: it varies by machine
+           class    mode  extent length cache TA TW
+X          array numeric [2x3x4]     24    no  0  1
+com0     numeric numeric     [1]      1    no  0  1
+com1.2.3 numeric numeric     [1]      1    no  0  1
+com10    numeric numeric     [1]      1    no  0  1
+com7     numeric numeric     [1]      1    no  0  1
+nul      numeric numeric     [1]      1    no  0  1
+prn      numeric numeric     [1]      1    no  0  1
+x        numeric numeric     [1]      1    no  0  1
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp10")
@@ -91,16 +91,16 @@ com7     tracked FALSE       _4       TRUE  TRUE
 nul      tracked FALSE       _3       TRUE  TRUE
 prn      tracked FALSE       _2       TRUE  TRUE
 x        tracked FALSE        x       TRUE  TRUE
-> track.summary(time=0, size=FALSE, access=1) # omit the 'size' column: it varies by machine
-           class    mode  extent length TA TW
-X          array numeric [2x3x4]     24  1  1
-com0     numeric numeric     [1]      1  1  1
-com1.2.3 numeric numeric     [1]      1  1  1
-com10    numeric numeric     [1]      1  1  1
-com7     numeric numeric     [1]      1  1  1
-nul      numeric numeric     [1]      1  1  1
-prn      numeric numeric     [1]      1  1  1
-x        numeric numeric     [1]      1  1  1
+> track.summary(time=0, size=FALSE, access=1, cache=TRUE) # omit the 'size' column: it varies by machine
+           class    mode  extent length cache TA TW
+X          array numeric [2x3x4]     24    no  1  1
+com0     numeric numeric     [1]      1    no  1  1
+com1.2.3 numeric numeric     [1]      1    no  1  1
+com10    numeric numeric     [1]      1    no  1  1
+com7     numeric numeric     [1]      1    no  1  1
+nul      numeric numeric     [1]      1    no  1  1
+prn      numeric numeric     [1]      1    no  1  1
+x        numeric numeric     [1]      1    no  1  1
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp10", recursive=TRUE)

@@ -5,7 +5,8 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
     if (!missing(expr)) {
         ## evaluate expr if necessary, and convert to list
         qexpr <- substitute(expr)
-        if (is.name(qexpr)) {
+            stop("expr argument must be a quoted or unquoted variable name")
+        if (is.name(qexpr) || is.character(qexpr)) {
             objName <- as.character(qexpr)
         } else if (mode(qexpr)=="call" && class(qexpr)=="<-") {
             if (length(list))
@@ -27,7 +28,7 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
                 }
             }
         } else {
-            stop("argument to track() must be an unquoted variable or an assignment")
+            stop("argument to track() must be a quoted or unquoted variable name, or an assignment")
         }
         list <- c(objName, list)
     } else if (is.null(list)) {

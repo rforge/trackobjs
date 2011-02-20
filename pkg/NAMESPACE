@@ -35,4 +35,6 @@ export(track.start,
        track.history.status,
        track.history.load,
        track.history.writer,
+       track.filename,
+       track.datadir,
        show.envs)

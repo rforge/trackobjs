@@ -21,12 +21,12 @@ x1 tracked FALSE       x1       TRUE  TRUE
 x2 tracked FALSE       x2       TRUE  TRUE
 y3 tracked FALSE       y3       TRUE  TRUE
 y4 tracked FALSE       y4       TRUE  TRUE
-> track.summary(pos=2, time=3, size=F)
-     class    mode extent length            modified             created
-x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
-x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
-y3 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
-y4 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+> track.summary(pos=2, time=3, size=F, cache=TRUE)
+     class    mode extent length cache            modified             created
+x1 numeric numeric    [1]      1    no 2001-01-01 09:00:06 2001-01-01 09:00:06
+x2 numeric numeric    [1]      1    no 2001-01-01 09:00:07 2001-01-01 09:00:07
+y3 numeric numeric    [1]      1    no 2001-01-01 09:00:08 2001-01-01 09:00:08
+y4 numeric numeric    [1]      1    no 2001-01-01 09:00:09 2001-01-01 09:00:09
               accessed TA TW
 x1 2001-01-01 09:00:06  0  1
 x2 2001-01-01 09:00:07  0  1

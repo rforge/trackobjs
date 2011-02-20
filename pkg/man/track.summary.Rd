@@ -10,28 +10,32 @@
 track.summary(expr, pos = 1, envir = as.environment(pos), list = NULL, pattern = NULL,
         glob = NULL, all.names = FALSE,
         times = track.options("summaryTimes", envir=envir)[[1]],
-        access = track.options("summaryAccess", envir=envir)[[1]], size=TRUE)
+        access = track.options("summaryAccess", envir=envir)[[1]],
+        size=TRUE, cache=FALSE, full=FALSE)
 }
 
 \arguments{
-  \item{expr}{ An unquoted variable name }
-  \item{pos}{ The search path position of the environment being tracked
+  \item{expr}{: An unquoted variable name }
+  \item{pos}{: The search path position of the environment being tracked
     (default is 1 for the global environment)}
-  \item{envir}{ The environment being tracked.  This is an alternate way
+  \item{envir}{: The environment being tracked.  This is an alternate way
     (to the use of \code{pos=})
   of specifying the environment being tracked, but should be rarely needed.}
-  \item{list}{ A character vector of variable names to summarize }
-  \item{pattern}{ A regular expression specifying variable names to summarize }
-  \item{glob}{ A regular expression specifying variable names to summarize }
-  \item{all.names}{ should names beginning with a period be included
+  \item{list}{: A character vector of variable names to summarize }
+  \item{pattern}{: A regular expression specifying variable names to summarize }
+  \item{glob}{: A regular expression specifying variable names to summarize }
+  \item{all.names}{: should names beginning with a period be included
   (like \code{all.names} in \code{ls})}
-  \item{times}{ An integer 0..3 specifying how many time columns to
+  \item{times}{: An integer 0..3 specifying how many time columns to
     return (in order of: modify, create, access) }
-  \item{access}{  An integer 0..3 specifying how many access-count
+  \item{access}{: An integer 0..3 specifying how many access-count
     columns to return for each writes and accesses (0=none, 1=total,
     2=prior and current session, 3=prior, current session and total)}
-  \item{size}{A logical: include the \code{size} column?  (This is
-    system dependent, so make it easy to exclude)}
+  \item{size}{: (logical) include the \code{size} column?  (The values in
+    this column are system dependent, so make it easy to exclude so that
+    test output is constant across systems.)}
+  \item{cache}{: (logical) include the \code{cache} column?}
+  \item{full}{: (logical) include all the optional columns?}
 }
 \details{
   Returns part or all of the cached summary data.  There is one row per

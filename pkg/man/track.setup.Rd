@@ -2,15 +2,12 @@
 \alias{track.start}
 \alias{track.stop}
 \alias{track.rescan}
-\alias{track.info}
 \alias{track.Last}
 % \alias{.Last}
-\alias{env.is.tracked}
-\alias{tracked.envs}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Setup and stop tracking }
 \description{
-  Functions to setup and stop tracking.
+  Functions to setup and stop tracking
 }
 \section{Simple Usage}{
 These functions have many arguments providing much control over
@@ -20,7 +17,6 @@ track.start()
 track.start(dir = "rdatadir")
 track.stop(pos = 1, all = FALSE)
 track.rescan(pos = 1)
-track.info()
 }
 }
 \usage{
@@ -33,10 +29,7 @@ track.start(dir="rdatadir", pos = 1, envir = as.environment(pos),
 track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
         stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE,
         verbose = TRUE, detach = TRUE, callFrom = NULL)
-track.info(pos = 1, envir = as.environment(pos), all=TRUE)
 track.rescan(pos = 1, envir = as.environment(pos), forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
-env.is.tracked(pos = 1, envir = as.environment(pos))
-tracked.envs(envirs=search())
 track.Last()
 % .Last()
 }
@@ -133,9 +126,6 @@ track.Last()
       environments, because tracked envs at positions other than 1 will
       be attached readonly.)}
 
-    \item{\code{track.info}:}{ returns a dataframe of information about
-      environments currently tracked.}
-
 \item{\code{track.rescan}:}{ Rescan the tracking dir, so that if anything has changed there,
 the current variables on file will be used instead of any cached
 in memory.
@@ -160,16 +150,11 @@ available.
 \value{
     \item{track.start, track.stop, track.rescan:}{all return \code{invisible(NULL)} (this
       may change if it becomes clear what useful return values would be)}
-    \item{env.is.tracked:}{returns \code{TRUE} or \code{FALSE}}
-    \item{tracked.envs:}{with no arguments, it returns the names of
-      tracked environment that are on the search list.  If given an
-      argument that is a vector of environments (or environment names),
-      it returns the subset of that vector that are tracked environments.}
     \item{track.Last:}{calls \code{track.stop(all=TRUE)} to ensure
       that all tracking information and objects are written to files,
    and removes tracked variables from the environment.}
 }
-\author{Tony Plate <tplate@acm.org>}
+\author{Tony Plate \email{tplate@acm.org}}
 \seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \examples{
 library(track)
@@ -179,6 +164,8 @@ x <- 33
 X <- array(1:24, dim=2:4)
 Y <- list(a=1:3,b=2)
 X[2] <- -1
+track.datadir(relative=TRUE)
+track.filenames(list=c("x", "X"))
 track.summary(time=0, access=1, size=FALSE)
 env.is.tracked(pos=1)
 env.is.tracked(pos=2)

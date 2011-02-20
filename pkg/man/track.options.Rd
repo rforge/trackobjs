@@ -52,11 +52,19 @@ track.options(..., pos = 1, envir = as.environment(pos),
     \item{alwaysCache:}{character (default \code{".Last"}): vector of objects
       to always keep in memory.  \code{".Last"} is here to avoid
       difficulties quitting R if the tracking DB becomes unavailable.}
+    \item{alwaysCacheClass:}{character (default \code{"ff"}): vector of
+      classes whose objects are always kept in memory.  \code{"ff"} is
+      here by default because \code{"ff"} objects generally occupy only
+      a small amount of memory, and flushing the object from memory
+      causes unnecessary finalization calls on the external pointers in
+      \code{"ff"} objects, which changes their behavior.}
     \item{alwaysSaveSummary:}{logical (default TRUE) if TRUE, always save
       the summary on any change to the summary.  Summaries are not saved
       for databases attached in a readonly mode.}
-    \item{autoTrackExcludeClass:}{character vector (default \code{"RODBC"}) variables
-      whose classes is in this vector are not auto-tracked}
+    \item{autoTrackExcludeClass:}{character vector.  Variables
+      whose class is in this vector are not auto-tracked.  The default
+      is \code{"RODBC"}, because variables of that class do not work
+      after being saved and reloaded.}
     \item{autoTrackExcludePattern:}{character vector (default \code{c("^\\.track", "^\\.required")}) variables
       whose name matches any of these regular expressions are not
       auto-tracked}

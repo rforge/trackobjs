@@ -29,10 +29,10 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     unsaved <- getUnsavedObj(trackingEnv, NULL)
     objSummary <- getObjSummary(trackingEnv, opt=opt)
     if (!is.null(qexpr)) {
-        if (is.name(qexpr)) {
+        if (is.name(qexpr) || is.character(qexpr)) {
             objName <- as.character(qexpr)
         } else {
-            stop("expr argument to ", who, " must be an unquoted variable")
+            stop("expr argument to ", who, " must be a quoted or unquoted variable name")
         }
         list <- c(objName, list)
     }

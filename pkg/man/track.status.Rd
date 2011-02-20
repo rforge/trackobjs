@@ -115,6 +115,4 @@ track.status()
 track.stop(pos=1)
 unlink("tmp1", recursive=TRUE)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ data }

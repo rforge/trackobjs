@@ -12,31 +12,31 @@ Tracking <env R_GlobalEnv> (writable) using new directory 'tmp11'
 > X <- array(1:24, dim=2:4)
 > Y <- list(a=1:3,b=2)
 > X[2] <- -1
-> track.summary(time=0, access=1, size=FALSE)
-    class    mode  extent length TA TW
-X   array numeric [2x3x4]     24  2  3
-Y    list    list   [[2]]      2  0  1
-x numeric numeric     [1]      1  0  1
+> track.summary(time=0, access=1, size=FALSE, cache=TRUE)
+    class    mode  extent length cache TA TW
+X   array numeric [2x3x4]     24    no  2  3
+Y    list    list   [[2]]      2    no  0  1
+x numeric numeric     [1]      1    no  0  1
 > y1 <- 2
 > y2 <- 3
-> track.summary(time=0, access=1, size=FALSE)
-     class    mode  extent length TA TW
-X    array numeric [2x3x4]     24  2  3
-Y     list    list   [[2]]      2  0  1
-x  numeric numeric     [1]      1  0  1
-y1 numeric numeric     [1]      1  0  1
-y2 numeric numeric     [1]      1  0  1
-> track.summary(X, size=FALSE)
-  class    mode  extent length            modified TA TW
-X array numeric [2x3x4]     24 2001-01-01 09:00:09  2  3
-> track.summary(list=c("x", "X"), size=FALSE)
-    class    mode  extent length            modified TA TW
-X   array numeric [2x3x4]     24 2001-01-01 09:00:09  2  3
-x numeric numeric     [1]      1 2001-01-01 09:00:03  0  1
-> track.summary(pattern="[xY]", size=FALSE)
-    class    mode extent length            modified TA TW
-Y    list    list  [[2]]      2 2001-01-01 09:00:05  0  1
-x numeric numeric    [1]      1 2001-01-01 09:00:03  0  1
+> track.summary(time=0, access=1, size=FALSE, cache=TRUE)
+     class    mode  extent length cache TA TW
+X    array numeric [2x3x4]     24    no  2  3
+Y     list    list   [[2]]      2    no  0  1
+x  numeric numeric     [1]      1    no  0  1
+y1 numeric numeric     [1]      1    no  0  1
+y2 numeric numeric     [1]      1    no  0  1
+> track.summary(X, size=FALSE, cache=TRUE)
+  class    mode  extent length cache            modified TA TW
+X array numeric [2x3x4]     24    no 2001-01-01 09:00:09  2  3
+> track.summary(list=c("x", "X"), size=FALSE, cache=TRUE)
+    class    mode  extent length cache            modified TA TW
+X   array numeric [2x3x4]     24    no 2001-01-01 09:00:09  2  3
+x numeric numeric     [1]      1    no 2001-01-01 09:00:03  0  1
+> track.summary(pattern="[xY]", size=FALSE, cache=TRUE)
+    class    mode extent length cache            modified TA TW
+Y    list    list  [[2]]      2    no 2001-01-01 09:00:05  0  1
+x numeric numeric    [1]      1    no 2001-01-01 09:00:03  0  1
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp11", recursive=TRUE)

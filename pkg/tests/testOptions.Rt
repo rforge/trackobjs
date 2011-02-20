@@ -45,6 +45,9 @@ $cache
 $alwaysCache
 [1] ".Last"
 
+$alwaysCacheClass
+[1] "ff"
+
 $alwaysSaveSummary
 [1] FALSE
 

@@ -63,6 +63,9 @@ Tracking <env R_GlobalEnv> (writable) using new directory 'tmp2'
 $alwaysCache
 [1] ".Last"
 
+$alwaysCacheClass
+[1] "ff"
+
 $alwaysSaveSummary
 [1] FALSE
 
@@ -120,6 +123,9 @@ $writeToDisk
 > track.options()
 $alwaysCache
 [1] ".Last"
+
+$alwaysCacheClass
+[1] "ff"
 
 $alwaysSaveSummary
 [1] FALSE
@@ -220,11 +226,11 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp2'
 > c(x, Y, z)
 [1] 12  7 19
-> track.summary(time=0, access=2, size=FALSE)
-    class    mode extent length ES SA SW PA PW
-Y numeric numeric    [1]      1  7  1  0  5  4
-x numeric numeric    [1]      1  7  1  0  8  4
-z numeric numeric    [1]      1  7  1  0  4  5
+> track.summary(time=0, access=2, size=FALSE, cache=TRUE)
+    class    mode extent length cache ES SA SW PA PW
+Y numeric numeric    [1]      1    no  7  1  0  5  4
+x numeric numeric    [1]      1    no  7  1  0  8  4
+z numeric numeric    [1]      1    no  7  1  0  4  5
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -236,6 +242,9 @@ Tracking <env R_GlobalEnv> (writable) using new directory 'tmp2'
 $alwaysCache
 [1] ".Last"
 
+$alwaysCacheClass
+[1] "ff"
+
 $alwaysSaveSummary
 [1] TRUE
 
@@ -335,11 +344,11 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp2'
 > c(x, Y, z)
 [1] 12  7 19
-> track.summary(time=0, access=2, size=FALSE)
-    class    mode extent length ES SA SW PA PW
-Y numeric numeric    [1]      1  7  1  0  5  4
-x numeric numeric    [1]      1  7  1  0  8  4
-z numeric numeric    [1]      1  7  1  0  4  5
+> track.summary(time=0, access=2, size=FALSE, cache=TRUE)
+    class    mode extent length cache ES SA SW PA PW
+Y numeric numeric    [1]      1    no  7  1  0  5  4
+x numeric numeric    [1]      1    no  7  1  0  8  4
+z numeric numeric    [1]      1    no  7  1  0  4  5
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -392,11 +401,11 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp2'
 > c(x, Y, z)
 [1] 12  7 19
-> track.summary(time=0, access=2, size=FALSE)
-    class    mode extent length ES SA SW PA PW
-Y numeric numeric    [1]      1  7  1  0  5  4
-x numeric numeric    [1]      1  7  1  0  8  4
-z numeric numeric    [1]      1  7  1  0  4  5
+> track.summary(time=0, access=2, size=FALSE, cache=TRUE)
+    class    mode extent length cache ES SA SW PA PW
+Y numeric numeric    [1]      1    no  7  1  0  5  4
+x numeric numeric    [1]      1    no  7  1  0  8  4
+z numeric numeric    [1]      1    no  7  1  0  4  5
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -449,11 +458,11 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp2'
 > c(x, Y, z)
 [1] 12  7 19
-> track.summary(time=0, access=2, size=FALSE)
-    class    mode extent length ES SA SW PA PW
-Y numeric numeric    [1]      1  7  1  0  5  4
-x numeric numeric    [1]      1  7  1  0  8  4
-z numeric numeric    [1]      1  7  1  0  4  5
+> track.summary(time=0, access=2, size=FALSE, cache=TRUE)
+    class    mode extent length cache ES SA SW PA PW
+Y numeric numeric    [1]      1    no  7  1  0  5  4
+x numeric numeric    [1]      1    no  7  1  0  8  4
+z numeric numeric    [1]      1    no  7  1  0  4  5
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -506,11 +515,11 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp2'
 > c(x, Y, z)
 [1] 12  7 19
-> track.summary(time=0, access=2, size=FALSE)
-    class    mode extent length ES SA SW PA PW
-Y numeric numeric    [1]      1  7  1  0  5  4
-x numeric numeric    [1]      1  7  1  0  8  4
-z numeric numeric    [1]      1  7  1  0  4  5
+> track.summary(time=0, access=2, size=FALSE, cache=TRUE)
+    class    mode extent length cache ES SA SW PA PW
+Y numeric numeric    [1]      1    no  7  1  0  5  4
+x numeric numeric    [1]      1    no  7  1  0  8  4
+z numeric numeric    [1]      1    no  7  1  0  4  5
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -563,11 +572,11 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp2'
 > c(x, Y, z)
 [1] 12  7 19
-> track.summary(time=0, access=2, size=FALSE)
-    class    mode extent length ES SA SW PA PW
-Y numeric numeric    [1]      1  7  1  0  5  4
-x numeric numeric    [1]      1  7  1  0  8  4
-z numeric numeric    [1]      1  7  1  0  4  5
+> track.summary(time=0, access=2, size=FALSE, cache=TRUE)
+    class    mode extent length cache ES SA SW PA PW
+Y numeric numeric    [1]      1    no  7  1  0  5  4
+x numeric numeric    [1]      1    no  7  1  0  8  4
+z numeric numeric    [1]      1    no  7  1  0  4  5
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -620,11 +629,11 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp2'
 > c(x, Y, z)
 [1] 12  7 19
-> track.summary(time=0, access=2, size=FALSE)
-    class    mode extent length ES SA SW PA PW
-Y numeric numeric    [1]      1  7  1  0  5  4
-x numeric numeric    [1]      1  7  1  0  8  4
-z numeric numeric    [1]      1  7  1  0  4  5
+> track.summary(time=0, access=2, size=FALSE, cache=TRUE)
+    class    mode extent length cache ES SA SW PA PW
+Y numeric numeric    [1]      1    no  7  1  0  5  4
+x numeric numeric    [1]      1    no  7  1  0  8  4
+z numeric numeric    [1]      1    no  7  1  0  4  5
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -677,11 +686,11 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp2'
 > c(x, Y, z)
 [1] 12  7 19
-> track.summary(time=0, access=2, size=FALSE)
-    class    mode extent length ES SA SW PA PW
-Y numeric numeric    [1]      1  7  1  0  5  4
-x numeric numeric    [1]      1  7  1  0  8  4
-z numeric numeric    [1]      1  7  1  0  4  5
+> track.summary(time=0, access=2, size=FALSE, cache=TRUE)
+    class    mode extent length cache ES SA SW PA PW
+Y numeric numeric    [1]      1    no  7  1  0  5  4
+x numeric numeric    [1]      1    no  7  1  0  8  4
+z numeric numeric    [1]      1    no  7  1  0  4  5
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp2", recursive=TRUE)

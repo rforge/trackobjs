@@ -47,10 +47,10 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
     if (!missing(expr))
         qexpr <- substitute(expr)
     if (!is.null(qexpr)) {
-        if (is.name(qexpr)) {
+        if (is.name(qexpr) || is.character(qexpr)) {
             objName <- as.character(qexpr)
         } else {
-            stop("expr argument must be an unquoted variable")
+            stop("expr argument must be a quoted or unquoted variable name")
         }
         list <- c(objName, list)
     }

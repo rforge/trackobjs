@@ -134,13 +134,17 @@ summaryRow <- function(name, opt, sumRow=NULL, obj=NULL, file=NULL, change=FALSE
 
     if (change || new) {
         cl <- class(obj)
-        # neither the first or last element of the returned value of 'class' is
-        # clearly the most useful class to note, so include all classes
-        # class of an object returned by 'glm()': "glm" "lm"
-        # class of an object returned by Sys.time(): "POSIXt"  "POSIXct"
+        ## Neither the first or last element of the returned value of 'class' is
+        ## clearly the most useful class to note, so include all classes as a comma
+        ## separated string.
+        ## E.g., class of an object returned by 'glm()': "glm" "lm"
+        ## while class of an object returned by Sys.time(): "POSIXt" "POSIXct"
         sumRow$class <- if (length(cl)==0) "?" else paste(cl, collapse=",")
         sumRow$mode <- mode(obj)
-        sumRow$cache <- is.element(name, opt$alwaysCache) || any(is.element(cl, opt$alwaysCacheClasses))
+        if (new || (change && (is.na(sumRow$cache) || ! (sumRow$cache %in% c("fixedyes", "fixedno")))))
+            sumRow$cache <- ifelse(   is.element(name, opt$alwaysCache)
+                                   || any(is.element(cl, opt$alwaysCacheClasses)),
+                                   "yes", "no")
         l <- try(length(obj), silent=TRUE)
         if (is(l, "try-error"))
             sumRow$length <- NA
@@ -292,7 +296,7 @@ readFileMapFile <- function(trackingEnv, dataDir, assignObj) {
     return(fileMap)
 }
 
-getObjSummary <- function(trackingEnv, stop.if.not.found=TRUE, opt) {
+getObjSummary <- function(trackingEnv, opt, stop.if.not.found=TRUE) {
     objSummary <- mget(".trackingSummary", envir=trackingEnv, ifnotfound=list(NULL))[[1]]
     if (stop.if.not.found && is.null(objSummary))
         stop("no .trackingSummary object in tracking env ", envname(trackingEnv), " - recommend using track.rebuild()")
@@ -300,16 +304,31 @@ getObjSummary <- function(trackingEnv, stop.if.not.found=TRUE, opt) {
         stop(".trackingSummary object found in tracking env ", envname(trackingEnv), " but is not a data frame - recommend using track.rebuild()")
     if (is.null(objSummary))
         return(objSummary)
+    ## The 'cache' column was added in version 1.03.
+    ## If we read a .trackingSummary without it, just add it.
     if (!is.element("cache", names(objSummary)))
-        objSummary$cache <- rep(NA, nrow(objSummary))
+        objSummary$cache <- factor(rep(NA, nrow(objSummary)), levels=c("fixedno", "no", "yes", "fixedyes"))
     i <- is.na(objSummary$cache)
+    objSummaryChanged <- FALSE
+    ## If there are any NA values in 'cache', set them based on name and class.
     if (any(i)) {
         j <- is.element(rownames(objSummary)[i], opt$alwaysCache)
         if (any(j))
-            objSummary[which(i)[j], "cache"] <- TRUE
+            objSummary[which(i)[j], "cache"] <- "yes"
         i <- is.na(objSummary$cache)
-        if (any(i)) {
+        if (any(i) & length(opt$alwaysCacheClasses)) {
+            j <- sapply(strsplit(objSummary$class[i], ","), is.element, opt$alwaysCacheClasses)
+            if (any(j))
+                objSummary[which(i)[j], "cache"] <- "yes"
         }
+        i <- is.na(objSummary$cache)
+        if (any(i))
+            objSummary[i, "cache"] <- "no"
+        objSummaryChanged <- TRUE
+    }
+    if (objSummaryChanged) {
+        assign(".trackingSummary", objSummary, envir=trackingEnv)
+        assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
     }
     return(objSummary)
 }

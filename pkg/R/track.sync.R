@@ -211,14 +211,15 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         unsavedVars <- getUnsavedObj(trackingEnv)
         objSummary <- getObjSummary(trackingEnv, opt=opt)
         if (!is.null(objSummary)) {
-            ## which variables are currently cached and are candidate for flushing?
+            ## which variables are currently cached in memory and are candidate for flushing?
             inmem <- is.element(rownames(objSummary), .Internal(ls(trackingEnv, TRUE)))
-            keep1 <- objSummary$cache
-            if (!any(inmem)) {
+            keep1 <- !is.na(objSummary$cache) & (objSummary$cache %in% c("yes", "fixedyes"))
+            flushCand <- inmem & !keep1
+            if (!any(flushCand)) {
                 flushVars <- character(0)
             } else if (length(opt$cacheKeepFun)) {
                 ## If there is a cacheKeepFun, see what it says...
-                keep <- try(do.call(opt$cacheKeepFun, list(objs=objSummary, inmem=inmem, envname=envname(envir))), silent=TRUE)
+                keep <- try(do.call(opt$cacheKeepFun, list(objs=objSummary, inmem=flushCand, envname=envname(envir))), silent=TRUE)
                 if (is(keep, "try-error")) {
                     warning("opt$cacheKeepFun stopped with an error: ", keep)
                     keep <- F
@@ -226,12 +227,12 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                     warning("opt$cacheKeepFun did not return a TRUE/FALSE vector of the correct length")
                     keep <- F
                 }
-                flushVars <- rownames(objSummary)[inmem & !keep]
-                saveVars <- intersect(rownames(objSummary)[inmem & keep], unsavedVars)
+                flushVars <- rownames(objSummary)[flushCand & !keep]
+                saveVars <- intersect(rownames(objSummary)[flushCand & keep], unsavedVars)
             } else {
                 keep <- F
-                flushVars <- rownames(objSummary)[inmem & !keep]
-                saveVars <- intersect(rownames(objSummary)[inmem & keep], unsavedVars)
+                flushVars <- rownames(objSummary)[flushCand & !keep]
+                saveVars <- intersect(rownames(objSummary)[flushCand & keep], unsavedVars)
             }
             if (length(flushVars)) {
                 if (length(opt$alwaysCache)) {
