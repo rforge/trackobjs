@@ -73,68 +73,7 @@ $autoTrackExcludeClass
 [1] "RODBC"
 
 $autoTrackExcludePattern
-[1] "^\\.track"    "^\\.required"
-
-$autoTrackFullSyncWait
-[1] 15
-
-$cache
-[1] TRUE
-
-$cacheKeepFun
-NULL
-
-$cachePolicy
-[1] "eotPurge"
-
-$clobberVars
-[1] ".Random.seed"
-
-$compress
-[1] TRUE
-
-$compression_level
-[1] 1
-
-$debug
-[1] 0
-
-$maintainSummary
-[1] TRUE
-
-$RDataSuffix
-[1] "rda"
-
-$readonly
-[1] FALSE
-
-$recordAccesses
-[1] TRUE
-
-$summaryAccess
-[1] 1
-
-$summaryTimes
-[1] 1
-
-$writeToDisk
-[1] TRUE
-
-> track.options()
-$alwaysCache
-[1] ".Last"
-
-$alwaysCacheClass
-[1] "ff"
-
-$alwaysSaveSummary
-[1] FALSE
-
-$autoTrackExcludeClass
-[1] "RODBC"
-
-$autoTrackExcludePattern
-[1] "^\\.track"    "^\\.required"
+[1] "^\\.track"    "^\\.required" "^\\*tmp\\*$"
 
 $autoTrackFullSyncWait
 [1] 15
@@ -238,67 +177,6 @@ Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp2", recursive=TRUE)
 > track.start("tmp2", options=list(cache=FALSE, writeToDisk=TRUE, alwaysSaveSummary=TRUE), auto=FALSE)
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp2'
-> track.options()
-$alwaysCache
-[1] ".Last"
-
-$alwaysCacheClass
-[1] "ff"
-
-$alwaysSaveSummary
-[1] TRUE
-
-$autoTrackExcludeClass
-[1] "RODBC"
-
-$autoTrackExcludePattern
-[1] "^\\.track"    "^\\.required"
-
-$autoTrackFullSyncWait
-[1] 15
-
-$cache
-[1] FALSE
-
-$cacheKeepFun
-NULL
-
-$cachePolicy
-[1] "eotPurge"
-
-$clobberVars
-[1] ".Random.seed"
-
-$compress
-[1] TRUE
-
-$compression_level
-[1] 1
-
-$debug
-[1] 0
-
-$maintainSummary
-[1] TRUE
-
-$RDataSuffix
-[1] "rda"
-
-$readonly
-[1] FALSE
-
-$recordAccesses
-[1] TRUE
-
-$summaryAccess
-[1] 1
-
-$summaryTimes
-[1] 1
-
-$writeToDisk
-[1] TRUE
-
 > find("x")
 character(0)
 > find("Y")
