@@ -200,17 +200,13 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     ## but that's slow compared to working out flushVars here and
     ## passing the specific vars to track.flush()
     ##
-    ## If there is a cacheKeepFun, see what it says...
-    ## Record what variables it says to flush from cache in flushVars.
-    ## flushVars is NULL if there is no cacheKeepFun
+    ## Record variables to flush from cache in flushVars.
     ## Record variables that need saving to disk in saveVars
-    ## Record variables not to be flushed in keepVars
     ## Note that vars are actually flushed from cache by a
     ## call to track.flush(), which won't flush vars named
     ## in opt$alwaysCache.
     if (taskEnd && opt$cachePolicy=="eotPurge") {
         flushVars <- NULL
-        keepVars <- NULL
         saveVars <- NULL
         unsavedVars <- getUnsavedObj(trackingEnv)
         objSummary <- getObjSummary(trackingEnv)
@@ -220,6 +216,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             if (!any(inmem)) {
                 flushVars <- character(0)
             } else if (length(opt$cacheKeepFun)) {
+                ## If there is a cacheKeepFun, see what it says...
                 keep <- try(do.call(opt$cacheKeepFun, list(objs=objSummary, inmem=inmem, envname=envname(envir))), silent=TRUE)
                 if (is(keep, "try-error")) {
                     warning("opt$cacheKeepFun stopped with an error: ", keep)
@@ -234,6 +231,15 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 keep <- F
                 flushVars <- rownames(objSummary)[inmem & !keep]
                 saveVars <- intersect(rownames(objSummary)[inmem & keep], unsavedVars)
+            }
+            if (length(flushVars)) {
+                if (length(opt$alwaysCache)) {
+                    i <- is.element(flushVars, opt$alwaysCache)
+                    if (any(i)) {
+                        saveVars <- unique(c(saveVars, intersect(flushVars[i], unsavedVars)))
+                        flushVars <- flushVars[!i]
+                    }
+                }
             }
         } else {
             warning(".trackingSummary does not exist in trackingEnv ", envname(trackingEnv))

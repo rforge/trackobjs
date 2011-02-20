@@ -192,7 +192,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     fileMapCreated <- FALSE
     objSummaryPath <- file.path(dataDir, paste(".trackingSummary.", opt$RDataSuffix, sep=""))
     ## Create a default empty objSummary -- an existing one will replace this
-    objSummary <- summaryRow(name="")[0,]
+    objSummary <- summaryRow(name="", opt=opt)[0,]
     if (!file.exists(file.path(dataDir))) {
         if (!create)
             stop("dir \"", dataDir, "\" does not exist (supply create=TRUE to create it)")

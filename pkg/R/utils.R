@@ -110,7 +110,7 @@ tracked.envs <- function(envirs=search()) {
 
 
 # Create or update a row for the summary data frame
-summaryRow <- function(name, sumRow=NULL, obj=NULL, file=NULL, change=FALSE, times=NULL, accessed=TRUE) {
+summaryRow <- function(name, opt, sumRow=NULL, obj=NULL, file=NULL, change=FALSE, times=NULL, accessed=TRUE) {
     tt <- Sys.time()
     new <- FALSE
     if (is.null(sumRow)) {
@@ -414,7 +414,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
             warning(".trackingSummary in ", envname(trackingEnv), " is not a data.frame: not updating summary; run track.rebuild()")
         } else {
             if (is.element(objName, rownames(objSummary))) {
-                sumRow <- summaryRow(objName, sumRow=objSummary[objName, , drop=FALSE], obj=value,
+                sumRow <- summaryRow(objName, opt=opt, sumRow=objSummary[objName, , drop=FALSE], obj=value,
                                         file=NULL, change=TRUE, times=times)
             } else {
                 ## Don't have a row in the summary for this object.
@@ -429,7 +429,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
                 ## summaryRow will get times from the file if we supply it -- only
                 ## want to do this in the exceptional case that this object was not
                 ## new, but didn't have a summary row.
-                sumRow <- summaryRow(objName, obj=value, file=if (!isNew) fullFile else NULL,
+                sumRow <- summaryRow(objName, opt=opt, obj=value, file=if (!isNew) fullFile else NULL,
                                      change=TRUE, times=times)
                 ## If this is not a new object, record that the times are not accurrate.
                 if (!isNew)
@@ -498,7 +498,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
             warning(".trackingSummary in ", envname(trackingEnv), " is not a data.frame: not updating objSummary; run track.rebuild()")
         } else {
             if (is.element(objName, rownames(objSummary))) {
-                sumRow <- summaryRow(objName, sumRow=objSummary[objName, , drop=FALSE], obj=value,
+                sumRow <- summaryRow(objName, opt=opt, sumRow=objSummary[objName, , drop=FALSE], obj=value,
                                         file=NULL, change=FALSE, times=NULL)
             } else {
                 if (is.null(fullFile)) {
@@ -516,7 +516,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
                         }
                     }
                 }
-                sumRow <- summaryRow(objName, obj=value, file=fullFile, change=FALSE, times=NULL)
+                sumRow <- summaryRow(objName, opt=opt, obj=value, file=fullFile, change=FALSE, times=NULL)
                 ## Since this is not a new object, but this we are creating a new summary
                 ## row for it, record that the times are not accurrate
                 sumRow$A <- 0
