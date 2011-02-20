@@ -1,0 +1,10 @@
+Package: track.ff
+Version: 1.0-0
+Date: 2011-02-20
+Title: Use 'ff' objects with track
+Author: Tony Plate <tplate@acm.org>
+Maintainer: Tony Plate <tplate@acm.org>
+Description: Cleanly use 'ff' objects with the track package.
+License: GPL
+Depends: track (>= 1.0.3), ff, R (>= 2.1.0)
+Suggests: scriptests
