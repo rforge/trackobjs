@@ -1,0 +1,188 @@
+> # Test cases:
+> # (1) track.ff(x) where
+> #   (a) x is an ordinary or ff object
+> #   (b) x is already tracked, is not tracked
+> #   (c) ff object is temporary, or permanent
+> #   (d) ff object is located in a different environment
+> # (2) track.ff(x <- y) where y is an object or call to ff creator
+> #   (a) y is an ordinary or ff object
+> #   (b) x is already tracked, is not tracked
+> #   (c) ff object is temporary, or permanent
+> #   (d) ff object is located in a different environment
+> 
+> library(ff)
+> library(track)
+> library(track.ff)
+> options(error=function() NULL)
+> # Set the locale used by order() so that track.status() & track.summary() put
+> # rows in the same order on different systems (so that the test output matches).
+> invisible(Sys.setlocale("LC_COLLATE", "C"))
+> track:::create.fake.Sys.time(0)
+> unlink("tmp1", recursive=TRUE)
+> track.start("tmp1")
+> y <- 33
+> x1 <- matrix(1:6, nrow=3, dimnames=list(LETTERS[1:3], letters[24:25]))
+> x2 <- matrix(1:6, nrow=2, dimnames=list(LETTERS[1:2], letters[24:26]))
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked FALSE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+y  tracked FALSE        y       TRUE  TRUE
+> track.summary(cache=T)
+     class    mode extent length size cache            modified TA TW
+x1  matrix numeric  [3x2]      6  768    no 2001-01-01 09:00:09  0  1
+x2  matrix numeric  [2x3]      6  768    no 2001-01-01 09:00:11  0  1
+y  numeric numeric    [1]      1   48    no 2001-01-01 09:00:07  0  1
+> # convert existing objects to ff objects
+> track.ff(x1)
+> track.ff(x2)
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked  TRUE       x1       TRUE FALSE
+x2 tracked  TRUE       x2       TRUE FALSE
+y  tracked FALSE        y       TRUE  TRUE
+> track.summary(cache=T)
+                   class    mode  extent length size cache            modified TA TW
+x1 ff_matrix,ff_array,ff    list [[3x2]]      6 3832   yes 2001-01-01 09:00:17  1  2
+x2 ff_matrix,ff_array,ff    list [[2x3]]      6 3832   yes 2001-01-01 09:00:20  1  2
+y                numeric numeric     [1]      1   48    no 2001-01-01 09:00:07  0  1
+> track.ff.filename(x1)
+[1] "tmp1/ff/x1.ff"
+> track.ff.filename(x2)
+[1] "tmp1/ff/x2.ff"
+> 
+> # create new ff object
+> track.ff(x3 <- matrix(1:12, nrow=3, dimnames=list(LETTERS[1:3], letters[22:25])))
+> track.ff(x4 <- ff(1:12, dim=3:4, dimnames=list(LETTERS[1:3], letters[22:25])))
+> x5 <- matrix(1:9, nrow=3, dimnames=list(LETTERS[1:3], letters[24:26]))
+> track.ff(x5 <- as.ff(x5))
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked  TRUE       x1       TRUE FALSE
+x2 tracked  TRUE       x2       TRUE FALSE
+x3 tracked  TRUE       x3      FALSE FALSE
+x4 tracked  TRUE       x4      FALSE FALSE
+x5 tracked  TRUE       x5       TRUE FALSE
+y  tracked FALSE        y       TRUE  TRUE
+> track.summary(cache=T)
+                   class    mode  extent length size cache            modified TA TW
+x1 ff_matrix,ff_array,ff    list [[3x2]]      6 3832   yes 2001-01-01 09:00:17  2  2
+x2 ff_matrix,ff_array,ff    list [[2x3]]      6 3832   yes 2001-01-01 09:00:20  2  2
+x3 ff_matrix,ff_array,ff    list [[3x4]]     12 3944   yes 2001-01-01 09:00:35  0  2
+x4 ff_matrix,ff_array,ff    list [[3x4]]     12 3952   yes 2001-01-01 09:00:38  0  2
+x5 ff_matrix,ff_array,ff    list [[3x3]]      9 3896   yes 2001-01-01 09:00:32  1  2
+y                numeric numeric     [1]      1   48    no 2001-01-01 09:00:07  0  1
+> track.ff.filename(x3)
+[1] "tmp1/ff/x3.ff"
+> track.ff.filename(x4)
+[1] "tmp1/ff/x4.ff"
+> track.ff.filename(x5)
+[1] "tmp1/ff/x5.ff"
+> track.ff.rm(x4)
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked  TRUE       x1       TRUE FALSE
+x2 tracked  TRUE       x2       TRUE FALSE
+x3 tracked  TRUE       x3      FALSE FALSE
+x5 tracked  TRUE       x5       TRUE FALSE
+y  tracked FALSE        y       TRUE  TRUE
+> track.summary(cache=T)
+                   class    mode  extent length size cache            modified TA TW
+x1 ff_matrix,ff_array,ff    list [[3x2]]      6 3832   yes 2001-01-01 09:00:17  2  2
+x2 ff_matrix,ff_array,ff    list [[2x3]]      6 3832   yes 2001-01-01 09:00:20  2  2
+x3 ff_matrix,ff_array,ff    list [[3x4]]     12 3944   yes 2001-01-01 09:00:35  1  2
+x5 ff_matrix,ff_array,ff    list [[3x3]]      9 3896   yes 2001-01-01 09:00:32  4  2
+y                numeric numeric     [1]      1   48    no 2001-01-01 09:00:07  0  1
+> 
+> x1
+ff (open) integer length=6 (6) dim=c(3,2) dimorder=c(1,2)
+  x y
+A 1 4
+B 2 5
+C 3 6
+> x2
+ff (open) integer length=6 (6) dim=c(2,3) dimorder=c(1,2)
+  x y z
+A 1 3 5
+B 2 4 6
+> x3
+ff (open) integer length=12 (12) dim=c(3,4) dimorder=c(1,2)
+   v  w  x  y
+A  1  4  7 10
+B  2  5  8 11
+C  3  6  9 12
+> x5
+ff (open) integer length=9 (9) dim=c(3,3) dimorder=c(1,2)
+  x y z
+A 1 4 7
+B 2 5 8
+C 3 6 9
+> y
+[1] 33
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> track.start("tmp1")
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp1'
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked FALSE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+x3 tracked FALSE       x3       TRUE  TRUE
+x5 tracked FALSE       x5       TRUE  TRUE
+y  tracked FALSE        y       TRUE  TRUE
+> track.summary()
+                   class    mode  extent length size            modified TA TW
+x1 ff_matrix,ff_array,ff    list [[3x2]]      6 3832 2001-01-01 09:00:17  9  2
+x2 ff_matrix,ff_array,ff    list [[2x3]]      6 3832 2001-01-01 09:00:20 15  2
+x3 ff_matrix,ff_array,ff    list [[3x4]]     12 3944 2001-01-01 09:00:35  9  2
+x5 ff_matrix,ff_array,ff    list [[3x3]]      9 3896 2001-01-01 09:00:32  6  2
+y                numeric numeric     [1]      1   48 2001-01-01 09:00:07  2  1
+> x1
+ff (closed) integer length=6 (6) dim=c(3,2) dimorder=c(1,2)
+> x1
+ff (closed) integer length=6 (6) dim=c(3,2) dimorder=c(1,2)
+> x1[1,]
+Warning in `[.ff_array`(x1, 1, ) :
+  opening ff D:/tplate/R/rforge/track.ff/tmp1/ff/x1.ff
+x y 
+1 4 
+> x1[1,]
+x y 
+1 4 
+> track.status()
+    Status InMem FileBase FileExists Saved
+x1 tracked  TRUE       x1       TRUE  TRUE
+x2 tracked FALSE       x2       TRUE  TRUE
+x3 tracked FALSE       x3       TRUE  TRUE
+x5 tracked FALSE       x5       TRUE  TRUE
+y  tracked FALSE        y       TRUE  TRUE
+> 
+> track.stop()
+> unlink("tmp2", recursive=TRUE)
+> track.start("tmp2")
+> track.attach("tmp1")
+> x1
+ff (closed) integer length=6 (6) dim=c(3,2) dimorder=c(1,2)
+> x1[1,]
+Warning in `[.ff_array`(x1, 1, ) :
+  opening ff D:/tplate/R/rforge/track.ff/tmp1/ff/x1.ff
+x y 
+1 4 
+> # create a new 'x1' that masks the old one
+> track.ff(x1 <- matrix(-(1:12), nrow=4, dimnames=list(LETTERS[1:4], letters[23:25])))
+> x1
+ff (closed) integer length=12 (12) dim=c(4,3) dimorder=c(1,2)
+> x1[1,]
+> x1[1,]
+Warning in `[.ff_array`(x1, 1, ) :
+  opening ff D:/tplate/R/rforge/track.ff/tmp2/ff/x1.ff
+ w  x  y 
+-1 -5 -9 
+> get("x1", pos=2)[1,]
+x y 
+1 4 
+> 
+> track.stop(2)
+> track.stop()
+> 
+
