@@ -114,7 +114,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                                   maintainSummary=TRUE, alwaysSaveSummary=FALSE,
                                   recordAccesses=TRUE,
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
-                                  debug=0, autoTrackExcludePattern=c("^\\.track", "^\\.required"),
+                                  debug=0, autoTrackExcludePattern=c("^\\.track", "^\\.required", "^\\*tmp\\*$"),
                                   autoTrackExcludeClass=c("RODBC"),
                                   autoTrackFullSyncWait=15, clobberVars=".Random.seed",
                                   compress=TRUE, compression_level=1))
