@@ -306,11 +306,14 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     ## 'data' arg is 'envir' - the tracked env
     trace <- getOption("track.callbacks.trace", FALSE)
     if (trace) {
-        cat("track.sync.callback", envname(data), ": entered at ", date(), "\n", sep="")
+        cat("track.sync.callback", envname(data), ": entered at ", date(), ", length(sys.calls())=", length(sys.calls()), "\n", sep="")
         stime <- proc.time()
         on.exit(cat("track.sync.callback: exited at ", date(),
                     " (", paste(round(1000*(proc.time()-stime)[1:3]), c("u", "s", "e"), sep="", collapse=" "), " ms)\n", sep=""))
     }
+    ## If we are called from a prompt in a browser, don't do anything
+    if (length(sys.calls()) > 1)
+        return(TRUE)
     trackingEnv <- getTrackingEnv(data, stop.on.not.tracked = FALSE)
     ## trackingEnv will be missing on the callback following the completion
     ## of the command track.stop()
