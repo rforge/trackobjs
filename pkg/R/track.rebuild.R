@@ -404,7 +404,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
     ## Read the summary, into summary and envSummary
     ## Will keep both of these because and get most
     ## recent info for each object one at a time.
-    summarySkel <- summaryRow(name="")
+    summarySkel <- summaryRow(name="", opt=opt)
     envSummary <- summarySkel[0,]
     if (activeTracking) {
         if (exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
@@ -682,12 +682,12 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                 if (is.null(sumRow)) {
                     ## try to rebuild this summary row
                     if (use.file.times)
-                        sumRow <- summaryRow(o, obj=obj, file=file.path(dataDir, objFile), accessed=FALSE)
+                        sumRow <- summaryRow(o, opt=opt, obj=obj, file=file.path(dataDir, objFile), accessed=FALSE)
                     else
-                        sumRow <- summaryRow(o, obj=obj, accessed=FALSE)
+                        sumRow <- summaryRow(o, opt=opt, obj=obj, accessed=FALSE)
                 } else {
                     ## update the summary row (but don't change times)
-                    sumRow <- summaryRow(o, sumRow=sumRow, obj=obj, accessed=FALSE)
+                    sumRow <- summaryRow(o, opt=opt, sumRow=sumRow, obj=obj, accessed=FALSE)
                     sumRowsReused <- sumRowsReused + 1
                 }
                 newSummaryRows <- setNamedElt(newSummaryRows, o, sumRow)
@@ -721,7 +721,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                 sumRow <- chooseBestSummaryRow(objName)
                 ## update or recreate the summary row (sumRow could be NULL)
                 ## we have no file info to get times from
-                sumRow <- summaryRow(objName, sumRow=sumRow, obj=obj)
+                sumRow <- summaryRow(objName, opt=opt, sumRow=sumRow, obj=obj)
                 newSummaryRows[[objName]] <- sumRow
             }
             unsaved <- mget(".trackingUnsaved", envir=trackingEnv, inherits=FALSE, ifnotfound=list(character(0)))[[1]]
