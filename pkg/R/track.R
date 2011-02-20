@@ -1,6 +1,8 @@
 track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, exclude=TRUE) {
     trackingEnv <- getTrackingEnv(envir)
     opt <- track.options(trackingEnv=trackingEnv)
+    if (opt$readonly)
+        stop(envname(trackingEnv), " is readonly")
     haveVal <- FALSE
     if (!missing(expr)) {
         ## evaluate expr if necessary, and convert to list
