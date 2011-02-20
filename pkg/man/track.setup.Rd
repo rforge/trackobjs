@@ -81,8 +81,6 @@ track.Last()
   it (though not if it was not created by \code{track.attach}).}
   \item{callFrom}{A character string used in a message saying where
   \code{track.stop()} was called from.}
-  \item{envirs}{A list or vector of objects that can be interpreted as
-    environments by \code{as.environment}}
   \item{forgetModified}{ If \code{TRUE}, discard copies that are
     modified and in memory }
   \item{RDataSuffix}{The suffix to use for \code{RData} files.  This
@@ -165,7 +163,7 @@ X <- array(1:24, dim=2:4)
 Y <- list(a=1:3,b=2)
 X[2] <- -1
 track.datadir(relative=TRUE)
-track.filenames(list=c("x", "X"))
+track.filename(list=c("x", "X"))
 track.summary(time=0, access=1, size=FALSE)
 env.is.tracked(pos=1)
 env.is.tracked(pos=2)
