@@ -12,7 +12,7 @@ track.summary <- function(expr, pos=1, envir=as.environment(pos), list=NULL,
     if (!exists(".trackingSummary", envir=trackingEnv, inherits=FALSE))
         stop("there is no .trackingSummary in the tracking env on ", envname(envir))
     # get the summary, and prune the list of objects down to the ones specified or matching the pattern
-    objSummary <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
+    objSummary <- getObjSummary(trackingEnv)
     if (!is.data.frame(objSummary))
         stop(".trackingSummary in ", envname(trackingEnv), " is not a data.frame")
     if (!all.names && nrow(objSummary) > 0)

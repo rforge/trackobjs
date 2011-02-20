@@ -78,7 +78,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         if (length(load.res)!=1 || load.res != ".trackingSummary")
             stop(objSummaryPath, " does not contain just '.trackingSummary' -- for recovery see ?track.rebuild")
         ## .trackingSummary has to exist because we just loaded it
-        objSummary <- get(".trackingSummary", envir=tmpenv, inherits=FALSE)
+        objSummary <- getObjSummary(tmpenv)
         if (!is.data.frame(objSummary))
             stop("'.trackingSummary' from ", objSummaryPath, " is not a data.frame -- see ?track.rebuild")
         ## Use some info from exisiting summary to update the summary read

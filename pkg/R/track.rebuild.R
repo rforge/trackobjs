@@ -408,7 +408,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
     envSummary <- summarySkel[0,]
     if (activeTracking) {
         if (exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
-            envSummary <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
+            envSummary <- getObjSummary(trackingEnv)
             if (!is.data.frame(envSummary)) {
                 cat("Tracking summary from tracking environment is not a data frame - discarding it.\n")
                 envSummary <- NULL
@@ -436,7 +436,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             cat("Strange: '", abbrevWD(file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))),
                 " does not containg a '.trackingSummary' object -- rebuilding...\n")
         } else {
-            fileSummary <- get(".trackingSummary", tmpenv, inherits=FALSE)
+            fileSummary <- getObjSummary(tmpenv)
             if (!is.data.frame(fileSummary)) {
                 cat("Tracking summary read from file is not a data frame - ignoring it.\n")
                 fileSummary <- NULL

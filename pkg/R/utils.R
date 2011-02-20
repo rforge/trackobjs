@@ -291,10 +291,12 @@ readFileMapFile <- function(trackingEnv, dataDir, assignObj) {
     return(fileMap)
 }
 
-getObjSummary <- function(trackingEnv) {
+getObjSummary <- function(trackingEnv, stop.if.not.found=TRUE) {
     objSummary <- mget(".trackingSummary", envir=trackingEnv, ifnotfound=list(NULL))[[1]]
-    if (is.null(objSummary) || !is.data.frame(objSummary))
-        stop("no usable .trackingSummary object in tracking env ", envname(trackingEnv), " - recommend using track.rebuild()")
+    if (stop.if.not.found && is.null(objSummary))
+        stop("no .trackingSummary object in tracking env ", envname(trackingEnv), " - recommend using track.rebuild()")
+    if (stop.if.not.found && !is.data.frame(objSummary))
+        stop(".trackingSummary object found in tracking env ", envname(trackingEnv), " but is not a data frame - recommend using track.rebuild()")
     return(objSummary)
 }
 
@@ -407,7 +409,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
             assign(".trackingUnsaved", sort(c(objName, unsaved)), envir=trackingEnv)
     }
     if (opt$maintainSummary) {
-        objSummary <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
+        objSummary <- getObjSummary(trackingEnv)
         if (!is.data.frame(objSummary)) {
             warning(".trackingSummary in ", envname(trackingEnv), " is not a data.frame: not updating summary; run track.rebuild()")
         } else {
@@ -491,7 +493,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
     }
     ##  update the object table (object characteristics, accesses)
     if (opt$maintainSummary && opt$recordAccesses) {
-        objSummary <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
+        objSummary <- getObjSummary(trackingEnv)
         if (!is.data.frame(objSummary)) {
             warning(".trackingSummary in ", envname(trackingEnv), " is not a data.frame: not updating objSummary; run track.rebuild()")
         } else {
