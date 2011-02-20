@@ -143,7 +143,7 @@ summaryRow <- function(name, opt, sumRow=NULL, obj=NULL, file=NULL, change=FALSE
         sumRow$mode <- mode(obj)
         if (new || (change && (is.na(sumRow$cache) || ! (sumRow$cache %in% c("fixedyes", "fixedno")))))
             sumRow$cache <- ifelse(   is.element(name, opt$alwaysCache)
-                                   || any(is.element(cl, opt$alwaysCacheClasses)),
+                                   || any(is.element(cl, opt$alwaysCacheClass)),
                                    "yes", "no")
         l <- try(length(obj), silent=TRUE)
         if (is(l, "try-error"))
@@ -393,7 +393,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
         assign(objName, value, envir=trackingEnv)
     ## Find the directory where we are saving, and create subdirs if necessary
     dir <- getTrackingDir(trackingEnv)
-    for (d in c(dir, getDataDir(dir)))
+    for (d in unique(c(dir, getDataDir(dir))))
         if (!file.exists(d))
             dir.create(d)
     ## Work out the name of the file to use for this var
