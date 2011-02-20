@@ -27,7 +27,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
              paste(setdiff(intersect(old, names(fileMap)), all.objs), collapse=", "))
     # make sure tracked objects are flushed out to files
     track.flush(envir=envir, list=intersect(union(new, old), names(fileMap)))
-    objSmy <- getObjSummary(trackingEnv)
+    objSmy <- getObjSummary(trackingEnv, opt=opt)
     dir <- getDataDir(getTrackingDir(trackingEnv))
     # what makes this tricky:
     #   (1) overlap between 'new' and 'old' names -- need to make temp
@@ -84,7 +84,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
         if (length(dispose)) {
             track.remove(list=dispose, envir=envir)
             fileMap <- getFileMapObj(trackingEnv)
-            objSmy <- getObjSummary(trackingEnv)
+            objSmy <- getObjSummary(trackingEnv, opt=opt)
         }
     }
     # Where we have names in both old and new, can't update fileMap and

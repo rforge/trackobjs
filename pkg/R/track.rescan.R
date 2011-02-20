@@ -65,7 +65,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         ## code further down take care of adding the new ones.
         fileMapEnv <- fileMap
         fileMap <- readFileMapFile(trackingEnv, getTrackingDir(trackingEnv), assignObj=!dryRun)
-        objSummaryEnv <- getObjSummary(trackingEnv)
+        objSummaryEnv <- getObjSummary(trackingEnv, opt=opt)
         objSummaryPath <- file.path(dataDir, paste(".trackingSummary.", opt$RDataSuffix, sep=""))
         ## Read and save the summary from file.
         tmpenv <- new.env(parent=emptyenv())
@@ -78,7 +78,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         if (length(load.res)!=1 || load.res != ".trackingSummary")
             stop(objSummaryPath, " does not contain just '.trackingSummary' -- for recovery see ?track.rebuild")
         ## .trackingSummary has to exist because we just loaded it
-        objSummary <- getObjSummary(tmpenv)
+        objSummary <- getObjSummary(tmpenv, opt=opt)
         if (!is.data.frame(objSummary))
             stop("'.trackingSummary' from ", objSummaryPath, " is not a data.frame -- see ?track.rebuild")
         ## Use some info from exisiting summary to update the summary read

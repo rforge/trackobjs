@@ -120,7 +120,7 @@ summaryRow <- function(name, opt, sumRow=NULL, obj=NULL, file=NULL, change=FALSE
                              modified=tt, created=tt, accessed=tt,
                              A=as.integer(1), ES=as.integer(1), SA=as.integer(0),
                              SW=as.integer(0), PA=as.integer(0), PW=as.integer(0),
-                             stringsAsFactors=FALSE)
+                             cache=NA, stringsAsFactors=FALSE)
         if (!is.null(file) && file.exists(file)
             && !is(info <- try(file.info(file), silent=TRUE), "try-error")) {
             if (length(info$mtime)==1 && !is.na(info$mtime))
@@ -140,6 +140,7 @@ summaryRow <- function(name, opt, sumRow=NULL, obj=NULL, file=NULL, change=FALSE
         # class of an object returned by Sys.time(): "POSIXt"  "POSIXct"
         sumRow$class <- if (length(cl)==0) "?" else paste(cl, collapse=",")
         sumRow$mode <- mode(obj)
+        sumRow$cache <- is.element(name, opt$alwaysCache) || any(is.element(cl, opt$alwaysCacheClasses))
         l <- try(length(obj), silent=TRUE)
         if (is(l, "try-error"))
             sumRow$length <- NA
@@ -291,12 +292,25 @@ readFileMapFile <- function(trackingEnv, dataDir, assignObj) {
     return(fileMap)
 }
 
-getObjSummary <- function(trackingEnv, stop.if.not.found=TRUE) {
+getObjSummary <- function(trackingEnv, stop.if.not.found=TRUE, opt) {
     objSummary <- mget(".trackingSummary", envir=trackingEnv, ifnotfound=list(NULL))[[1]]
     if (stop.if.not.found && is.null(objSummary))
         stop("no .trackingSummary object in tracking env ", envname(trackingEnv), " - recommend using track.rebuild()")
     if (stop.if.not.found && !is.data.frame(objSummary))
         stop(".trackingSummary object found in tracking env ", envname(trackingEnv), " but is not a data frame - recommend using track.rebuild()")
+    if (is.null(objSummary))
+        return(objSummary)
+    if (!is.element("cache", names(objSummary)))
+        objSummary$cache <- rep(NA, nrow(objSummary))
+    i <- is.na(objSummary$cache)
+    if (any(i)) {
+        j <- is.element(rownames(objSummary)[i], opt$alwaysCache)
+        if (any(j))
+            objSummary[which(i)[j], "cache"] <- TRUE
+        i <- is.na(objSummary$cache)
+        if (any(i)) {
+        }
+    }
     return(objSummary)
 }
 
@@ -409,7 +423,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
             assign(".trackingUnsaved", sort(c(objName, unsaved)), envir=trackingEnv)
     }
     if (opt$maintainSummary) {
-        objSummary <- getObjSummary(trackingEnv)
+        objSummary <- getObjSummary(trackingEnv, opt=opt)
         if (!is.data.frame(objSummary)) {
             warning(".trackingSummary in ", envname(trackingEnv), " is not a data.frame: not updating summary; run track.rebuild()")
         } else {
@@ -493,7 +507,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
     }
     ##  update the object table (object characteristics, accesses)
     if (opt$maintainSummary && opt$recordAccesses) {
-        objSummary <- getObjSummary(trackingEnv)
+        objSummary <- getObjSummary(trackingEnv, opt=opt)
         if (!is.data.frame(objSummary)) {
             warning(".trackingSummary in ", envname(trackingEnv), " is not a data.frame: not updating objSummary; run track.rebuild()")
         } else {

@@ -27,7 +27,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     dataDir <- getDataDir(dir)
     fileMap <- getFileMapObj(trackingEnv)
     unsaved <- getUnsavedObj(trackingEnv, NULL)
-    objSummary <- getObjSummary(trackingEnv)
+    objSummary <- getObjSummary(trackingEnv, opt=opt)
     if (!is.null(qexpr)) {
         if (is.name(qexpr)) {
             objName <- as.character(qexpr)

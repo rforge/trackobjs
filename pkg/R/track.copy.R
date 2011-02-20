@@ -49,8 +49,8 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
         stop("clobber=FALSE and some objects to be copied already exist in 'to': ", paste(intersect(list, all.objs.to), collapse=", "))
     # make sure objects in the source are flushed out to files
     track.flush(envir=env.from, list=intersect(list, names(fileMap.from)))
-    objSmy.to <- getObjSummary(trackingEnv.to)
-    objSmy.from <- getObjSummary(trackingEnv.from)
+    objSmy.to <- getObjSummary(trackingEnv.to, opt=opt.to)
+    objSmy.from <- getObjSummary(trackingEnv.from, opt=opt.from)
     dir.to <- getDataDir(getTrackingDir(trackingEnv.to))
     dir.from <- getDataDir(getTrackingDir(trackingEnv.from))
     auto.to <- track.auto(envir=env.to)

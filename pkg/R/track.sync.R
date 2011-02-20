@@ -209,10 +209,11 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         flushVars <- NULL
         saveVars <- NULL
         unsavedVars <- getUnsavedObj(trackingEnv)
-        objSummary <- getObjSummary(trackingEnv)
+        objSummary <- getObjSummary(trackingEnv, opt=opt)
         if (!is.null(objSummary)) {
             ## which variables are currently cached and are candidate for flushing?
             inmem <- is.element(rownames(objSummary), .Internal(ls(trackingEnv, TRUE)))
+            keep1 <- objSummary$cache
             if (!any(inmem)) {
                 flushVars <- character(0)
             } else if (length(opt$cacheKeepFun)) {

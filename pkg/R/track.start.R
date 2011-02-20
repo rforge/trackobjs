@@ -218,7 +218,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             if (length(load.res)!=1 || load.res != ".trackingSummary")
                 stop(objSummaryPath, " does not contain just '.trackingSummary' -- for recovery see ?track.rebuild")
             ## .trackingSummary has to exist because we just loaded it
-            objSummary <- getObjSummary(tmpenv)
+            objSummary <- getObjSummary(tmpenv, opt=opt)
             if (!is.data.frame(objSummary))
                 stop("'.trackingSummary' from ", objSummaryPath, " is not a data.frame -- see ?track.rebuild")
             assign(".trackingSummary", objSummary, envir=trackingEnv)
