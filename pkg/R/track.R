@@ -7,7 +7,6 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
     if (!missing(expr)) {
         ## evaluate expr if necessary, and convert to list
         qexpr <- substitute(expr)
-            stop("expr argument must be a quoted or unquoted variable name")
         if (is.name(qexpr) || is.character(qexpr)) {
             objName <- as.character(qexpr)
         } else if (mode(qexpr)=="call" && class(qexpr)=="<-") {
