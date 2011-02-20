@@ -21,11 +21,11 @@ track.summary <- function(expr, pos=1, envir=as.environment(pos), list=NULL,
     qexpr <- if (!missing(expr)) substitute(expr) else NULL
     if (!is.null(qexpr)) {
         if (is.name(qexpr)) {
-            objname <- as.character(qexpr)
+            objName <- as.character(qexpr)
         } else {
             stop("expr argument must be an unquoted variable")
         }
-        list <- c(objname, list)
+        list <- c(objName, list)
         if (!is.null(glob) || !is.null(pattern))
             stop("must specify EITHER expr and/or list, OR pattern or glob")
         vars.how <- " specified"

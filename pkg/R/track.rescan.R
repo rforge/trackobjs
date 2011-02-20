@@ -135,13 +135,13 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         if (length(new.vars)) {
             if (verbose)
                 cat("track.rescanc: creating active bindings for ", length(new.vars), " new variables: ", paste(new.vars, collapse=", "), "\n", sep="")
-            if (!dryRun) for (objname in new.vars) {
+            if (!dryRun) for (objName in new.vars) {
                 f <- substitute(function(v) {
                     if (missing(v))
                         getTrackedVar(x, envir)
                     else
                         setTrackedVar(x, v, envir)
-                }, list(x=objname, envir=trackingEnv))
+                }, list(x=objName, envir=trackingEnv))
                 mode(f) <- "function"
                 ## Need to replace the environment of f, otherwise it is this
                 ## function, which can contain a copy of objval, which can
@@ -155,7 +155,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
                 ##     binding can't find non-exported functions from track
                 ##   * parent.env(environment(f)) works!
                 environment(f) <- parent.env(environment(f))
-                makeActiveBinding(objname, env=envir, fun=f)
+                makeActiveBinding(objName, env=envir, fun=f)
             }
         }
         if (!dryRun) {

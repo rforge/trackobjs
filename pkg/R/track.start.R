@@ -320,16 +320,16 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             warning("had problem writing ", dfn, " (", as.character(write.res), ")")
     }
     ## load bindings for the vars already in the tracking dir
-    for (objname in names(fileMap)) {
+    for (objName in names(fileMap)) {
         f <- substitute(function(v) {
             if (missing(v))
                 getTrackedVar(x, envir)
             else
                 setTrackedVar(x, v, envir)
-        }, list(x=objname, envir=trackingEnv))
+        }, list(x=objName, envir=trackingEnv))
         mode(f) <- "function"
         environment(f) <- parent.env(environment(f))
-        makeActiveBinding(objname, env=envir, fun=f)
+        makeActiveBinding(objName, env=envir, fun=f)
     }
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
     if (auto) {

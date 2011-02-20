@@ -62,10 +62,22 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         untracked <- grep(re, untracked, invert=TRUE, value=TRUE)
     deleted <- setdiff(names(fileMap), all.objs)
 
+
+    ## Which variables are currently cached?
+    ## This code used to call track.flush(envir=envir, all=TRUE)
+    ## but that's slow compared to working out flushVars here and
+    ## passing the specific vars to track.flush()
+    ##
     ## If there is a cacheKeepFun, see what it says...
-    ## Record what variables it says to discard in purgeVars.
-    ## purgeVars is NULL if there is no cacheKeepFun
-    purgeVars <- NULL
+    ## Record what variables it says to flush from cache in flushVars.
+    ## flushVars is NULL if there is no cacheKeepFun
+    ## Record variables that need saving to disk in saveVars
+    ## Record variables not to be flushed in keepVars
+    ## Note that vars are actually flushed from cache by a
+    ## call to track.flush(), which won't flush vars named
+    ## in opt$alwaysCache.
+    flushVars <- NULL
+    keepVars <- NULL
     saveVars <- NULL
     if (taskEnd && opt$cachePolicy=="eotPurge" && length(opt$cacheKeepFun)
         && exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
@@ -73,7 +85,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         objs <- get(".trackingSummary", envir=trackingEnv, inherits=FALSE)
         ## which variables are currently cached
         inmem <- is.element(rownames(objs), .Internal(ls(trackingEnv, TRUE)))
-        purgeVars <- character(0)
+        flushVars <- character(0)
         if (any(inmem)) {
             keep <- try(do.call(opt$cacheKeepFun, list(objs=objs, inmem=inmem, envname=envname(envir))), silent=TRUE)
             if (is(keep, "try-error")) {
@@ -81,7 +93,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             } else if (!is.logical(keep) || length(keep)!=nrow(objs) || any(is.na(keep))) {
                 warning("opt$cacheKeepFun did not return a TRUE/FALSE vector of the correct length")
             } else {
-                purgeVars <- rownames(objs)[inmem & !keep]
+                flushVars <- rownames(objs)[inmem & !keep]
                 saveVars <- intersect(rownames(objs)[inmem & keep], getUnsavedObj(trackingEnv))
             }
         }
@@ -99,32 +111,32 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ## time, and this function is called after every
         ## top level task...
         if (taskEnd && opt$cachePolicy=="eotPurge") {
-            if (!is.null(purgeVars)) {
+            if (!is.null(flushVars)) {
                 if (dryRun) {
-                    cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
-                        paste(purgeVars, collapse=", "), "\n")
+                    cat("track.sync(dryRun): Would flush", length(flushVars), "vars:",
+                        paste(flushVars, collapse=", "), "\n")
                 } else {
                     if (verbose)
-                        cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
-                            envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
-                    if (length(purgeVars))
-                        track.flush(envir=envir, list=purgeVars)
+                        cat("track.sync: flushing ", length(flushVars), " vars with call to track.flush(envir=",
+                            envname(envir), ", list=c(", paste("'", flushVars, "'", sep="", collapse=", "), "))\n", sep="")
+                    if (length(flushVars))
+                        track.flush(envir=envir, list=flushVars)
                 }
             } else {
                 ## which variables are currently cached?
                 ## used to call track.flush(envir=envir, all=TRUE)
-                ## but that's slow compared to working out purgeVars here
-                purgeVars <- .Internal(ls(trackingEnv, TRUE))
-                purgeVars <- purgeVars[is.element(purgeVars, names(fileMap))]
+                ## but that's slow compared to working out flushVars here
+                flushVars <- .Internal(ls(trackingEnv, TRUE))
+                flushVars <- flushVars[is.element(flushVars, names(fileMap))]
                 if (dryRun) {
-                    cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
-                        paste(purgeVars, collapse=", "), "\n")
+                    cat("track.sync(dryRun): Would flush", length(flushVars), "vars:",
+                        paste(flushVars, collapse=", "), "\n")
                 } else {
                     if (verbose)
-                        cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
-                            envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
-                    if (length(purgeVars))
-                        track.flush(envir=envir, list=purgeVars)
+                        cat("track.sync: flushing ", length(flushVars), " vars with call to track.flush(envir=",
+                            envname(envir), ", list=c(", paste("'", flushVars, "'", sep="", collapse=", "), "))\n", sep="")
+                    if (length(flushVars))
+                        track.flush(envir=envir, list=flushVars)
                 }
             }
         }
@@ -207,18 +219,18 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
 
     ## Deal with untracked objects in the tracked env.
     ## Need to write these to files, and replace with active bindings.
-    for (objname in retrack) {
+    for (objName in retrack) {
         ## get obj from envir, store in file, create active binding
-        objval <- get(objname, envir=envir, inherits=FALSE)
+        objval <- get(objName, envir=envir, inherits=FALSE)
         if (any(is.element(class(objval), opt$autoTrackExcludeClass))) {
             if (verbose)
-                cat("track.sync", if (dryRun) "(dryRun)", ": var is from excluded class, not tracking: ", objname, "\n", sep="")
+                cat("track.sync", if (dryRun) "(dryRun)", ": var is from excluded class, not tracking: ", objName, "\n", sep="")
             next
         }
         if (verbose && !opt$readonly)
-            cat("track.sync: retracking var: ", objname, "\n", sep="")
+            cat("track.sync: retracking var: ", objName, "\n", sep="")
         if (opt$readonly)
-            warning("variable ", objname, " was clobbered in a readonly tracking env -- forgetting the changes")
+            warning("variable ", objName, " was clobbered in a readonly tracking env -- forgetting the changes")
         if (dryRun)
             next
         ## Use setTrackedVar to write the object to disk (or merely cache
@@ -226,14 +238,14 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ## setTrackedVar() will assign it in the trackingEnv -- it currently
         ## exists in 'envir'
         if (!opt$readonly)
-            setTrackedVar(objname, objval, trackingEnv, opt)
-        remove(list=objname, envir=envir)
+            setTrackedVar(objName, objval, trackingEnv, opt)
+        remove(list=objName, envir=envir)
         f <- substitute(function(v) {
             if (missing(v))
                 getTrackedVar(x, envir)
             else
                 setTrackedVar(x, v, envir)
-        }, list(x=objname, envir=trackingEnv))
+        }, list(x=objName, envir=trackingEnv))
         mode(f) <- "function"
         ## Need to replace the environment of f, otherwise it is this
         ## function, which can contain a copy of objval, which can
@@ -247,42 +259,42 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ##     binding can't find non-exported functions from trackObjs
         ##   * parent.env(environment(f)) works!
         environment(f) <- parent.env(environment(f))
-        makeActiveBinding(objname, env=envir, fun=f)
+        makeActiveBinding(objName, env=envir, fun=f)
     }
     ## Do we need to re-read the fileMap?
     if (length(retrack))
         fileMap <- getFileMapObj(trackingEnv)
     if (taskEnd && opt$cachePolicy=="eotPurge") {
-        if (!is.null(purgeVars)) {
+        if (!is.null(flushVars)) {
             if (dryRun) {
-                cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
-                    paste(purgeVars, collapse=", "), "\n")
+                cat("track.sync(dryRun): Would flush", length(flushVars), "vars:",
+                    paste(flushVars, collapse=", "), "\n")
                 cat("track.sync(dryRun): Would save", length(saveVars), "vars:",
                     paste(saveVars, collapse=", "), "\n")
             } else {
                 if (verbose)
-                    cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
-                        envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
-                if (length(purgeVars))
-                    track.flush(envir=envir, list=purgeVars)
+                    cat("track.sync: flushing ", length(flushVars), " vars with call to track.flush(envir=",
+                        envname(envir), ", list=c(", paste("'", flushVars, "'", sep="", collapse=", "), "))\n", sep="")
+                if (length(flushVars))
+                    track.flush(envir=envir, list=flushVars)
                 if (length(saveVars))
                     track.save(envir=envir, list=saveVars)
             }
         } else {
             ## Which variables are currently cached?
             ## This code used to call track.flush(envir=envir, all=TRUE)
-            ## but that's slow compared to working out purgeVars here
-            purgeVars <- .Internal(ls(trackingEnv, TRUE))
-            purgeVars <- purgeVars[is.element(purgeVars, names(fileMap))]
+            ## but that's slow compared to working out flushVars here
+            flushVars <- .Internal(ls(trackingEnv, TRUE))
+            flushVars <- flushVars[is.element(flushVars, names(fileMap))]
             if (dryRun) {
-                cat("track.sync(dryRun): Would flush", length(purgeVars), "vars:",
-                    paste(purgeVars, collapse=", "), "\n")
+                cat("track.sync(dryRun): Would flush", length(flushVars), "vars:",
+                    paste(flushVars, collapse=", "), "\n")
             } else {
                 if (verbose)
-                    cat("track.sync: purging ", length(purgeVars), " vars with call to track.flush(envir=",
-                        envname(envir), ", list=c(", paste("'", purgeVars, "'", sep="", collapse=", "), "))\n", sep="")
-                if (length(purgeVars))
-                    track.flush(envir=envir, list=purgeVars)
+                    cat("track.sync: flushing ", length(flushVars), " vars with call to track.flush(envir=",
+                        envname(envir), ", list=c(", paste("'", flushVars, "'", sep="", collapse=", "), "))\n", sep="")
+                if (length(flushVars))
+                    track.flush(envir=envir, list=flushVars)
             }
         }
     } else {

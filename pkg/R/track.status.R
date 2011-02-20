@@ -48,11 +48,11 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
         qexpr <- substitute(expr)
     if (!is.null(qexpr)) {
         if (is.name(qexpr)) {
-            objname <- as.character(qexpr)
+            objName <- as.character(qexpr)
         } else {
             stop("expr argument must be an unquoted variable")
         }
-        list <- c(objname, list)
+        list <- c(objName, list)
     }
     all.objs <- .Internal(ls(envir, all.names || reserved))
     fileMap.names <- names(fileMap)
@@ -78,28 +78,28 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
             list <- intersect(list, fileMap.names)
         else
             list <- setdiff(list, fileMap.names)
-    status <- lapply(list, function(objname) {
+    status <- lapply(list, function(objName) {
         ## an object is already tracked if the following 2 conditions are met:
         ##   - it exists as an activing binding in envir
         ##   - there is an entry in the fileMap in the trackingEnv
         inMem <- fileExists <- as.logical(NA)
         fileBase <- as.character(NA)
-        if (is.element(objname, fileMap.names)) {
-            saved <- !is.element(objname, unsaved)
-            if (!is.element(objname, all.objs))
+        if (is.element(objName, fileMap.names)) {
+            saved <- !is.element(objName, unsaved)
+            if (!is.element(objName, all.objs))
                 status <- "orphaned"
-            else if (!bindingIsActive(objname, envir))
+            else if (!bindingIsActive(objName, envir))
                 status <- "masked"
             else
                 status <- "tracked"
-            fileBase <- fileMap[objname]
+            fileBase <- fileMap[objName]
             if (file.status)
                 fileExists <- file.exists(file.path(dataDir, paste(fileBase, opt$RDataSuffix, sep=".")))
-            inMem <- exists(objname, trackingEnv, inherits=FALSE)
+            inMem <- exists(objName, trackingEnv, inherits=FALSE)
         } else {
-            if (!is.element(objname, all.objs))
+            if (!is.element(objName, all.objs))
                 status <- "nonexistent"
-            else if (!bindingIsActive(objname, envir) && !isReservedName(objname))
+            else if (!bindingIsActive(objName, envir) && !isReservedName(objName))
                 status <- "untracked"
             else
                 status <- "untrackable"

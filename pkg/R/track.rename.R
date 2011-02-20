@@ -192,7 +192,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
                 objSmy.changed <- TRUE
             }
         } else {
-            stop("shouldn't happen: old objname is not tracked and new objname is tracked: old='",
+            stop("shouldn't happen: old objName is not tracked and new objName is tracked: old='",
                  oldObjName, "', new='", newObjName, "'")
         }
         if (objSmy.changed) {

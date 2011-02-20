@@ -171,32 +171,32 @@ summaryRow <- function(name, sumRow=NULL, obj=NULL, file=NULL, change=FALSE, tim
     return(sumRow)
 }
 
-isReservedName <- function(objname)
+isReservedName <- function(objName)
     ## ".trackingEnv" is a reserved name to allow for storing the
     ## tracking env as an object in the tracked environment instead
     ## of an attribute on the tracked environment.
-    return((regexpr("[\n\r]", objname) > 0)
-           | is.element(objname, c(".trackingEnv", ".trackingDir", ".trackingFileMap",
+    return((regexpr("[\n\r]", objName) > 0)
+           | is.element(objName, c(".trackingEnv", ".trackingDir", ".trackingFileMap",
                                    ".trackingUnsaved", ".trackingSummary",
                                    ".trackingSummaryChanged", ".trackingOptions",
                                    ".trackingPid", ".trackingCreated",
                                    ".trackAuto", ".trackingFinished")))
 
-objIsTracked <- function(objnames, envir, trackingEnv, all.objs=.Internal(ls(envir, TRUE))) {
-    if (length(objnames)==0)
+objIsTracked <- function(objNames, envir, trackingEnv, all.objs=.Internal(ls(envir, TRUE))) {
+    if (length(objNames)==0)
         return(logical(0))
     fileMap <- getFileMapObj(trackingEnv)
-    return(sapply(objnames, function(objname) {
+    return(sapply(objNames, function(objName) {
         ## an object is already tracked if the following 2 conditions are met:
         ##   - it exists as an activing binding in envir
         ##   - there is an entry in the fileMap in the trackingEnv
         ## Don't use exists() because it gets the object
-        ## if (!exists(objname, envir=envir, inherits=FALSE))
-        if (!is.element(objname, all.objs))
+        ## if (!exists(objName, envir=envir, inherits=FALSE))
+        if (!is.element(objName, all.objs))
             return(FALSE)
-        if (!bindingIsActive(objname, envir))
+        if (!bindingIsActive(objName, envir))
             return(FALSE)
-        if (!is.element(objname, names(fileMap)))
+        if (!is.element(objName, names(fileMap)))
             return(FALSE)
         return(TRUE)
     }))
@@ -313,16 +313,16 @@ envname <- function(envir) {
 
 notyetdone <- function(msg) cat("Not yet done: ", msg, "\n", sep="")
 
-isSimpleName <- function(objname) {
-    return(nchar(objname)<=55
-           && regexpr("^[[:lower:]][._[:digit:][:lower:]]*$", objname, perl=TRUE)==1
-           && regexpr("^(prn|aux|con|nul|com[1-9]|lpt[1-9])(\\.|$)", objname)<0)
+isSimpleName <- function(objName) {
+    return(nchar(objName)<=55
+           && regexpr("^[[:lower:]][._[:digit:][:lower:]]*$", objName, perl=TRUE)==1
+           && regexpr("^(prn|aux|con|nul|com[1-9]|lpt[1-9])(\\.|$)", objName)<0)
 }
 
-makeObjFileName <- function(objname, fileNames) {
-    ## check if we can use objname as a filename
-    if (isSimpleName(objname))
-        return(objname)
+makeObjFileName <- function(objName, fileNames) {
+    ## check if we can use objName as a filename
+    if (isSimpleName(objName))
+        return(objName)
     ## fileNames is a list of vectors of file names that are already used.
     ## Generate a filename of the form _NNN (NNN is a number without a leading zero)
     ## work out what numbers have been used

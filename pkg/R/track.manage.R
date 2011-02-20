@@ -30,11 +30,11 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     objSummary <- getObjSummary(trackingEnv)
     if (!is.null(qexpr)) {
         if (is.name(qexpr)) {
-            objname <- as.character(qexpr)
+            objName <- as.character(qexpr)
         } else {
             stop("expr argument to ", who, " must be an unquoted variable")
         }
-        list <- c(objname, list)
+        list <- c(objName, list)
     }
     if (!is.null(pattern) || !is.null(glob) || all) {
         if (!is.null(list))
@@ -62,25 +62,25 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     quarantine.dir <- file.path(dataDir, "quarantine")
     needSaveFileMap <- FALSE
     needSaveObjSummary <- mget(".trackingSummaryChanged", envir=trackingEnv, ifnotfound=list(FALSE))[[1]]
-    for (objname in list) {
+    for (objName in list) {
         fileMapChanged <- FALSE
         objSummaryChanged <- FALSE
-        # if (!exists(objname, envir=envir, inherits=FALSE)) { # don't use exists() because it ...
-        if (!force && !is.element(objname, all.objs)) {
-            warning("'", objname, "' does not exist in ", envname(envir))
+        # if (!exists(objName, envir=envir, inherits=FALSE)) { # don't use exists() because it ...
+        if (!force && !is.element(objName, all.objs)) {
+            warning("'", objName, "' does not exist in ", envname(envir))
             next
         }
-        if (is.element(op, c("untrack", "lift")) && !force && !bindingIsActive(objname, envir)) {
-            warning("cannot ", op, " tracked var '", objname, "' because it is not a properly tracked variable (not an active binding in ", envname(envir), ")")
+        if (is.element(op, c("untrack", "lift")) && !force && !bindingIsActive(objName, envir)) {
+            warning("cannot ", op, " tracked var '", objName, "' because it is not a properly tracked variable (not an active binding in ", envname(envir), ")")
             next
         }
-        fileMapPos <- match(objname, names(fileMap))
+        fileMapPos <- match(objName, names(fileMap))
         if (is.na(fileMapPos)) {
-            if (objIsTracked(objname, envir, trackingEnv, all.objs)) {
-                warning("cannot ", op, " tracked var '", objname, "' because it is not in the file map in ", envname(envir))
+            if (objIsTracked(objName, envir, trackingEnv, all.objs)) {
+                warning("cannot ", op, " tracked var '", objName, "' because it is not in the file map in ", envname(envir))
             } else {
                 if (op=="remove")
-                    remove(list=objname, envir=envir, inherits=FALSE)
+                    remove(list=objName, envir=envir, inherits=FALSE)
             }
             next
         }
@@ -91,17 +91,17 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         ##
         if (op=="remove") {
             ## remove the variable from envir
-            if (is.element(objname, all.objs))
-                remove(list=objname, envir=envir)
+            if (is.element(objName, all.objs))
+                remove(list=objName, envir=envir)
         } else if (is.element(op, c("untrack", "lift"))) {
             ## fetch the value and assign it in envir
-            if (exists(objname, envir=trackingEnv, inherits=FALSE)) {
-                objval <- get(objname, envir=trackingEnv, inherits=FALSE)
+            if (exists(objName, envir=trackingEnv, inherits=FALSE)) {
+                objval <- get(objName, envir=trackingEnv, inherits=FALSE)
             } else {
                 tmpenv <- new.env(parent=emptyenv())
                 load.res <- load(filePath, envir=tmpenv)
-                if (length(load.res)<1 || load.res[1] != objname) {
-                    warning("file '", filePath, "' did not contain obj '", objname,
+                if (length(load.res)<1 || load.res[1] != objName) {
+                    warning("file '", filePath, "' did not contain obj '", objName,
                             "' as its first object - moving this file to ", quarantine.dir)
                     if (!file.exists(quarantine.dir))
                         dir.create(quarantine.dir)
@@ -111,13 +111,13 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
                         warning("ignoring other objects in file '", filePath, "'")
                         remove(list=load.res[-1], envir=tmpenv)
                     }
-                    objval <- get(objname, envir=tmpenv, inherits=FALSE)
-                    remove(list=objname, envir=tmpenv)
+                    objval <- get(objName, envir=tmpenv, inherits=FALSE)
+                    remove(list=objName, envir=tmpenv)
                 }
             }
             # need to remove the active binding from envir before saving the ordinary variable
-            remove(list=objname, envir=envir)
-            assign(objname, objval, envir=envir)
+            remove(list=objName, envir=envir)
+            assign(objName, objval, envir=envir)
         } else if (!is.element(op, c("save", "flush", "forget"))) {
             stop("what ", op, "???")
         }
@@ -127,34 +127,34 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         if (is.element(op, c("remove", "untrack"))) {
             fileMap <- fileMap[-fileMapPos]
             fileMapChanged <- TRUE
-            if (exists(objname, envir=trackingEnv, inherits=FALSE))
-                remove(list=objname, envir=trackingEnv)
+            if (exists(objName, envir=trackingEnv, inherits=FALSE))
+                remove(list=objName, envir=trackingEnv)
             if (file.exists(filePath)) {
                 rm.res <- try(file.remove(filePath), silent=TRUE)
                 if (is(rm.res, "try-error"))
-                    warning("could not remove file for tracked var '", objname, "'")
+                    warning("could not remove file for tracked var '", objName, "'")
             }
-            i <- match(objname, rownames(objSummary))
+            i <- match(objName, rownames(objSummary))
             if (!is.na(i)) {
                 objSummary <- objSummary[-i,,drop=FALSE]
                 objSummaryChanged <- TRUE
             }
         } else if (is.element(op, c("save", "flush", "forget", "lift"))) {
-            if (is.element(op, c("flush", "save", "lift")) && exists(objname, envir=trackingEnv, inherits=FALSE)
-                && (resave || is.element(objname, unsaved))) {
-                save.res <- try(save(list=objname, envir=trackingEnv, file=filePath,
+            if (is.element(op, c("flush", "save", "lift")) && exists(objName, envir=trackingEnv, inherits=FALSE)
+                && (resave || is.element(objName, unsaved))) {
+                save.res <- try(save(list=objName, envir=trackingEnv, file=filePath,
                                      compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
                 if (is(save.res, "try-error"))
-                    stop("could not save '", objname, "' in ", filePath, ": fix file problem and try again")
+                    stop("could not save '", objName, "' in ", filePath, ": fix file problem and try again")
             }
-            if (is.element(op, c("flush", "forget", "lift")) && exists(objname, envir=trackingEnv, inherits=FALSE)
-                && !(op=="flush" && is.element(objname, opt$alwaysCache)))
-                remove(list=objname, envir=trackingEnv)
+            if (is.element(op, c("flush", "forget", "lift")) && exists(objName, envir=trackingEnv, inherits=FALSE)
+                && !(op=="flush" && is.element(objName, opt$alwaysCache)))
+                remove(list=objName, envir=trackingEnv)
         } else {
             stop("what ", op, "???")
         }
         ## every operation we do has the effect of unsetting the 'unsaved' bit
-        if (!is.na(i <- match(objname, unsaved))) {
+        if (!is.na(i <- match(objName, unsaved))) {
             unsaved <- unsaved[-i]
             assign(".trackingUnsaved", unsaved, envir=trackingEnv)
         }

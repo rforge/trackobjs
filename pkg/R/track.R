@@ -6,30 +6,30 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
         ## evaluate expr if necessary, and convert to list
         qexpr <- substitute(expr)
         if (is.name(qexpr)) {
-            objname <- as.character(qexpr)
+            objName <- as.character(qexpr)
         } else if (mode(qexpr)=="call" && class(qexpr)=="<-") {
             if (length(list))
                 stop("cannot use both assignment expr and list at the same time in track(LHS <- RHS, list=...)")
             if (!is.name(qexpr[[2]]))
                 stop("LHS must be a simple var name in track(LHS <- RHS)")
             ## need to evaluate and assign
-            objname <- as.character(qexpr[[2]])
+            objName <- as.character(qexpr[[2]])
             objval <- eval(qexpr[[3]], envir=parent.frame(), enclos=parent.frame())
             haveVal <- TRUE
             ## check if the var already exists
-            if (exists(objname, envir=envir, inherits=FALSE)) {
-                if (objIsTracked(objname, envir, trackingEnv)) {
-                    setTrackedVar(objname, objval, trackingEnv, opt)
+            if (exists(objName, envir=envir, inherits=FALSE)) {
+                if (objIsTracked(objName, envir, trackingEnv)) {
+                    setTrackedVar(objName, objval, trackingEnv, opt)
                     ## will detect that this var is already tracked below, and won't
                     ## do setTrackedVar() again
                 } else {
-                    remove(list=objname, envir=envir)
+                    remove(list=objName, envir=envir)
                 }
             }
         } else {
             stop("argument to track() must be an unquoted variable or an assignment")
         }
-        list <- c(objname, list)
+        list <- c(objName, list)
     } else if (is.null(list)) {
         list <- untracked(envir=envir, pattern=pattern, glob=glob)
         if (isTRUE(exclude))
@@ -56,34 +56,34 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
         list <- list[-i]
     }
     all.objs <- .Internal(ls(envir, TRUE))
-    for (objname in list) {
+    for (objName in list) {
         ## Doesn't matter if it already exists....
-        ## if (exists(objname, trackingEnv))
-        ##     stop("'", objname, "' already exists in trackingEnv ", envname(trackingEnv))
+        ## if (exists(objName, trackingEnv))
+        ##     stop("'", objName, "' already exists in trackingEnv ", envname(trackingEnv))
         if (haveVal) {
             ## Nothing to do here -- already have the val in objval
-        } else if (!is.element(objname, all.objs)) {
+        } else if (!is.element(objName, all.objs)) {
             objval <- NULL
         } else {
-            if (bindingIsActive(objname, envir)) {
-                warning("cannot track '", objname, "' because it is an active binding")
+            if (bindingIsActive(objName, envir)) {
+                warning("cannot track '", objName, "' because it is an active binding")
                 next
             }
-            objval <- get(objname, envir=envir, inherits=FALSE)
-            remove(list=objname, envir=envir)
+            objval <- get(objName, envir=envir, inherits=FALSE)
+            remove(list=objName, envir=envir)
             ## robustness danger point: can have objval in here, but
             ## assigned in no environment -- might be better to remove
             ## it only after setTrackedVar() has succeeded.  However,
             ## setTrackedVar cannot work if it is still here...
         }
         ## robustness: what to do if the assign inside setTrackedVar fails?
-        setTrackedVar(objname, objval, trackingEnv, opt)
+        setTrackedVar(objName, objval, trackingEnv, opt)
         f <- substitute(function(v) {
             if (missing(v))
                 getTrackedVar(x, envir)
             else
                 setTrackedVar(x, v, envir)
-        }, list(x=objname, envir=trackingEnv))
+        }, list(x=objName, envir=trackingEnv))
         mode(f) <- "function"
         ## Need to replace the environment of f, otherwise it is this
         ## function, which can contain a copy of objval, which can
@@ -97,7 +97,7 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
         ##     binding can't find non-exported functions from track
         ##   * parent.env(environment(f)) works!
         environment(f) <- parent.env(environment(f))
-        makeActiveBinding(objname, env=envir, fun=f)
+        makeActiveBinding(objName, env=envir, fun=f)
     }
     return(invisible(list))
 }
