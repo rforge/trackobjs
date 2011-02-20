@@ -40,7 +40,7 @@ track.Last()
     (default is 1 for the global environment)}
   \item{envir}{ The environment being tracked.  This is an alternate way
     (to the use of \code{pos=})
-  of specifying the environment being tracked, but should be rarely needed.}
+    of specifying the environment being tracked, but should be rarely needed.}
   \item{create}{ If \code{TRUE}, create the tracking directory if it
     doesn't exist }
   \item{clobber}{ Controls action taken when there are objects of the
