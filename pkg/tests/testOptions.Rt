@@ -55,7 +55,7 @@ $autoTrackExcludeClass
 [1] "RODBC"
 
 $autoTrackExcludePattern
-[1] "^\\.track"    "^\\.required"
+[1] "^\\.track"    "^\\.required" "^\\*tmp\\*$" 
 
 $autoTrackFullSyncWait
 [1] 15
@@ -163,12 +163,12 @@ $cachePolicy
 > # Test how multi-value options are handled
 > track.options("autoTrackExcludePattern")
 $autoTrackExcludePattern
-[1] "^\\.track"    "^\\.required"
+[1] "^\\.track"    "^\\.required" "^\\*tmp\\*$" 
 
 > track.options(autoTrackExcludePattern="pattern")
 > track.options("autoTrackExcludePattern")
 $autoTrackExcludePattern
-[1] "^\\.track"    "^\\.required" "pattern"     
+[1] "^\\.track"    "^\\.required" "^\\*tmp\\*$"  "pattern"     
 
 > track.options("autoTrackExcludeClass")
 $autoTrackExcludeClass
