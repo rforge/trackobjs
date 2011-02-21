@@ -14,5 +14,5 @@ Description: Automatically stores objects in files on disk
   saves the last command to a history file after each
   command completes.
 License: GPL
-Depends: R (>= 2.1.0)
+Depends: R (>= 2.1.0), methods
 Suggests: scriptests
