@@ -5,6 +5,7 @@ Title: Use 'ff' objects with track
 Author: Tony Plate <tplate@acm.org>
 Maintainer: Tony Plate <tplate@acm.org>
 Description: Cleanly use 'ff' objects with the track package.
+  Geared towards working with permanent ff objects.
 License: GPL
 Depends: track (>= 1.0.3), ff, R (>= 2.1.0)
 Suggests: scriptests

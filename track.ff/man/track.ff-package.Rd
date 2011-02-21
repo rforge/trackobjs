@@ -2,16 +2,18 @@
 \alias{track.ff-package}
 \docType{package}
 \title{
-Overview of track.ff package
+Overview of \code{track.ff} package
 }
 \description{
 
-  The track.ff package glues the track package and the ff package
-  together, making it easy to manage ff objects in a tracked
-  database.  The ff datafiles are stored in a subdirectory of the
-  tracking directory.
+  The \code{track.ff} package glues the track package and the \code{ff} package
+  together, making it easy to manage \code{ff} objects in a tracked
+  database.  The \code{ff} datafiles are stored in a subdirectory of the
+  tracking directory.  The \code{track.ff} package is geared towards working
+  with permanent \code{ff} objects, although it does not interfere in the
+  creation of temporary \code{ff} objects.
 
-  This package is not needed to access ff objects in a tracking
+  This package is not needed to access \code{ff} objects in a tracking
   database, for that, only the \code{track} and \code{ff} packages are
   needed.
 

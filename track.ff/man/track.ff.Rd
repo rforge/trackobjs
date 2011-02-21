@@ -33,13 +33,30 @@ track.ff.delete(expr, pos = 1, envir = as.environment(pos))
     relative path?}
 }
 \details{
-  Create or remove ff objects in a tracked environment.  The ff objects
-are made permanent.  Currently, existing temporary (or permanent) ff
-objects cannot be stored in a tracked environment (merely because this
-has not been implemented, not because of any particular difficulty.)
-The data files backing the ff objects are stored in the \code{ff}
-subdirectory of the tracking database.
+
+The functions in \code{track.ff} create or remove ff objects in a
+tracked environment.  The ff objects are made permanent.  Currently, the
+underlying data files of existing temporary (or permanent) ff objects
+cannot be moved into the ff data storage in tracked environment (merely
+because this has not been implemented, not because of any particular
+difficulty.)  The data files backing the ff objects are stored in the
+\code{ff} subdirectory of the tracking database.
+
+The functions in \code{track.ff} do not interfere or intervene in the
+creation or use of \code{ff} objects other than by use of the
+\code{track.ff} functions.
 }
+
+\note{
+
+  The \code{track} package does have some minor special treatment for
+  \code{ff} objects: by default it does not flush them from memory.
+  This is because when \code{ff} objects are flushed from memory, the
+  \code{ff} objects are treated as though they are being deleted, and
+  C-level destructors are called.
+  
+}
+
 \value{
   \describe{
     \item{track.ff()}{invisibly returns the ff object}
