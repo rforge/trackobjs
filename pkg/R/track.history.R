@@ -1,4 +1,4 @@
-track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, load=FALSE, verbose=FALSE, message="Session start") {
+track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, load=TRUE, verbose=FALSE, message="Session start") {
     if (!is.null(file))
         options(incr.hist.file=file)
     if (!is.null(width))

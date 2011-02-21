@@ -18,7 +18,7 @@
 }
 \usage{
 track.history.start(file = NULL, width = NULL, style = NULL, times =
-  NULL, load = FALSE, verbose = FALSE, message="Session start")
+  NULL, load = TRUE, verbose = FALSE, message="Session start")
 track.history.stop()
 track.history.status()
 track.history.load(times = FALSE)
