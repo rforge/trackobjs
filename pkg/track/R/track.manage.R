@@ -7,8 +7,8 @@ track.save <- function(expr, pos=1, envir=as.environment(pos), list=NULL, patter
 track.resave <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr) && missing(list) && missing(pattern) && missing(glob))
     trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="save", resave=TRUE, who="track.resave()")
 
-track.flush <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr) && missing(list) && missing(pattern) && missing(glob))
-    trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="flush", who="track.flush()")
+track.flush <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=missing(expr) && missing(list) && missing(pattern) && missing(glob), force=FALSE)
+    trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="flush", who="track.flush()", force=force)
 
 track.forget <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all=FALSE)
     trackedVarOp(if (!missing(expr)) substitute(expr), envir=envir, list=list, pattern=pattern, glob=glob, all=all, op="forget", who="track.forget()")
@@ -148,7 +148,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
                     stop("could not save '", objName, "' in ", filePath, ": fix file problem and try again")
             }
             if (is.element(op, c("flush", "forget", "lift")) && exists(objName, envir=trackingEnv, inherits=FALSE)
-                && !(op=="flush" && is.element(objName, opt$alwaysCache)))
+                && (force || !(op=="flush" && is.element(objName, opt$alwaysCache))))
                 remove(list=objName, envir=trackingEnv)
         } else {
             stop("what ", op, "???")

@@ -29,7 +29,8 @@ track.resave(expr, pos = 1, envir = as.environment(pos), list = NULL,
         all = missing(expr) && missing(list) && missing(pattern) && missing(glob))
 track.flush(expr, pos = 1, envir = as.environment(pos), list = NULL,
         pattern = NULL, glob = NULL,
-        all = missing(expr) && missing(list) && missing(pattern) && missing(glob))
+        all = missing(expr) && missing(list) && missing(pattern) && missing(glob),
+        force = FALSE)
 track.forget(expr, pos = 1, envir = as.environment(pos), list = NULL,
         pattern = NULL, glob = NULL, all = FALSE)
 track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
@@ -63,7 +64,9 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
     object cached in memory }
   \item{clobber}{ \code{TRUE} or \code{FALSE} indicating whether to
     overwrite existing objects of the same name}
-  \item{force}{ If \code{TRUE}, remove orphaned tracked variables }
+  \item{force}{ If \code{TRUE}, for \code{track.remove} remove orphaned
+  tracked variables; for \code{track.flush} flush out variables that
+  would normally be kept in cache. }
   \item{time.of.file}{ If \code{TRUE}, use the access times on the file
     to populate the access time fields in the tracking summary.}
   \item{warn}{ If \code{TRUE}, issue warnings about object not acted upon.}
