@@ -1,2 +1,0 @@
-library(trackObjs)
-trackObjs:::createRfromRt("testObjStatus2")

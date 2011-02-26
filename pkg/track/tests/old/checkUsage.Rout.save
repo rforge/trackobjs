@@ -1,6 +1,0 @@
-
-
-> library(trackObjs)
-> library(codetools)
-> checkUsagePackage("trackObjs")
-> 
