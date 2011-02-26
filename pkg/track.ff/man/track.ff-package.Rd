@@ -6,12 +6,13 @@ Overview of \code{track.ff} package
 }
 \description{
 
-  The \code{track.ff} package glues the track package and the \code{ff} package
-  together, making it easy to manage \code{ff} objects in a tracked
-  database.  The \code{ff} datafiles are stored in a subdirectory of the
-  tracking directory.  The \code{track.ff} package is geared towards working
-  with permanent \code{ff} objects, although it does not interfere in the
-  creation of temporary \code{ff} objects.
+  The \code{track.ff} package glues the track package and the \code{ff}
+  package together, making it easy to manage \code{ff} objects in a
+  tracked database.  The \code{ff} datafiles are stored in the \code{ff}
+  subdirectory of the tracking directory (i.e., by default
+  \code{rdatadir/ff}.  The \code{track.ff} package is geared towards
+  working with permanent \code{ff} objects, although it does not
+  interfere in the creation of temporary \code{ff} objects.
 
   This package is not needed to access \code{ff} objects in a tracking
   database, for that, only the \code{track} and \code{ff} packages are

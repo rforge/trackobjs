@@ -35,12 +35,16 @@ track.ff.delete(expr, pos = 1, envir = as.environment(pos))
 \details{
 
 The functions in \code{track.ff} create or remove ff objects in a
-tracked environment.  The ff objects are made permanent.  Currently, the
-underlying data files of existing temporary (or permanent) ff objects
-cannot be moved into the ff data storage in tracked environment (merely
-because this has not been implemented, not because of any particular
-difficulty.)  The data files backing the ff objects are stored in the
-\code{ff} subdirectory of the tracking database.
+tracked environment, storing the \code{ff} data file in the subdirectory
+\code{ff} in the tracking directory (i.e., by default
+\code{rdatadir/ff}).  \code{track.ff()} makes ff objects permanent, by
+virtue of telling \code{ff()} an explicit directory and filename for the
+data.  Currently, the underlying data files of existing temporary (or
+permanent) ff objects cannot be moved into the ff data storage in
+tracked environment (merely because this has not been implemented, not
+because of any particular difficulty.)  The data files backing the ff
+objects are stored in the \code{ff} subdirectory of the tracking
+database.
 
 The functions in \code{track.ff} do not interfere or intervene in the
 creation or use of \code{ff} objects other than by use of the
@@ -54,9 +58,33 @@ creation or use of \code{ff} objects other than by use of the
   This is because when \code{ff} objects are flushed from memory, the
   \code{ff} objects are treated as though they are being deleted, and
   C-level destructors are called.
-  
-}
 
+  For \code{ff} objects created not using \code{track.ff()}, a warning
+  about opening the datafile will usually be given the first time the
+  \code{ff} object is used after being created.  This warning happens
+  because after it is created, the auto-track functionality moves the
+  \code{ff} R object from the environment where it was created to the
+  tracking environment, and assigns an active binding to provide access
+  to the object.  This sequence of events is interpreted by the
+  \code{ff} system as deletion of the \code{ff} R object, and the data
+  file connection is closed.  Other than producing output, this warning
+  is harmless.
+
+  To completely prevent the \code{track} package from touching \code{ff}
+  objects, do \code{track.options(autoTrackExcludeClass="ff")}.
+
+}
+\section{warning}{
+
+  The \code{track.copy()} and \code{track.move()} functions in the
+  \code{track} package do not know about the data file associated with
+  \code{ff} objects and will leave it where it is (as of package version
+  \code{track-1.0.3}).  The \code{ff} objects should continue to work as
+  long as the data files remain available.  It is intended to change
+  this behavior to move the \code{ff} data files along with the tracking
+  files.
+
+}
 \value{
   \describe{
     \item{track.ff()}{invisibly returns the ff object}
