@@ -204,7 +204,9 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     ## Record variables that need saving to disk in saveVars
     ## Note that vars are actually flushed from cache by a
     ## call to track.flush(), which won't flush vars named
-    ## in opt$alwaysCache.
+    ## in opt$alwaysCache.  For vars named in opt$alwaysCache,
+    ## we do want to write them out to file (if they've changed),
+    ## but we don't want to remove them from the tracking env.
     if (taskEnd && opt$cachePolicy=="eotPurge") {
         flushVars <- NULL
         saveVars <- NULL
@@ -243,6 +245,9 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                     }
                 }
             }
+            ## Add the vars we want to write to disk and also keep in memory because
+            ## of the cache flag (from alwaysCacheClass)
+            saveVars <- unique(c(saveVars, intersect(rownames(objSummary)[keep1 & inmem], unsavedVars)))
         } else {
             warning(".trackingSummary does not exist in trackingEnv ", envname(trackingEnv))
             flushVars <- .Internal(ls(trackingEnv, TRUE))
