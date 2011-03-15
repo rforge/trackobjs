@@ -41,8 +41,8 @@ y  numeric numeric    [1]      1   32    no 2001-01-01 09:00:05  0  1
 > track.ff(x2)
 > track.status()
     Status InMem FileBase FileExists Saved
-x1 tracked  TRUE       x1       TRUE FALSE
-x2 tracked  TRUE       x2       TRUE FALSE
+x1 tracked  TRUE       x1       TRUE  TRUE
+x2 tracked  TRUE       x2       TRUE  TRUE
 y  tracked FALSE        y       TRUE  TRUE
 > track.summary(cache=T)
                    class    mode  extent length size cache            modified
@@ -65,11 +65,11 @@ y   0  1
 > track.ff(x5 <- as.ff(x5))
 > track.status()
     Status InMem FileBase FileExists Saved
-x1 tracked  TRUE       x1       TRUE FALSE
-x2 tracked  TRUE       x2       TRUE FALSE
-x3 tracked  TRUE       x3      FALSE FALSE
-x4 tracked  TRUE       x4      FALSE FALSE
-x5 tracked  TRUE       x5       TRUE FALSE
+x1 tracked  TRUE       x1       TRUE  TRUE
+x2 tracked  TRUE       x2       TRUE  TRUE
+x3 tracked  TRUE       x3       TRUE  TRUE
+x4 tracked  TRUE       x4       TRUE  TRUE
+x5 tracked  TRUE       x5       TRUE  TRUE
 y  tracked FALSE        y       TRUE  TRUE
 > track.summary(cache=T)
                    class    mode  extent length size cache            modified
@@ -95,10 +95,10 @@ y   0  1
 > track.ff.rm(x4)
 > track.status()
     Status InMem FileBase FileExists Saved
-x1 tracked  TRUE       x1       TRUE FALSE
-x2 tracked  TRUE       x2       TRUE FALSE
-x3 tracked  TRUE       x3      FALSE FALSE
-x5 tracked  TRUE       x5       TRUE FALSE
+x1 tracked  TRUE       x1       TRUE  TRUE
+x2 tracked  TRUE       x2       TRUE  TRUE
+x3 tracked  TRUE       x3       TRUE  TRUE
+x5 tracked  TRUE       x5       TRUE  TRUE
 y  tracked FALSE        y       TRUE  TRUE
 > track.summary(cache=T)
                    class    mode  extent length size cache            modified
