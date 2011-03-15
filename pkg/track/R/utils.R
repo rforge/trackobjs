@@ -141,10 +141,12 @@ summaryRow <- function(name, opt, sumRow=NULL, obj=NULL, file=NULL, change=FALSE
         ## while class of an object returned by Sys.time(): "POSIXt" "POSIXct"
         sumRow$class <- if (length(cl)==0) "?" else paste(cl, collapse=",")
         sumRow$mode <- mode(obj)
-        if (new || (change && (is.na(sumRow$cache) || ! (sumRow$cache %in% c("fixedyes", "fixedno")))))
-            sumRow$cache <- ifelse(   is.element(name, opt$alwaysCache)
-                                   || any(is.element(cl, opt$alwaysCacheClass)),
-                                   "yes", "no")
+        if (new || (change && (is.na(sumRow$cache) || ! (sumRow$cache %in% c("fixedyes", "fixedno"))))) {
+            sumRow$cache <- factor(ifelse(   is.element(name, opt$alwaysCache)
+                                          || any(is.element(cl, opt$alwaysCacheClass)),
+                                          "yes", "no"),
+                                   levels=c("fixedno", "no", "yes", "fixedyes"))
+        }
         l <- try(length(obj), silent=TRUE)
         if (is(l, "try-error"))
             sumRow$length <- NA
