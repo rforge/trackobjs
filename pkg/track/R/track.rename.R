@@ -11,7 +11,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
     opt <- track.options(trackingEnv=trackingEnv)
     if (opt$readonly)
         stop("cannot rename in a readonly tracking env")
-    all.objs <- ls(envir=envir, all=TRUE)
+    all.objs <- ls(envir=envir, all.names=TRUE)
     fileMap <- getFileMapObj(trackingEnv)
     if (any(isReservedName(new)))
         stop("'new' contains reserved names: ", new[isReservedName(new)])
@@ -47,7 +47,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
     old.isCached <- !old.isTracked & is.element(old, new)
     if (any(old.isCached | (!new.isTracked & old.isTracked))) {
         old.cacheEnv <- new.env()
-        on.exit(remove(list=ls(envir=old.cacheEnv, all=TRUE), envir=old.cacheEnv), add=TRUE)
+        on.exit(remove(list=ls(envir=old.cacheEnv, all.names=TRUE), envir=old.cacheEnv), add=TRUE)
         for (objName in old[old.isCached | (!new.isTracked & old.isTracked)])
             assign(objName, envir=old.cacheEnv, get(objName, envir=envir, inherits=FALSE))
     }

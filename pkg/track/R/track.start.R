@@ -31,7 +31,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         ## after it had stopped being used.
         if (exists(".trackingFinished", envir=trackingEnv, inherits=FALSE))
             return(NULL)
-        if (!exists(".trackingEnv", env=envir, inherits=FALSE)) {
+        if (!exists(".trackingEnv", envir=envir, inherits=FALSE)) {
             ## This used to happen under some circumstances when the finalizer is
             ## called after tracking has stopped, but the check for ".trackingFinished"
             ## fixed that.
@@ -40,14 +40,14 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                     ": no .trackingEnv in", envname(envir), "\n")
             return(NULL)
         }
-        if (!identical(trackingEnv, get(".trackingEnv", env=envir, inherits=FALSE))) {
+        if (!identical(trackingEnv, get(".trackingEnv", envir=envir, inherits=FALSE))) {
             ## This can happen in cases where a tracking env is partially
             ## set up and then discarded, as when there are variable name
             ## conflicts
             if (FALSE)
                 cat("Bogus call to track.stop reg.finalizer for", envname(trackingEnv),
                     ": .trackingEnv in", envname(envir), "is different:",
-                    envname(get(".trackingEnv", env=envir, inherits=FALSE)), "\n")
+                    envname(get(".trackingEnv", envir=envir, inherits=FALSE)), "\n")
             return(NULL)
         }
         ## cat("Valid call to track.stop reg.finalizer for", envname(trackingEnv),

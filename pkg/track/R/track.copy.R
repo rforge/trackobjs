@@ -16,7 +16,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
         stop("cannot copy into a readonly tracking env '", to, "'")
     if (opt.from$readonly && delete)
         stop("cannot move (i.e., copy & delete) from readonly tracking env '", from, "'")
-    all.objs.from <- ls(envir=env.from, all=TRUE)
+    all.objs.from <- ls(envir=env.from, all.names=TRUE)
     all.objs.from <- all.objs.from[!isReservedName(all.objs.from)]
     all.objs.from <- setdiff(all.objs.from, c(".Last", ".Last.sys"))
     fileMap.from <- getFileMapObj(trackingEnv.from)
@@ -44,7 +44,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
         return(invisible(list))
     }
     fileMap.to <- getFileMapObj(trackingEnv.to)
-    all.objs.to <- ls(envir=env.to, all=TRUE)
+    all.objs.to <- ls(envir=env.to, all.names=TRUE)
     if (!clobber && any(list %in% all.objs.to))
         stop("clobber=FALSE and some objects to be copied already exist in 'to': ", paste(intersect(list, all.objs.to), collapse=", "))
     # make sure objects in the source are flushed out to files
@@ -70,7 +70,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
             objSmy.from.i <- NA
             objVal <- get(objName, envir=env.from, inherits=FALSE)
             objClasses <- class(objVal)
-            smyRow <- summaryRow(objName, NULL, obj=objVal, file=NULL, change=TRUE, time=NULL)
+            smyRow <- summaryRow(objName, NULL, obj=objVal, file=NULL, change=TRUE, times=NULL)
         }
         trackInDest <- (trackedInSource || auto.to) && !exclude.from.tracking(objName, objClasses, opt.to)
         if (trackInDest) {

@@ -99,7 +99,7 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
         ## of everything except tracking reserved names, detach it.
         if (detach && exists(".trackingCreated", envir=envir, inherits=FALSE)
             && !identical(globalenv(), envir)) {
-            vars <- ls(envir=envir, all=TRUE)
+            vars <- ls(envir=envir, all.names=TRUE)
             pos <- match(environmentName(envir), search())
             vars <- vars[!isReservedName(vars)]
             if (length(vars)==0 || force.detach || environmentIsLocked(envir)) {

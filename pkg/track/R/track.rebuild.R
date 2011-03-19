@@ -455,7 +455,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         else
             cat("Using tracking summary read from file.\n")
 
-        objs <- ls(all=TRUE, envir=tmpenv)
+        objs <- ls(all.names=TRUE, envir=tmpenv)
         if (length(objs))
             remove(list=objs, envir=tmpenv)
     } else {
@@ -694,7 +694,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             }
         }
         ## Clean up tmpenv for the next iteration
-        objs <- ls(all=TRUE, envir=tmpenv)
+        objs <- ls(all.names=TRUE, envir=tmpenv)
         if (length(objs))
             remove(list=objs, envir=tmpenv)
     }
@@ -762,7 +762,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
     masked <- character(0)
     if (activeTracking) {
         ## Get all the objects in the environment
-        visibleObjs <- ls(envir=envir, all=TRUE)
+        visibleObjs <- ls(envir=envir, all.names=TRUE)
         ## We're only interested in ones with the same names as tracked vars
         visibleObjs <- intersect(visibleObjs, rownames(newSummary))
         missingBindings <- setdiff(rownames(newSummary), visibleObjs)
