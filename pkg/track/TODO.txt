@@ -1,4 +1,6 @@
-* add a "track.plugin" man page and examples of use
+* add track.assign() that is like track(), but doesn't cache the value
+
+* DONE: add a "track.plugin" man page and examples of use
 
 * DONE: make the callback catch errors and always return TRUE, so
   that it doesn't get removed.  make track.auto(TRUE) check
@@ -16,7 +18,7 @@
 * make track.sync issue a warning if variables are created in
   a readonly tracked env
 
-* clean up examples in .Rd files -- make them simple pedagogic examples, not tests of functionality (the latter are in tests/*.Rt)
+* DONE: clean up examples in .Rd files -- make them simple pedagogic examples, not tests of functionality (the latter are in tests/*.Rt)
 OK pkg/man/track.attach.Rd
 OK pkg/man/track.auto.Rd
 NONE pkg/man/track.design.Rd

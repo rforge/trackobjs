@@ -1,4 +1,8 @@
-                CHANGES in track version 1.0-3 (2011-02-19)
+                CHANGES in track version 1.0-5 (2011-03-25)
+ENHANCEMENTS
+    o   Added track.assign()
+
+                CHANGES in track version 1.0-4 (2011-03-18)
 FIXES
     o	Use full argument names in ls(), get() and exists()
     	as recommended by R CMD check.

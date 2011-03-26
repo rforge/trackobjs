@@ -1,5 +1,6 @@
 \name{track.manage}
 \alias{track}
+\alias{track.assign}
 \alias{untrack}
 \alias{track.remove}
 \alias{track.save}
@@ -17,6 +18,7 @@
 \usage{
 track(expr, pos = 1, envir = as.environment(pos), list = NULL,
         pattern = NULL, glob = NULL, exclude = TRUE)
+track.assign(x, value, pos = 1, envir = as.environment(pos), flush = TRUE)
 untrack(expr, pos = 1, envir = as.environment(pos), list = NULL,
         pattern = NULL, glob = NULL, all = FALSE, keep.in.db = FALSE)
 track.remove(expr, pos = 1, envir = as.environment(pos), list = NULL,
@@ -69,12 +71,20 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
   would normally be kept in cache. }
   \item{time.of.file}{ If \code{TRUE}, use the access times on the file
     to populate the access time fields in the tracking summary.}
-  \item{warn}{ If \code{TRUE}, issue warnings about object not acted upon.}
+  \item{warn}{ If \code{TRUE}, issue warnings about object not acted
+    upon.}
+  \item{x}{A variable name, as a character vector of length 1}
+  \item{value}{The value to assign}
+  \item{flush}{Logical value, specifying whether to flush the assigned
+  object out of memory}
 }
 \details{
   These functions are executed for their side effects:
   \itemize{
   \item \code{track}: start tracking the specified variables
+  \item \code{track.assign}: assign a value to a variable (start
+  tracking variable if it is not already tracked.)  Optionally flush the
+  value out of memory.
   \item \code{untrack}: stop tracking the specified variables, leaving the object in \code{envir} so that it can
     still be used.  If \code{keep.in.db=TRUE}, the variable is left
     in the tracking environment (but is masked), if
