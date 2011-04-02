@@ -194,14 +194,16 @@ in the body of a plugin function.
 \section{What track is not good for}
 
 Tracking is not particularly suitable for storing objects
-that contain environments, because those environments and
-their contents will be fully written out in the saved files.
-In a live R session, environments are references, and there
-can be multiple references to one environment, without there
-being multiple copies of the environment.  However, when
-objects containing environments are saved to files, a copy of
-the environment is written in each file, resulting in
-duplication and the loss of links across environments.
+that contain references to environments other than the
+global environment, because those environments and their
+contents will be fully written out in each of the saved
+files.  In a live R session, environments are references,
+and there can be multiple references to one environment,
+without there being multiple copies of the environment.
+However, when objects containing environments are saved to
+files, a copy of the environment is written in each file,
+which can result in duplication and the loss of links across
+environments.
 
 Functions are one of the most common objects that contain
 environments, which can contain data objects local to the
@@ -209,12 +211,23 @@ function (e.g., see the examples in the R FAQ in the section
 "Lexical scoping" under "What are the differences between R
 and S?"
 \texttt{http://cran.r-project.org/doc/FAQ/R-FAQ.html\#Lexical-scoping}).
+This is not necessarily a problem, but is something to be
+aware of if you are trying to use tracking together with
+explicit use of environments in objects.
+
 Additionally, the results of some modeling functions contain
 environments, e.g., \texttt{lm} holds several references to
-the environment that contains the data.  When an \texttt{lm}
-object is \texttt{save}'ed, the environment containing the
-data, and all the other objects in that environment, can be
-saved in the same file.  To work with large data objects and
+the environment in which the modeling function was run,
+which may or may not be the environment that contains the
+data.  When an \texttt{lm} object is \texttt{save}'ed, that
+environment, and all the other objects in that environment,
+can be saved in the same file.  This is only problematic
+when the modeling function is called from an environment
+other than the global environment, and when that environment
+contains large objects (because the global environment is
+not written out to the save file).
+
+To work with large data objects and
 modeling functions, consider first creating a tracking
 database that contains the data objects.  Then, in a
 different R session (which can be running at the same time),
