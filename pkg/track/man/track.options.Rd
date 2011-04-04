@@ -72,7 +72,7 @@ track.options(..., pos = 1, envir = as.environment(pos),
       many seconds between doing full syncs}
     \item{cache:}{logical (default TRUE): keep objects in memory?}
     \item{cacheKeepFun:}{A function that specifies which objects to keep
-      in memory at the end of a top-level-task. See section on "Cache plugin functions" below.}
+      in memory at the end of a top-level-task. \link{track.plugins} for further info.}
     \item{cachePolicy:}{The higher-level policy to follow regarding
       keeping objects in memory.  Currently has two possible values -
       one of them allows special action at the end of a top-level-task:
@@ -176,48 +176,13 @@ users to supply their own plugin functions that specify
 cache rules.  Currently, the plugin function can specify
 whether or not an object will be flushed from memory at the
 end of a top-level command.
-
-Here's an example of a cache plugin function that keeps in
-memory variables whose names begin with the letter 'x'.
-
-\preformatted{
-plugin <- function(objs, inmem, envname) {
-    keep <- regexpr("^x", rownames(objs))>0
-    # browser() # uncomment for debugging & development
-    return(keep)
-}
-}
-
-To use this function, supply it to \code{track.options()}:
-\preformatted{
-  track.options(cacheKeepFun=plugin, save=TRUE)
-  }
-
-The plugin function takes three arguments:
-\itemize{
-
-  \item{objs}: the object summary dataframe.  A subset of this data
-  frame is returned by \code{track.summary()}; invoke \code{track.summary(times=3, access=3,
-  size=T, all=T)} to get the entire data frame.  The names of the objects are in the rownames
-  of the dataframe.
-
-  \item{inmem}: a logical vector with length equal to the number of rows
-  in \code{objs}.  It will have value \code{TRUE} where the
-  corresponding object is in memory, and \code{FALSE} otherwise.
-
-  \item{envname}: a single string containing the name of the tracking
-  environment, in a form like \code{<env R_GlobalEnv>}.
-
-}
-
-The plugin function should return a logical vector the same length as
-\code{inmem}, with \code{TRUE} values where the corresponding objects
-should be kept in memory.
-
+See \link{track.plugins} for further info.
 }
 
 \author{Tony Plate <tplate@acm.org>}
-\seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
+\seealso{ \link[=track-package]{Overview} and
+  \link[=track.design]{design} of the \code{track} package. See
+  \link{track.plugins} for description of cache plugin functions}
 \examples{
 library(track)
 unlink("tmp1", recursive=TRUE)

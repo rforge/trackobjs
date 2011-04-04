@@ -38,4 +38,5 @@ export(track.start,
        track.history.writer,
        track.filename,
        track.datadir,
+       track.lru.plugin,
        show.envs)
