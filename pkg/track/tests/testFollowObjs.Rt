@@ -23,6 +23,7 @@
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp2", recursive=TRUE)
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp2")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp2'
 > find("x")
@@ -72,7 +73,7 @@ $autoTrackExcludeClass
 [1] "RODBC"
 
 $autoTrackExcludePattern
-[1] "^\\.track"    "^\\.required" "^\\*tmp\\*$"
+[1] "^\\.track"    "^\\.required" "^\\*tmp\\*$" 
 
 $autoTrackFullSyncWait
 [1] 15
@@ -81,7 +82,7 @@ $cache
 [1] TRUE
 
 $cacheKeepFun
-NULL
+[1] "none"
 
 $cachePolicy
 [1] "eotPurge"

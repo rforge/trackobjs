@@ -219,7 +219,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             flushCand <- inmem & !keep1
             if (!any(flushCand)) {
                 flushVars <- character(0)
-            } else if (length(opt$cacheKeepFun)) {
+            } else if (length(opt$cacheKeepFun) && !identical(opt$cacheKeepFun, "none")) {
                 ## If there is a cacheKeepFun, see what it says...
                 keep <- try(do.call(opt$cacheKeepFun, list(objs=objSummary, inmem=flushCand, envname=envname(envir))), silent=TRUE)
                 if (is(keep, "try-error")) {

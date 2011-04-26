@@ -2,6 +2,7 @@
 > # test that track.sync can correctly pick up changes
 > options(error=function() NULL)
 > invisible(if (file.exists("tmp18")) unlink("tmp18", recursive=TRUE))
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start(dir="tmp18")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp18'
 > x <- 1

@@ -186,7 +186,7 @@ isReservedName <- function(objName)
            | is.element(objName, c(".trackingEnv", ".trackingDir", ".trackingFileMap",
                                    ".trackingUnsaved", ".trackingSummary",
                                    ".trackingSummaryChanged", ".trackingOptions",
-                                   ".trackingPid", ".trackingCreated",
+                                   ".trackingPid", ".trackingCreated", ".trackingCacheMark",
                                    ".trackAuto", ".trackingFinished")))
 
 objIsTracked <- function(objNames, envir, trackingEnv, all.objs=.Internal(ls(envir, TRUE))) {

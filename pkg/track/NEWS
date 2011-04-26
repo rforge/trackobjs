@@ -1,11 +1,17 @@
+                CHANGES in track version 1.0-6 (2011-04-25)
+ENHANCEMENTS
+    o   Changed default value for cacheKeepFun to track.plugin.lru
+        to implement a Least Recently Used policy for clearing
+        objects from the cache.
+
                 CHANGES in track version 1.0-5 (2011-03-25)
 ENHANCEMENTS
     o   Added track.assign()
 
                 CHANGES in track version 1.0-4 (2011-03-18)
 FIXES
-    o	Use full argument names in ls(), get() and exists()
-    	as recommended by R CMD check.
+    o   Use full argument names in ls(), get() and exists()
+        as recommended by R CMD check.
 
                 CHANGES in track version 1.0-3 (2011-02-19)
 ENHANCEMENTS
@@ -17,8 +23,8 @@ ENHANCEMENTS
 ENHANCEMENTS
     o   Add an "alwaysCache" option and populate it with ".Last"
         so that q() is possible from R even when globalenv
-	tracking env becomes unavailable (e.g., due to a
-	network drive becoming unavailable)
+        tracking env becomes unavailable (e.g., due to a
+        network drive becoming unavailable)
 
                 CHANGES in track version 1.0-1 (2011-01-22)
 FIXES

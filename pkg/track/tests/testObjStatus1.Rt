@@ -10,6 +10,7 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp3", recursive=TRUE)
 > remove(list=ls(all=TRUE))
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp3", cache=TRUE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp3'
 > # with the standard options, create a variable with each status:

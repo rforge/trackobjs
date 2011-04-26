@@ -7,6 +7,7 @@
 > options(width=120)
 > options(error=function() NULL)
 > unlink("tmp6", recursive=TRUE)
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp6")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp6'
 > x <- 33
@@ -64,7 +65,7 @@ $cache
 [1] TRUE
 
 $cacheKeepFun
-NULL
+[1] "none"
 
 $cachePolicy
 [1] "none"

@@ -1,5 +1,5 @@
-\name{track.lru.plugin}
-\alias{track.lru.plugin}
+\name{track.plugin.lru}
+\alias{track.plugin.lru}
 \alias{track.plugin}
 \alias{track.plugins}
 \alias{track.cache}
@@ -12,7 +12,7 @@
   keep in memory at the end of each top level command.
 }
 \usage{
-track.lru.plugin(objs, inmem, envname)
+track.plugin.lru(objs, inmem, envname)
 }
 \arguments{
   \item{objs}{: the full object summary dataframe.  A subset of this data
@@ -33,10 +33,10 @@ cache rules.  Currently, the plugin function can specify
 whether or not an object will be flushed from memory at the
 end of a top-level command.
 
-\code{track.lru.plugin()} implements a simple least-recently-used discard policy.
+\code{track.plugin.lru()} implements a simple least-recently-used discard policy.
 To use is, supply it to \code{track.options()}:
 \preformatted{
-  track.options(cacheKeepFun=track.lru.plugin, save=TRUE)
+  track.options(cacheKeepFun=track.plugin.lru, save=TRUE)
 }
 
 Here is another example of a very simple cache plugin function: this one

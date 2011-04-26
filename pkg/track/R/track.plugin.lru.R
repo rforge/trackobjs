@@ -1,10 +1,15 @@
-track.lru.plugin <- function(objs, inmem, envname) {
-    # A simple least-recently-used discard policy
+track.plugin.lru <- function(objs, inmem, envname) {
+    # A simple least-recently-used discard policy.
+    # This function treats each tracked environment independently.
+    # A more sophistocated version (to come) will look at all
+    # tracked environments at once, and store a variable
+    # ".trackingCacheMark" in each tracking env, which says which
+    # vars to keep.
     cumsum.ordered <- function(x, order) return(replace(x, order, cumsum(x[order])))
     # just work with the objects that are in memory
     imobjs <- objs[inmem,]
     keep <- inmem
-    max.size <- getOption("track.cache.bytes", default=200e6)
+    max.size <- (2^20) * getOption("track.cache.size", default=min(200, memory.limit()/6, na.rm=T))
     # get the order, youngest first (though ones with cache='yes' or 'fixedyes'
     by.age <- order(imobjs[,"cache"]=="yes" | imobjs[,"cache"]=="fixedyes", imobjs[,"accessed"], decreasing=TRUE)
     # which ones can we definitely keep?

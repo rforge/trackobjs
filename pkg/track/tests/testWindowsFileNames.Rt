@@ -8,6 +8,7 @@
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > unlink("tmp10", recursive=TRUE)
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp10")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp10'
 > x <- 1

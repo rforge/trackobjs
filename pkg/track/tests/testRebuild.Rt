@@ -30,6 +30,7 @@
 > 
 > # Test (1) rebuild a complete unlinked directory (nothing to do)
 > track:::create.fake.Sys.time(0)
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp7'
 > track(x <- 33)

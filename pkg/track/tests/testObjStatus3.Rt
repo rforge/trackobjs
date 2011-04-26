@@ -13,6 +13,7 @@
 > unlink("tmp5", recursive=TRUE)
 > attach(NULL, name="testenv")
 > remove(list=ls(all=TRUE))
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp5", pos=2, cache=FALSE, cachePolicy="none")
 Tracking <env testenv> (writable) using new directory 'tmp5'
 > # with the standard options, create a variable with each status:

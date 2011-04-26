@@ -7,6 +7,7 @@
 > options(width=100)
 > track:::create.fake.Sys.time(0)
 > unlink("tmp8", recursive=TRUE)
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp8")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp8'
 > x <- 33

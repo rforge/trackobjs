@@ -95,7 +95,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     }
 
     if (!all(is.element(query.values, optionNames)))
-        stop("unknown option names: ", paste("'", setdiff(values, optionNames), "'", sep="", collapse=", "))
+        stop("unknown option names: ", paste("'", setdiff(query.values, optionNames), "'", sep="", collapse=", "))
 
     ## See if we need to repair any missing options (shouldn't need to do this)
     ## This is where to set defaults
@@ -107,7 +107,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
         names(need.value) <- need.value
         repaired <- lapply(need.value, function(x)
                            switch(x, cache=TRUE, cachePolicy="eotPurge",
-                                  cacheKeepFun=NULL,
+                                  cacheKeepFun="track.plugin.lru",
                                   alwaysCache=c(".Last"),
                                   alwaysCacheClass=c("ff"),
                                   readonly=FALSE, writeToDisk=TRUE,
@@ -137,17 +137,19 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                 # don't do the standard NA & length checks
                 special <- TRUE
                 f <- values[[opt]]
-                if (!is.function(f)) {
-                    if (is.character(f) && length(f)==1) {
-                        f <- get(f)
-                    } else if (is.name(f)) {
-                        f <- eval(f)
+                if (!identical(f, "none")) {
+                    if (!is.function(f)) {
+                        if (is.character(f) && length(f)==1) {
+                            f <- get(f)
+                        } else if (is.name(f)) {
+                            f <- eval(f)
+                        }
                     }
+                    if (!is.function(f) && !is.null(f))
+                        stop("cacheKeepFun must be a function or the name of a function")
+                    if (!is.null(f) && !all(is.element(c("objs", "inmem", "envname"), names(formals(f)))))
+                        stop("cacheKeepFun must have an arguments namd 'objs' and 'envname'")
                 }
-                if (!is.function(f) && !is.null(f))
-                    stop("cacheKeepFun must be a function or the name of a function")
-                if (!is.null(f) && !all(is.element(c("objs", "inmem", "envname"), names(formals(f)))))
-                    stop("cacheKeepFun must have an arguments namd 'objs' and 'envname'")
             } else if (opt=="readonly") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
@@ -217,13 +219,14 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                 if (single && length(values[[opt]])!=1)
                     stop("option ", opt, " must have a value of length 1")
             }
-            ## Now, how we put the value in depends on whethr it can have single or multiple values
+            ## Now, how we put the value in depends on whether it can have single or multiple values
+            ## Do assignment like new.values[opt] <- list(value) so that it works with value==NULL
             if (single || clear)
-                new.values[[opt]] <- values[[opt]]
+                new.values[opt] <- list(values[[opt]])
             else if (delete)
-                new.values[[opt]] <- setdiff(new.values[[opt]], values[[opt]])
+                new.values[opt] <- list(setdiff(new.values[[opt]], values[[opt]]))
             else
-                new.values[[opt]] <- unique(c(new.values[[opt]], values[[opt]]))
+                new.values[opt] <- list(unique(c(new.values[[opt]], values[[opt]])))
         }
 
         if (only.preprocess)
@@ -250,4 +253,3 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     else
         return(option.values)
 }
-

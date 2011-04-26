@@ -4,6 +4,7 @@
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > track:::create.fake.Sys.time(0)
 > unlink("tmp21", recursive=TRUE)
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp21")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp21'
 > track.assign("y", 1)

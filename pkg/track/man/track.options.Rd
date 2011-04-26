@@ -72,14 +72,15 @@ track.options(..., pos = 1, envir = as.environment(pos),
       many seconds between doing full syncs}
     \item{cache:}{logical (default TRUE): keep objects in memory?}
     \item{cacheKeepFun:}{A function that specifies which objects to keep
-      in memory at the end of a top-level-task. \link{track.plugins} for further info.}
+      in memory at the end of a top-level-task. \link{track.plugins} for
+      further info.  Can be \code{"none"} or \code{NULL}.}
     \item{cachePolicy:}{The higher-level policy to follow regarding
       keeping objects in memory.  Currently has two possible values -
       one of them allows special action at the end of a top-level-task:
       \describe{
-	\item{\code{"none"}:}{No special action at end of task, i.e., follow option \code{cache}}
-	\item{\code{"eotPurge"}:}{Purge objects from memory at the end }
-	}
+        \item{\code{"none"}:}{No special action at end of task, i.e., follow option \code{cache}}
+        \item{\code{"eotPurge"}:}{Purge objects from memory at the end }
+        }
       Also affects when changes to objects are written to disk - see option
       \code{writeToDisk} below.}
     \item{clobberVars:}{vector of string specifying variables to be

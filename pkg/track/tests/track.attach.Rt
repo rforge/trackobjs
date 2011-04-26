@@ -1,6 +1,7 @@
 > invisible(if (file.exists("tmp14")) unlink("tmp14", recursive=TRUE))
 > dir.create("tmp14")
 > cat("", file="tmp14/filemap.txt")
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.attach("tmp14", name="track:tmp14", readonly=FALSE)
 Attaching tracking db in 'tmp14' to env in pos 2 (writable)
 > search()[1:2]

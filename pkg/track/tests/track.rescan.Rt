@@ -1,6 +1,7 @@
 > options(error=function() NULL)
 > invisible(if (file.exists("tmp15")) unlink("tmp15", recursive=TRUE))
 > invisible(if (file.exists("tmp16")) unlink("tmp15", recursive=TRUE))
+> options(global.track.options=list(cacheKeepFun=NULL))
 > # Create one db
 > track.attach("tmp15", pos=2, name="track:tmp15", readonly=FALSE, create=TRUE)
 Attaching tracking db in 'tmp15' to env in pos 2 (writable)

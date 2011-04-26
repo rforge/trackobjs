@@ -2,6 +2,7 @@
 > # so use fake times to make test output always the same
 > track:::create.fake.Sys.time(0)
 > invisible(if (file.exists("tmp21")) unlink("tmp21", recursive=TRUE))
+> options(global.track.options=list(cacheKeepFun='none'))
 > track.start(dir="tmp21")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp21'
 > a <- 1
