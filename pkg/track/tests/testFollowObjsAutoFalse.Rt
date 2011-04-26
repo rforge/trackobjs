@@ -74,7 +74,8 @@ $autoTrackExcludeClass
 [1] "RODBC"
 
 $autoTrackExcludePattern
-[1] "^\\.track"    "^\\.required" "^\\*tmp\\*$" 
+[1] "^\\.track"      "^\\.required"   "^\\*tmp\\*$"    "^.vimplemented"
+[5] "^.vcoerceable" 
 
 $autoTrackFullSyncWait
 [1] 15
