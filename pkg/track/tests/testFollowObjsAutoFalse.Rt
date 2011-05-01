@@ -78,7 +78,7 @@ $autoTrackExcludePattern
 [5] "^.vcoerceable" 
 
 $autoTrackFullSyncWait
-[1] 15
+[1] -1
 
 $cache
 [1] TRUE

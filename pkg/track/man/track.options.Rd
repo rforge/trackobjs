@@ -68,8 +68,11 @@ track.options(..., pos = 1, envir = as.environment(pos),
     \item{autoTrackExcludePattern:}{character vector (default \code{c("^\\.track", "^\\.required")}) variables
       whose name matches any of these regular expressions are not
       auto-tracked}
-    \item{autoTrackFullSyncWait:}{auto track will wait at least this
-      many seconds between doing full syncs}
+    \item{autoTrackFullSyncWait:}{(default -1) auto track will wait at
+      least this many seconds between doing a full sync at the end of a
+      top level task.  If equal to zero, do a full sync at the end of
+      each top level task.  If less than zero, don't do a full sync.
+      Doing a full sync can be slow, so this is off by default.}
     \item{cache:}{logical (default TRUE): keep objects in memory?}
     \item{cacheKeepFun:}{A function that specifies which objects to keep
       in memory at the end of a top-level-task. \link{track.plugins} for

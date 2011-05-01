@@ -19,8 +19,16 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     ## track new objects and removed deleted objects, so want it to be fast.
 
     ## Do check for untrackable objects (isReservedName())
+    if (missing(pos)) {
+        n <- environmentName(envir)
+        if (n=="R_GlobalEnv")
+            pos <- 1
+        else
+            pos <- match(n, search())
+    }
     opt <- track.options(trackingEnv=trackingEnv)
     verbose <- dryRun || opt$debug > 0
+    trace <- getOption("track.callbacks.trace", FALSE)
     if (verbose)
         cat("track.sync", if (dryRun) "(dryRun)",
             ": syncing tracked env ", envname(envir), "\n", sep="")
@@ -32,6 +40,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             stop("must supply argument master='files' or master='envir' when tracking db is attached with readonly=FALSE")
     if (master=="files")
         return(track.rescan(envir=envir, forgetModified=TRUE, level="low"))
+    if (trace==2)
+        cat("[", pos, ":", sep="")
 
     ## Get info about the state of things
     autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
@@ -45,11 +55,15 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (verbose && length(warn.reserved))
         cat("track.sync: cannot track variables with reserved names: ", paste(warn.reserved, collapse=", "), "\n", sep="")
     untracked <- untracked[!reserved]
+    if (trace==2 && length(untracked))
+        cat("u")
     activeBindings <- sapply(untracked, bindingIsActive, envir)
     if (verbose && any(activeBindings))
         cat("track.sync: cannot track variables that have active bindings: ", paste(untracked[activeBindings], collapse=", "), "\n", sep="")
     untracked <- untracked[!activeBindings]
     if (length(opt$autoTrackExcludeClass)) {
+        if (trace==2)
+            cat("e")
         hasExcludedClass <- sapply(untracked, function(o) any(is.element(class(get(o, envir=envir, inherits=FALSE)), opt$autoTrackExcludeClass)))
         if (any(hasExcludedClass)) {
             if (verbose)
@@ -80,6 +94,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         } else {
             if (verbose > 0)
                 cat("track.sync: tracking ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
+            if (trace==2)
+                cat("t")
             track(list=untracked, envir=envir)
             fileMap <- getFileMapObj(trackingEnv)
         }
@@ -96,6 +112,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         } else {
             if (verbose > 0)
                 cat("track.sync: removing ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
+            if (trace==2)
+                cat("d")
             track.remove(list=deleted, envir=envir, force=TRUE)
             fileMap <- getFileMapObj(trackingEnv)
         }
@@ -120,11 +138,12 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ## (there could be changes, and we could warn about them...)
         retrack <- character(0)
         if (full) {
-            trace <- is.na(full.orig) && getOption("track.callbacks.trace", FALSE)
-            if (trace) {
+            if (trace==1 && is.na(full.orig)) {
                 cat("track.sync.callback", envname(envir), ": look for vars without active bindings at ", date(), "\n", sep="")
                 stime <- proc.time()
             }
+            if (trace==2)
+                cat("f")
             ## Find the vars that look like they are tracked but don't have active bindings
             ## This can be time consuming -- need to call bindingIsActive for each tracked
             ## var.
@@ -135,7 +154,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             tracked <- tracked[!reserved]
             if (length(tracked))
                 retrack <- tracked[!sapply(tracked, bindingIsActive, envir)]
-            if (trace) {
+            if (trace==1 && is.na(full.orig)) {
                 cat("track.sync.callback: finished looking for vars without active bindings",
                             " (", paste(round(1000*(proc.time()-stime)[1:3]), c("u", "s", "e"), sep="", collapse=" "), " ms)\n", sep="")
             }
@@ -143,9 +162,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         if (length(retrack))
             for (re in opt$autoTrackExcludePattern)
                 retrack <- grep(re, retrack, invert=TRUE, value=TRUE)
-
         ## Deal with untracked objects in the tracked env.
         ## Need to write these to files, and replace with active bindings.
+        if (trace==2 && length(retrack))
+            cat("r")
         for (objName in retrack) {
             ## get obj from envir, store in file, create active binding
             objval <- get(objName, envir=envir, inherits=FALSE)
@@ -262,10 +282,16 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             if (verbose)
                 cat("track.sync: flushing ", length(flushVars), " vars with call to track.flush(envir=",
                     envname(envir), ", list=c(", paste("'", flushVars, "'", sep="", collapse=", "), "))\n", sep="")
-            if (length(flushVars))
+            if (length(flushVars)) {
+                if (trace==2)
+                    cat("f")
                 track.flush(envir=envir, list=flushVars)
-            if (length(saveVars))
+            }
+            if (length(saveVars)) {
+                if (trace==2)
+                    cat("s")
                 track.save(envir=envir, list=saveVars)
+            }
         }
     } else {
         if (dryRun) {
@@ -273,6 +299,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         } else {
             if (verbose)
                 cat("track.sync: calling track.save(envir=", envname(envir), ")\n", sep="")
+            if (trace==2)
+                cat("s")
             track.save(envir=envir, all=TRUE)
         }
     }
@@ -280,6 +308,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ##  write out the object summary if necessary
         summaryChanged <- mget(".trackingSummaryChanged", ifnotfound=list(FALSE), envir=trackingEnv)[[1]]
         if (summaryChanged) {
+            if (trace==2)
+                cat("S")
             if (!exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
                 warning("no .trackingSummary in trackng env ", envname(trackingEnv))
             } else {
@@ -300,49 +330,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         autoTrack$last <- now
         assign(".trackAuto", autoTrack, envir=trackingEnv)
     }
+    if (trace==2)
+        cat("]")
     return(invisible(list(new=untracked, removed=deleted)))
-}
-
-track.sync.callback <- function(expr, ok, value, visible, data) {
-    ## To automatically track new and deleted objects, do
-    ##   addTaskCallback(track.sync.callback, data=globalenv())
-    ## and
-    ##   assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
-    ## 'data' arg is 'envir' - the tracked env
-    trace <- getOption("track.callbacks.trace", FALSE)
-    if (trace) {
-        cat("track.sync.callback", envname(data), ": entered at ", date(), ", length(sys.calls())=", length(sys.calls()), "\n", sep="")
-        stime <- proc.time()
-        on.exit(cat("track.sync.callback: exited at ", date(),
-                    " (", paste(round(1000*(proc.time()-stime)[1:3]), c("u", "s", "e"), sep="", collapse=" "), " ms)\n", sep=""))
-    }
-    ## If we are called from a prompt in a browser, don't do anything
-    if (length(sys.calls()) > 1)
-        return(TRUE)
-    trackingEnv <- getTrackingEnv(data, stop.on.not.tracked = FALSE)
-    ## trackingEnv will be missing on the callback following the completion
-    ## of the command track.stop()
-    i <- match(paste("track.auto:", envname(data), sep=""), getTaskCallbackNames())
-    if (length(i)>1)
-        warning("have more than one callback for ", paste("track.auto:", envname(data), sep=""))
-    if (is.null(trackingEnv))
-        return(FALSE)
-    autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
-    ## This is the easist way to remove the callback when it is no longer wanted,
-    ## otherwise we have the problem of identifying the appropriate callback
-    if (!isTRUE(autoTrack$on))
-        return(FALSE)
-    ## Don't repeat the work an explicit call to track.sync()
-    ## BUT, expr in a callback can be an invalid object and cause
-    ## a crash when it is accessed, so don't touch it until R is fixed!
-    if (FALSE)
-        if (is.call(expr) && as.character(expr[[1]]) == "track.sync")
-            return(TRUE)
-    res <- try(track.sync(envir=data, trackingEnv=trackingEnv, full=NA, master="envir", taskEnd=TRUE), silent=TRUE)
-    if (is(try, "try-error"))
-        warning("oops: track.sync() had a problem (use track.auto(FALSE, pos=) to turn off): ", res)
-    ## Check that the monitor is alive -- this is a mutual back-scratching exercise
-    if (!is.element("track.auto.monitor", getTaskCallbackNames()))
-        addTaskCallback(track.auto.monitor, name="track.auto.monitor")
-    return(TRUE) # to keep this callback active
 }

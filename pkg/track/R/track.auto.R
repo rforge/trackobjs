@@ -1,7 +1,7 @@
 track.auto <- function(auto=NULL, pos=1, envir=as.environment(pos)) {
     trackingEnv <- getTrackingEnv(envir)
     current <- mget(".trackAuto", ifnotfound=list(list(on=FALSE, last=-1)), envir=trackingEnv)[[1]]
-    callback.name <- paste("track.auto:", envname(envir), sep="")
+    callback.name <- "track.auto"
     haveCallback <- is.element(callback.name, getTaskCallbackNames())
     if (is.null(auto)) {
         if (current$on && !haveCallback)
@@ -20,7 +20,7 @@ track.auto <- function(auto=NULL, pos=1, envir=as.environment(pos)) {
             removeTaskCallback(callback.name)
     } else if (auto) {
         if (!haveCallback)
-            addTaskCallback(track.sync.callback, data=envir, name=callback.name)
+            addTaskCallback(track.sync.callback, data=NULL, name=callback.name)
         if (!current$on)
             assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
     }

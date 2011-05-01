@@ -117,7 +117,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                                   debug=0,
                                   autoTrackExcludePattern=c("^\\.track", "^\\.required", "^\\*tmp\\*$", "^.vimplemented", "^.vcoerceable"),
                                   autoTrackExcludeClass=c("RODBC"),
-                                  autoTrackFullSyncWait=15,
+                                  autoTrackFullSyncWait=-1,
                                   clobberVars=c(".Random.seed"),
                                   compress=TRUE, compression_level=1))
         currentOptions <- c(currentOptions, repaired)

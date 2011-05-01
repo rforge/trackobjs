@@ -333,7 +333,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     }
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
     if (auto) {
-        callbackName <- paste("track.auto:", envname(envir), sep="")
+        callbackName <- "track.auto"
         ## remove the old callback (to avoid having duplicates)
         while (is.element(callbackName, getTaskCallbackNames()))
             removeTaskCallback(callbackName)

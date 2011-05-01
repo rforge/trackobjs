@@ -59,7 +59,7 @@ $autoTrackExcludePattern
 [1] "^\\.track"      "^\\.required"   "^\\*tmp\\*$"    "^.vimplemented" "^.vcoerceable" 
 
 $autoTrackFullSyncWait
-[1] 15
+[1] -1
 
 $cache
 [1] TRUE

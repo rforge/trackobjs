@@ -1,4 +1,11 @@
-                CHANGES in track version 1.0-6 (2011-04-25)
+                CHANGES in track version 1.0-8 (2011-05-01)
+ENHANCEMENTS
+    o   Changed task callback 'track.auto' to call track.sync()
+        for all tracked environments, rather than having one
+        callback for each environment.  This will allow better
+        management of caching.
+
+                CHANGES in track version 1.0-7 (2011-04-25)
 ENHANCEMENTS
     o   Changed default value for cacheKeepFun to track.plugin.lru
         to implement a Least Recently Used policy for clearing
