@@ -36,9 +36,10 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
                 warning("oops: track.sync() had a problem (use track.auto(FALSE, pos=) to turn off): ", res)
         }
     }
-    if (trace==2)
+    if (trace==2) {
         cat("\n")
-
+        flush.console()
+    }
     ## Remove the callback when it is no longer wanted
     if (!isTRUE(any.auto.on))
         return(FALSE)

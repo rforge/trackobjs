@@ -40,8 +40,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             stop("must supply argument master='files' or master='envir' when tracking db is attached with readonly=FALSE")
     if (master=="files")
         return(track.rescan(envir=envir, forgetModified=TRUE, level="low"))
-    if (trace==2)
+    if (trace==2) {
         cat("[", pos, ":", sep="")
+        flush.console()
+    }
 
     ## Get info about the state of things
     autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
@@ -55,15 +57,19 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (verbose && length(warn.reserved))
         cat("track.sync: cannot track variables with reserved names: ", paste(warn.reserved, collapse=", "), "\n", sep="")
     untracked <- untracked[!reserved]
-    if (trace==2 && length(untracked))
+    if (trace==2 && length(untracked)) {
         cat("u")
+        flush.console()
+    }
     activeBindings <- sapply(untracked, bindingIsActive, envir)
     if (verbose && any(activeBindings))
         cat("track.sync: cannot track variables that have active bindings: ", paste(untracked[activeBindings], collapse=", "), "\n", sep="")
     untracked <- untracked[!activeBindings]
     if (length(opt$autoTrackExcludeClass)) {
-        if (trace==2)
+        if (trace==2) {
             cat("e")
+            flush.console()
+        }
         hasExcludedClass <- sapply(untracked, function(o) any(is.element(class(get(o, envir=envir, inherits=FALSE)), opt$autoTrackExcludeClass)))
         if (any(hasExcludedClass)) {
             if (verbose)
@@ -94,8 +100,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         } else {
             if (verbose > 0)
                 cat("track.sync: tracking ", length(untracked), " untracked variables: ", paste(untracked, collapse=", "), "\n", sep="")
-            if (trace==2)
+            if (trace==2) {
                 cat("t")
+                flush.console()
+            }
             track(list=untracked, envir=envir)
             fileMap <- getFileMapObj(trackingEnv)
         }
@@ -112,8 +120,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         } else {
             if (verbose > 0)
                 cat("track.sync: removing ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
-            if (trace==2)
+            if (trace==2) {
                 cat("d")
+                flush.console()
+            }
             track.remove(list=deleted, envir=envir, force=TRUE)
             fileMap <- getFileMapObj(trackingEnv)
         }
@@ -142,8 +152,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 cat("track.sync.callback", envname(envir), ": look for vars without active bindings at ", date(), "\n", sep="")
                 stime <- proc.time()
             }
-            if (trace==2)
+            if (trace==2) {
                 cat("f")
+                flush.console()
+            }
             ## Find the vars that look like they are tracked but don't have active bindings
             ## This can be time consuming -- need to call bindingIsActive for each tracked
             ## var.
@@ -164,8 +176,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 retrack <- grep(re, retrack, invert=TRUE, value=TRUE)
         ## Deal with untracked objects in the tracked env.
         ## Need to write these to files, and replace with active bindings.
-        if (trace==2 && length(retrack))
+        if (trace==2 && length(retrack)) {
             cat("r")
+            flush.console()
+        }
         for (objName in retrack) {
             ## get obj from envir, store in file, create active binding
             objval <- get(objName, envir=envir, inherits=FALSE)
@@ -283,13 +297,17 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 cat("track.sync: flushing ", length(flushVars), " vars with call to track.flush(envir=",
                     envname(envir), ", list=c(", paste("'", flushVars, "'", sep="", collapse=", "), "))\n", sep="")
             if (length(flushVars)) {
-                if (trace==2)
+                if (trace==2) {
                     cat("f")
+                    flush.console()
+                }
                 track.flush(envir=envir, list=flushVars)
             }
             if (length(saveVars)) {
-                if (trace==2)
+                if (trace==2) {
                     cat("s")
+                    flush.console()
+                }
                 track.save(envir=envir, list=saveVars)
             }
         }
@@ -299,8 +317,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         } else {
             if (verbose)
                 cat("track.sync: calling track.save(envir=", envname(envir), ")\n", sep="")
-            if (trace==2)
+            if (trace==2) {
                 cat("s")
+                flush.console()
+            }
             track.save(envir=envir, all=TRUE)
         }
     }
@@ -308,8 +328,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ##  write out the object summary if necessary
         summaryChanged <- mget(".trackingSummaryChanged", ifnotfound=list(FALSE), envir=trackingEnv)[[1]]
         if (summaryChanged) {
-            if (trace==2)
+            if (trace==2) {
                 cat("S")
+                flush.console()
+            }
             if (!exists(".trackingSummary", envir=trackingEnv, inherits=FALSE)) {
                 warning("no .trackingSummary in trackng env ", envname(trackingEnv))
             } else {
@@ -330,7 +352,9 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         autoTrack$last <- now
         assign(".trackAuto", autoTrack, envir=trackingEnv)
     }
-    if (trace==2)
+    if (trace==2) {
         cat("]")
+        flush.console()
+    }
     return(invisible(list(new=untracked, removed=deleted)))
 }
