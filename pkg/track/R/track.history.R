@@ -80,7 +80,7 @@ track.history.writer <- function(expr, value, ok, visible) {
     ## do it in a way that prevents the time stamps from appearing in
     ## the interactive history.
     trace <- getOption("track.callbacks.trace", FALSE)
-    if (trace) {
+    if (trace==1) {
         cat("track.history.writer: entered at ", date(), "\n", sep="")
         stime <- proc.time()
     }
@@ -173,7 +173,7 @@ track.history.writer <- function(expr, value, ok, visible) {
             }
         }
     }
-    if (trace) {
+    if (trace==1) {
         cat("track.history.writer: exited at ", date(),
              " (", paste(round(1000*(proc.time()-stime)[1:3]), c("u", "s", "e"), sep="", collapse=" "), ")\n", sep="")
     }
