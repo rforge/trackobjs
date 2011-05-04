@@ -74,6 +74,8 @@ track.ff <- function(expr, pos=1, envir=as.environment(pos)) {
     }
     filename.ff <- file.path(".", track.datadir(envir=envir), "ff",
                              paste(track.filename(list=objName, envir=envir), ".ff", sep=""))
+    if (file.exists(filename.ff))
+        file.remove(filename.ff)
     if (is.call(objValExpr) && is.element(as.character(objValExpr[[1]]), c("ff", "as.ff"))) {
         if (haveObjVal)
             stop("internal logical error - should not already have objVal")

@@ -19,6 +19,7 @@
 > # Set the locale used by order() so that track.status() & track.summary() put
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
+> options(global.track.options=list(cacheKeepFun='none'))
 > track:::create.fake.Sys.time(0)
 > unlink("tmp1", recursive=TRUE)
 > track.start("tmp1")
@@ -33,9 +34,9 @@ x2 tracked FALSE       x2       TRUE  TRUE
 y  tracked FALSE        y       TRUE  TRUE
 > track.summary(cache=T)
      class    mode extent length size cache            modified TA TW
-x1  matrix numeric  [3x2]      6  464    no 2001-01-01 09:00:06  0  1
-x2  matrix numeric  [2x3]      6  464    no 2001-01-01 09:00:07  0  1
-y  numeric numeric    [1]      1   32    no 2001-01-01 09:00:05  0  1
+x1  matrix numeric  [3x2]      6  464    no 2001-01-01 09:00:04  0  1
+x2  matrix numeric  [2x3]      6  464    no 2001-01-01 09:00:05  0  1
+y  numeric numeric    [1]      1   32    no 2001-01-01 09:00:03  0  1
 > # convert existing objects to ff objects
 > track.ff(x1)
 > track.ff(x2)
@@ -46,9 +47,9 @@ x2 tracked  TRUE       x2       TRUE  TRUE
 y  tracked FALSE        y       TRUE  TRUE
 > track.summary(cache=T)
                    class    mode  extent length size cache            modified
-x1 ff_matrix,ff_array,ff    list [[3x2]]      6 2216   yes 2001-01-01 09:00:09
-x2 ff_matrix,ff_array,ff    list [[2x3]]      6 2216   yes 2001-01-01 09:00:11
-y                numeric numeric     [1]      1   32    no 2001-01-01 09:00:05
+x1 ff_matrix,ff_array,ff    list [[3x2]]      6 2216   yes 2001-01-01 09:00:07
+x2 ff_matrix,ff_array,ff    list [[2x3]]      6 2216   yes 2001-01-01 09:00:09
+y                numeric numeric     [1]      1   32    no 2001-01-01 09:00:03
    TA TW
 x1  1  2
 x2  1  2
@@ -73,12 +74,12 @@ x5 tracked  TRUE       x5       TRUE  TRUE
 y  tracked FALSE        y       TRUE  TRUE
 > track.summary(cache=T)
                    class    mode  extent length size cache            modified
-x1 ff_matrix,ff_array,ff    list [[3x2]]      6 2216   yes 2001-01-01 09:00:09
-x2 ff_matrix,ff_array,ff    list [[2x3]]      6 2216   yes 2001-01-01 09:00:11
-x3 ff_matrix,ff_array,ff    list [[3x4]]     12 2288   yes 2001-01-01 09:00:15
-x4 ff_matrix,ff_array,ff    list [[3x4]]     12 2296   yes 2001-01-01 09:00:17
-x5 ff_matrix,ff_array,ff    list [[3x3]]      9 2256   yes 2001-01-01 09:00:20
-y                numeric numeric     [1]      1   32    no 2001-01-01 09:00:05
+x1 ff_matrix,ff_array,ff    list [[3x2]]      6 2216   yes 2001-01-01 09:00:07
+x2 ff_matrix,ff_array,ff    list [[2x3]]      6 2216   yes 2001-01-01 09:00:09
+x3 ff_matrix,ff_array,ff    list [[3x4]]     12 2288   yes 2001-01-01 09:00:13
+x4 ff_matrix,ff_array,ff    list [[3x4]]     12 2296   yes 2001-01-01 09:00:15
+x5 ff_matrix,ff_array,ff    list [[3x3]]      9 2256   yes 2001-01-01 09:00:18
+y                numeric numeric     [1]      1   32    no 2001-01-01 09:00:03
    TA TW
 x1  2  2
 x2  2  2
@@ -102,11 +103,11 @@ x5 tracked  TRUE       x5       TRUE  TRUE
 y  tracked FALSE        y       TRUE  TRUE
 > track.summary(cache=T)
                    class    mode  extent length size cache            modified
-x1 ff_matrix,ff_array,ff    list [[3x2]]      6 2216   yes 2001-01-01 09:00:09
-x2 ff_matrix,ff_array,ff    list [[2x3]]      6 2216   yes 2001-01-01 09:00:11
-x3 ff_matrix,ff_array,ff    list [[3x4]]     12 2288   yes 2001-01-01 09:00:15
-x5 ff_matrix,ff_array,ff    list [[3x3]]      9 2256   yes 2001-01-01 09:00:20
-y                numeric numeric     [1]      1   32    no 2001-01-01 09:00:05
+x1 ff_matrix,ff_array,ff    list [[3x2]]      6 2216   yes 2001-01-01 09:00:07
+x2 ff_matrix,ff_array,ff    list [[2x3]]      6 2216   yes 2001-01-01 09:00:09
+x3 ff_matrix,ff_array,ff    list [[3x4]]     12 2288   yes 2001-01-01 09:00:13
+x5 ff_matrix,ff_array,ff    list [[3x3]]      9 2256   yes 2001-01-01 09:00:18
+y                numeric numeric     [1]      1   32    no 2001-01-01 09:00:03
    TA TW
 x1  2  2
 x2  2  2
@@ -152,11 +153,11 @@ x5 tracked FALSE       x5       TRUE  TRUE
 y  tracked FALSE        y       TRUE  TRUE
 > track.summary()
                    class    mode  extent length size            modified TA TW
-x1 ff_matrix,ff_array,ff    list [[3x2]]      6 2216 2001-01-01 09:00:09  3  2
-x2 ff_matrix,ff_array,ff    list [[2x3]]      6 2216 2001-01-01 09:00:11  3  2
-x3 ff_matrix,ff_array,ff    list [[3x4]]     12 2288 2001-01-01 09:00:15  2  2
-x5 ff_matrix,ff_array,ff    list [[3x3]]      9 2256 2001-01-01 09:00:20  3  2
-y                numeric numeric     [1]      1   32 2001-01-01 09:00:05  1  1
+x1 ff_matrix,ff_array,ff    list [[3x2]]      6 2216 2001-01-01 09:00:07  3  2
+x2 ff_matrix,ff_array,ff    list [[2x3]]      6 2216 2001-01-01 09:00:09  3  2
+x3 ff_matrix,ff_array,ff    list [[3x4]]     12 2288 2001-01-01 09:00:13  2  2
+x5 ff_matrix,ff_array,ff    list [[3x3]]      9 2256 2001-01-01 09:00:18  3  2
+y                numeric numeric     [1]      1   32 2001-01-01 09:00:03  1  1
 > x1
 ff (closed) integer length=6 (6) dim=c(3,2) dimorder=c(1,2)
 > x1

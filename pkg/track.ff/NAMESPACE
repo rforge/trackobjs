@@ -1,1 +1,6 @@
-export(track.ff, track.ff.rm, track.ff.remove, track.ff.delete, track.ff.filename)
+export(track.ff,
+       track.ff.rm,
+       track.ff.remove,
+       track.ff.delete,
+       track.ff.filename,
+       track.preremove.ff)
