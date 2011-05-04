@@ -62,6 +62,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     quarantine.dir <- file.path(dataDir, "quarantine")
     needSaveFileMap <- FALSE
     needSaveObjSummary <- mget(".trackingSummaryChanged", envir=trackingEnv, ifnotfound=list(FALSE))[[1]]
+    track.preremove.methods <- character(0)
     for (objName in list) {
         fileMapChanged <- FALSE
         objSummaryChanged <- FALSE
@@ -91,12 +92,34 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         ##
         if (op=="remove") {
             ## remove the variable from envir
-            if (is.element(objName, all.objs))
+            if (is.element(objName, all.objs)) {
+                if (objName %in% rownames(objSummary)) {
+                    ## See if we need to call a track.preremove() method.
+                    ## Don't want to actually fetch the object to do this unless it is necessary.
+                    cls <- objSummary[objName, "class"]
+                    found <- FALSE
+                    for (cl in strsplit(cls, ",")[[1]]) {
+                        meth <- paste("track.preremove", cl, sep=".")
+                        if (meth %in% track.preremove.methods) {
+                            found <- TRUE
+                            break
+                        } else if (exists(meth, mode="function")) {
+                            found <- TRUE
+                            track.preremove.methods <- c(track.preremove.methods, meth)
+                            break
+                        }
+                    }
+                    if (found) {
+                        objVal <- get(objName, envir=envir, inherits=FALSE)
+                        res <- try(track.preremove(objVal, objName, envir), silent=TRUE)
+                    }
+                }
                 remove(list=objName, envir=envir)
+            }
         } else if (is.element(op, c("untrack", "lift"))) {
             ## fetch the value and assign it in envir
             if (exists(objName, envir=trackingEnv, inherits=FALSE)) {
-                objval <- get(objName, envir=trackingEnv, inherits=FALSE)
+                objVal <- get(objName, envir=trackingEnv, inherits=FALSE)
             } else {
                 tmpenv <- new.env(parent=emptyenv())
                 load.res <- load(filePath, envir=tmpenv)
@@ -111,13 +134,13 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
                         warning("ignoring other objects in file '", filePath, "'")
                         remove(list=load.res[-1], envir=tmpenv)
                     }
-                    objval <- get(objName, envir=tmpenv, inherits=FALSE)
+                    objVal <- get(objName, envir=tmpenv, inherits=FALSE)
                     remove(list=objName, envir=tmpenv)
                 }
             }
             # need to remove the active binding from envir before saving the ordinary variable
             remove(list=objName, envir=envir)
-            assign(objName, objval, envir=envir)
+            assign(objName, objVal, envir=envir)
         } else if (!is.element(op, c("save", "flush", "forget"))) {
             stop("what ", op, "???")
         }
@@ -183,3 +206,5 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         stop("unable to save some tracking info in ", file.path(dataDir), ": fix problem and run track.resave()")
     return(invisible(list))
 }
+
+track.preremove <- function(obj, objName, envir, ...) UseMethod("track.preremove", obj)
