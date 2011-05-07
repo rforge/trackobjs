@@ -79,24 +79,30 @@ track.ff <- function(expr, pos=1, envir=as.environment(pos)) {
     if (is.call(objValExpr) && is.element(as.character(objValExpr[[1]]), c("ff", "as.ff"))) {
         if (haveObjVal)
             stop("internal logical error - should not already have objVal")
-        i <- length(objValExpr)
         ## add a filename argument to the ff call
+        i <- length(objValExpr)
         objValExpr[i+1] <- filename.ff
         names(objValExpr)[i+1] <- "filename"
+        ## add a finalizer='delete' argument to the ff call
+        i <- length(objValExpr)
+        objValExpr[i+1] <- "delete"
+        names(objValExpr)[i+1] <- "finalizer"
+        ## add a finonexit=FALSE argument to the ff call
+        i <- length(objValExpr)
+        objValExpr[i+1] <- FALSE
+        names(objValExpr)[i+1] <- "finonexit"
         objVal <- eval(objValExpr)
     } else {
         if (!haveObjVal)
             stop("internal logical error - should already have objVal")
-        objVal <- as.ff(objVal, filename=filename.ff)
+        objVal <- as.ff(objVal, filename=filename.ff, finalizer="delete", finonexit=FALSE)
     }
     track:::setTrackedVar(objName, objVal, trackingEnv, opt)
     return(invisible(objVal))
 }
 
 track.ff.rm <- function(expr, pos=1, envir=as.environment(pos)) {
-    ## Simplified from track(), just deal with:
-    ##    (1) track.ff(x) where x is an ordinary or ff objects
-    ## or (2) track.ff(x <- y) where y is an object or call to ff creator
+    ## Functionally the same as track.remove(expr, ...)
     trackingEnv <- track:::getTrackingEnv(envir)
     opt <- track.options(trackingEnv=trackingEnv)
     if (opt$readonly)
@@ -105,9 +111,9 @@ track.ff.rm <- function(expr, pos=1, envir=as.environment(pos)) {
     qexpr <- substitute(expr)
     if (is.name(qexpr) || is.character(qexpr)) {
         objName <- as.character(qexpr)
-        objValExpr <- as.name(objName)
-        objVal <- get(as.character(objValExpr), envir=envir, inherit=FALSE)
-        delete(objVal)
+        ## objValExpr <- as.name(objName)
+        ## objVal <- get(as.character(objValExpr), envir=envir, inherit=FALSE)
+        ## delete(objVal)
         track.remove(list=objName, envir=envir)
     } else {
         stop("argument to track.ff.rm() must be a quoted or unquoted variable name")
