@@ -9,6 +9,12 @@ track.auto.monitor <- function(expr, value, ok, visible) {
         cat("track.auto.monitor: entered at ", date(), "\n", sep="")
         stime <- proc.time()
     }
+    if (identical(getOption("incr.hist.active", FALSE), TRUE)) {
+        if (!is.element("track.history.writer", getTaskCallbackNames())) {
+            cat("track.auto.monitor: Task callback track.history.writer seems to have disappeared; reinstating...\n")
+            addTaskCallback(track.history.writer, name="track.history.writer")
+        }
+    }
     envs <- search()
     callback.names <- getTaskCallbackNames()
     envs.look <- grep("^(package:|pkgcode:|Autoloads$)", envs, invert=TRUE)
@@ -28,12 +34,6 @@ track.auto.monitor <- function(expr, value, ok, visible) {
             cat("track.auto.monitor: Task callback", callback.name,
                 "seems to have disappeared; reinstating...\n")
             try(track.auto(TRUE, pos = pos))
-        }
-    }
-    if (identical(getOption("incr.hist.active", FALSE), TRUE)) {
-        if (!is.element("track.history.writer", getTaskCallbackNames())) {
-            cat("track.auto.monitor: Task callback track.history.writer seems to have disappeared; reinstating...\n")
-            addTaskCallback(track.history.writer, name="track.history.writer")
         }
     }
     if (trace==1) {
