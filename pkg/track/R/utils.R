@@ -457,7 +457,9 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
                     if (is.null(fullFile))
                         fullFile <- file.path(getDataDir(dir), paste(file, opt$RDataSuffix, sep="."))
                     if (!file.exists(fullFile)) {
-                        warning("file '", fullFile, "' does not yet exist (for obj '", objName, "') - will create it when needed")
+                        ## This can happen when an object is created via track.ff() -- want to avoid noise
+                        ## so don't issue this warning.
+                        ## warning("file '", fullFile, "' does not yet exist (for obj '", objName, "') - will create it when needed")
                         fullFile <- NULL
                     }
                 }

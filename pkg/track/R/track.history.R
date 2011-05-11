@@ -75,6 +75,9 @@ track.history.load <- function(times=FALSE) {
 }
 
 track.history.writer <- function(expr, value, ok, visible) {
+    ## If we are called from a prompt in a browser, don't do anything
+    if (length(sys.calls()) > 1)
+        return(TRUE)
     method <- "last" # set the internal algorithm
     ## Always write time stamps to the incremental history file -- but
     ## do it in a way that prevents the time stamps from appearing in
@@ -83,7 +86,7 @@ track.history.writer <- function(expr, value, ok, visible) {
     if (trace==1) {
         cat("track.history.writer: entered at ", date(), "\n", sep="")
         stime <- proc.time()
-    } else {
+    } else if (trace==2) {
         cat("[h:")
         flush.console()
     }
