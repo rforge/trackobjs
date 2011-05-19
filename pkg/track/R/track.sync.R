@@ -242,6 +242,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     ## we do want to write them out to file (if they've changed),
     ## but we don't want to remove them from the tracking env.
     if (taskEnd && opt$cachePolicy=="eotPurge") {
+        if (trace==2) {
+            cat("p")
+            flush.console()
+        }
         flushVars <- NULL
         saveVars <- NULL
         unsavedVars <- getUnsavedObj(trackingEnv)
@@ -254,6 +258,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             if (!any(flushCand)) {
                 flushVars <- character(0)
             } else if (length(opt$cacheKeepFun) && !identical(opt$cacheKeepFun, "none")) {
+                if (trace==2) {
+                    cat("k")
+                    flush.console()
+                }
                 ## If there is a cacheKeepFun, see what it says...
                 keep <- try(do.call(opt$cacheKeepFun, list(objs=objSummary, inmem=flushCand, envname=envname(envir))), silent=TRUE)
                 if (is(keep, "try-error")) {
