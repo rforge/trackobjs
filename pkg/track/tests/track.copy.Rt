@@ -24,15 +24,15 @@ y3 tracked FALSE       y3       TRUE  TRUE
 y4 tracked FALSE       y4       TRUE  TRUE
 > track.summary(pos=2, time=3, size=F, cache=TRUE)
      class    mode extent length cache            modified             created
-x1 numeric numeric    [1]      1    no 2001-01-01 09:00:06 2001-01-01 09:00:06
-x2 numeric numeric    [1]      1    no 2001-01-01 09:00:07 2001-01-01 09:00:07
-y3 numeric numeric    [1]      1    no 2001-01-01 09:00:08 2001-01-01 09:00:08
-y4 numeric numeric    [1]      1    no 2001-01-01 09:00:09 2001-01-01 09:00:09
+x1 numeric numeric    [1]      1    no 2001-01-01 09:00:05 2001-01-01 09:00:05
+x2 numeric numeric    [1]      1    no 2001-01-01 09:00:06 2001-01-01 09:00:06
+y3 numeric numeric    [1]      1    no 2001-01-01 09:00:07 2001-01-01 09:00:07
+y4 numeric numeric    [1]      1    no 2001-01-01 09:00:08 2001-01-01 09:00:08
               accessed TA TW
-x1 2001-01-01 09:00:06  0  1
-x2 2001-01-01 09:00:07  0  1
-y3 2001-01-01 09:00:08  0  1
-y4 2001-01-01 09:00:09  0  1
+x1 2001-01-01 09:00:05  0  1
+x2 2001-01-01 09:00:06  0  1
+y3 2001-01-01 09:00:07  0  1
+y4 2001-01-01 09:00:08  0  1
 > x1
 [1] 1
 > x2
@@ -43,15 +43,15 @@ y4 2001-01-01 09:00:09  0  1
 [1] 4
 > track.summary(pos=2, time=3, size=F)
      class    mode extent length            modified             created
-x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
-x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
-y3 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
-y4 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+x1 numeric numeric    [1]      1 2001-01-01 09:00:05 2001-01-01 09:00:05
+x2 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+y3 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y4 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
               accessed TA TW
-x1 2001-01-01 09:00:11  1  1
-x2 2001-01-01 09:00:13  2  1
-y3 2001-01-01 09:00:08  0  1
-y4 2001-01-01 09:00:14  1  1
+x1 2001-01-01 09:00:10  1  1
+x2 2001-01-01 09:00:12  2  1
+y3 2001-01-01 09:00:07  0  1
+y4 2001-01-01 09:00:13  1  1
 > track.copy(from=2, pat="^x")
 Copying 'x1'...
 Copying 'x2'...
@@ -61,24 +61,24 @@ Copying 'x2'...
 [1] "x1" "x2" "y3" "y4"
 > track.summary(pos=1, time=3, size=F)
      class    mode extent length            modified             created
-x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
-x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
-z5 numeric numeric    [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:10
+x1 numeric numeric    [1]      1 2001-01-01 09:00:05 2001-01-01 09:00:05
+x2 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+z5 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
               accessed TA TW
-x1 2001-01-01 09:00:11  1  1
-x2 2001-01-01 09:00:13  2  1
-z5 2001-01-01 09:00:10  0  1
+x1 2001-01-01 09:00:10  1  1
+x2 2001-01-01 09:00:12  2  1
+z5 2001-01-01 09:00:09  0  1
 > track.summary(pos=2, time=3, size=F)
      class    mode extent length            modified             created
-x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
-x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
-y3 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
-y4 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+x1 numeric numeric    [1]      1 2001-01-01 09:00:05 2001-01-01 09:00:05
+x2 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+y3 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y4 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
               accessed TA TW
-x1 2001-01-01 09:00:11  1  1
-x2 2001-01-01 09:00:13  2  1
-y3 2001-01-01 09:00:08  0  1
-y4 2001-01-01 09:00:14  1  1
+x1 2001-01-01 09:00:10  1  1
+x2 2001-01-01 09:00:12  2  1
+y3 2001-01-01 09:00:07  0  1
+y4 2001-01-01 09:00:13  1  1
 > track.move(from=2, pat="^y")
 Moving 'y3'...
 Moving 'y4'...
@@ -101,20 +101,20 @@ Moving 'x2'...
 [1] 1 2 3 4
 > track.summary(pos=1, time=3, size=F)
      class    mode extent length            modified             created
-x1 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
-x2 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
-y3 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
-y4 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+x1 numeric numeric    [1]      1 2001-01-01 09:00:05 2001-01-01 09:00:05
+x2 numeric numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+y3 numeric numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y4 numeric numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
               accessed TA TW
-x1 2001-01-01 09:00:19  2  1
-x2 2001-01-01 09:00:20  3  1
-y3 2001-01-01 09:00:21  2  1
-y4 2001-01-01 09:00:22  3  1
+x1 2001-01-01 09:00:18  2  1
+x2 2001-01-01 09:00:19  3  1
+y3 2001-01-01 09:00:20  2  1
+y4 2001-01-01 09:00:21  3  1
 > track.summary(pos=2, time=3, size=F)
      class    mode extent length            modified             created
-z5 numeric numeric    [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:10
+z5 numeric numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
               accessed TA TW
-z5 2001-01-01 09:00:10  0  1
+z5 2001-01-01 09:00:09  0  1
 > ls(1)
 [1] "x1" "x2" "y3" "y4"
 > ls(2)
@@ -244,19 +244,19 @@ yb2 untracked    NA     <NA>         NA    NA
 z5    tracked FALSE       z5       TRUE  TRUE
 > track.summary(pos=2, time=3, size=F)
         class      mode extent length            modified             created
-a1  character character    [1]      1 2001-01-01 09:00:43 2001-01-01 09:00:43
-a1y character character    [1]      1 2001-01-01 09:00:46 2001-01-01 09:00:46
-a2       list      list  [[1]]      1 2001-01-01 09:00:44 2001-01-01 09:00:44
-a2z character character    [1]      1 2001-01-01 09:00:45 2001-01-01 09:00:45
-ya2 character character    [1]      1 2001-01-01 09:00:47 2001-01-01 09:00:47
-z5    numeric   numeric    [1]      1 2001-01-01 09:00:10 2001-01-01 09:00:10
+a1  character character    [1]      1 2001-01-01 09:00:38 2001-01-01 09:00:38
+a1y character character    [1]      1 2001-01-01 09:00:41 2001-01-01 09:00:41
+a2       list      list  [[1]]      1 2001-01-01 09:00:39 2001-01-01 09:00:39
+a2z character character    [1]      1 2001-01-01 09:00:40 2001-01-01 09:00:40
+ya2 character character    [1]      1 2001-01-01 09:00:42 2001-01-01 09:00:42
+z5    numeric   numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
                accessed TA TW
-a1  2001-01-01 09:00:43  0  1
-a1y 2001-01-01 09:00:46  0  1
-a2  2001-01-01 09:00:44  0  1
-a2z 2001-01-01 09:00:45  0  1
-ya2 2001-01-01 09:00:47  0  1
-z5  2001-01-01 09:00:10  0  1
+a1  2001-01-01 09:00:38  0  1
+a1y 2001-01-01 09:00:41  0  1
+a2  2001-01-01 09:00:39  0  1
+a2z 2001-01-01 09:00:40  0  1
+ya2 2001-01-01 09:00:42  0  1
+z5  2001-01-01 09:00:09  0  1
 > track.copy(pat="[ab]", from=2)
 Copying 'a1'...
 Copying 'a1y'...
@@ -299,23 +299,23 @@ ya2 untracked    NA     <NA>         NA    NA
 yb2 untracked    NA     <NA>         NA    NA
 > track.summary(time=3, size=F)
         class      mode extent length            modified             created
-a1  character character    [1]      1 2001-01-01 09:00:43 2001-01-01 09:00:43
-a1y character character    [1]      1 2001-01-01 09:00:46 2001-01-01 09:00:46
-b1  character character    [1]      1 2001-01-01 09:00:50 2001-01-01 09:00:50
-b1y character character    [1]      1 2001-01-01 09:00:51 2001-01-01 09:00:51
-x1    numeric   numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
-x2    numeric   numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
-y3    numeric   numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
-y4    numeric   numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+a1  character character    [1]      1 2001-01-01 09:00:38 2001-01-01 09:00:38
+a1y character character    [1]      1 2001-01-01 09:00:41 2001-01-01 09:00:41
+b1  character character    [1]      1 2001-01-01 09:00:45 2001-01-01 09:00:45
+b1y character character    [1]      1 2001-01-01 09:00:46 2001-01-01 09:00:46
+x1    numeric   numeric    [1]      1 2001-01-01 09:00:05 2001-01-01 09:00:05
+x2    numeric   numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+y3    numeric   numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y4    numeric   numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
                accessed TA TW
-a1  2001-01-01 09:00:43  0  1
-a1y 2001-01-01 09:00:46  0  1
-b1  2001-01-01 09:00:50  0  1
-b1y 2001-01-01 09:00:51  0  1
-x1  2001-01-01 09:00:23  3  1
-x2  2001-01-01 09:00:24  4  1
-y3  2001-01-01 09:00:25  3  1
-y4  2001-01-01 09:00:26  4  1
+a1  2001-01-01 09:00:38  0  1
+a1y 2001-01-01 09:00:41  0  1
+b1  2001-01-01 09:00:45  0  1
+b1y 2001-01-01 09:00:46  0  1
+x1  2001-01-01 09:00:22  3  1
+x2  2001-01-01 09:00:23  4  1
+y3  2001-01-01 09:00:24  3  1
+y4  2001-01-01 09:00:25  4  1
 > track.remove(list=ls(pat="[ab]"))
 > track.status()
     Status InMem FileBase FileExists Saved
@@ -356,23 +356,23 @@ ya2 untracked    NA     <NA>         NA    NA
 yb2 untracked    NA     <NA>         NA    NA
 > track.summary(time=3, size=F)
         class      mode extent length            modified             created
-a1  character character    [1]      1 2001-01-01 09:00:43 2001-01-01 09:00:43
-a1y character character    [1]      1 2001-01-01 09:00:46 2001-01-01 09:00:46
-b1  character character    [1]      1 2001-01-01 09:00:58 2001-01-01 09:00:58
-b1y character character    [1]      1 2001-01-01 09:00:59 2001-01-01 09:00:59
-x1    numeric   numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
-x2    numeric   numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
-y3    numeric   numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
-y4    numeric   numeric    [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09
+a1  character character    [1]      1 2001-01-01 09:00:38 2001-01-01 09:00:38
+a1y character character    [1]      1 2001-01-01 09:00:41 2001-01-01 09:00:41
+b1  character character    [1]      1 2001-01-01 09:00:53 2001-01-01 09:00:53
+b1y character character    [1]      1 2001-01-01 09:00:54 2001-01-01 09:00:54
+x1    numeric   numeric    [1]      1 2001-01-01 09:00:05 2001-01-01 09:00:05
+x2    numeric   numeric    [1]      1 2001-01-01 09:00:06 2001-01-01 09:00:06
+y3    numeric   numeric    [1]      1 2001-01-01 09:00:07 2001-01-01 09:00:07
+y4    numeric   numeric    [1]      1 2001-01-01 09:00:08 2001-01-01 09:00:08
                accessed TA TW
-a1  2001-01-01 09:00:43  0  1
-a1y 2001-01-01 09:00:46  0  1
-b1  2001-01-01 09:00:58  0  1
-b1y 2001-01-01 09:00:59  0  1
-x1  2001-01-01 09:00:23  3  1
-x2  2001-01-01 09:00:24  4  1
-y3  2001-01-01 09:00:25  3  1
-y4  2001-01-01 09:00:26  4  1
+a1  2001-01-01 09:00:38  0  1
+a1y 2001-01-01 09:00:41  0  1
+b1  2001-01-01 09:00:53  0  1
+b1y 2001-01-01 09:00:54  0  1
+x1  2001-01-01 09:00:22  3  1
+x2  2001-01-01 09:00:23  4  1
+y3  2001-01-01 09:00:24  3  1
+y4  2001-01-01 09:00:25  4  1
 > track.remove(list=ls(pat="[ab]"))
 > track.status()
     Status InMem FileBase FileExists Saved

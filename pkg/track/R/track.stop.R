@@ -4,6 +4,7 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
         force.detach <- TRUE
         detach <- TRUE
     }
+    debug <- !identical(getOption("track.debug", sessionEnd), FALSE)
     ## track.stop() with no arguments behaves analogously
     ## to track.start() with no args, and works on pos=1 (globalenv)
     ## if (missing(pos) && missing(envir) && missing(all)) {
@@ -27,7 +28,7 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
             if (stop.on.error)
                 track.stop(envir=as.environment(e.name), keepVars=keepVars, sessionEnd=sessionEnd)
             else
-                try(track.stop(envir=as.environment(e.name), keepVars=keepVars, sessionEnd=sessionEnd))
+                try(track.stop(envir=as.environment(e.name), keepVars=keepVars, sessionEnd=sessionEnd, stop.on.error=FALSE))
     } else {
         if (!env.is.tracked(envir)) {
             if (sessionEnd)
@@ -49,9 +50,20 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
             ## If this is an auto-update tracking env, get vars and files in sync,
             ## otherwise we presume the user knows what they're doing -- ignore
             ## out-of-sync things
-            if (auto$on)
-                track.sync(envir=envir, master="envir", full=TRUE, trackingEnv=trackingEnv)
-            track.flush(envir=envir, force=TRUE)
+            if (auto$on) {
+                if (debug)
+                    cat("Calling track.sync(envir = ", environmentName(envir), ")\n", sep="")
+                if (stop.on.error)
+                    track.sync(envir=envir, master="envir", full=TRUE, trackingEnv=trackingEnv)
+                else
+                    try(track.sync(envir=envir, master="envir", full=TRUE, trackingEnv=trackingEnv))
+            }
+            if (debug)
+                cat("Calling track.flush(envir = ", environmentName(envir), ")\n", sep="")
+            if (stop.on.error)
+                track.flush(envir=envir, force=TRUE)
+            else
+                try(track.flush(envir=envir, force=TRUE))
         }
         if (keepVars) {
             for (var in tracked.vars) {
@@ -117,4 +129,3 @@ track.stop <- function(pos=1, envir=as.environment(pos), all=FALSE, stop.on.erro
     }
     return(invisible(NULL))
 }
-

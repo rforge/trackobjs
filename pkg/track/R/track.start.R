@@ -305,12 +305,6 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     ## We always need to save the summary...
     assign(".trackingSummary", objSummary, envir=trackingEnv)
     assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-    if (!opt$readonly) {
-        save.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=objSummaryPath, compress=FALSE), silent=TRUE)
-        if (is(save.res, "try-error"))
-            stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again")
-    }
-    assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     if (dir!=dataDir) {
         ## Only use a "DESCRIPTION" file when we use a 'data' subdirectory
         ## in the tracking dir.
@@ -342,7 +336,8 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         addTaskCallback(track.sync.callback, data=envir, name=callbackName)
         assign(".trackAuto", list(on=TRUE, last=-1), envir=trackingEnv)
     }
-    if (check.Last) {
+    if (FALSE && check.Last) {
+        ## Stopped using .Last.sys because it was only called when in the globalenv
         if (length(i <- find(".Last.sys")) > 1)
             if (i[1] != find("track.start")[1])
                 warning("There are more than one .Last.sys() functions on the search path -- the one from track will is masked and will not run.  This may affect the saving of tracked environments.\n")
@@ -356,7 +351,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     ## tracked env, and the tracking env is not locked.
     if (lockEnv && opt$readonly && environmentName(envir) != "R_GlobalEnv")
         lockEnvironment(envir)
-    ## Setup .Last to be track.last(), which will make sure that all
+    ## Set up .Last to be track.last(), which will make sure that all
     ## tracked envs are sync'd to disk when R quits.
     ## This is a good candidate for a different way of doing things, either
     ## a 'Last' hook (doesn't exist in R, but would be nice if it did,
@@ -374,11 +369,22 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         existing.Last <- get(".Last", pos=1, inherits=FALSE)
         environment(existing.Last) <- globalenv()
     }
-    if (!is.null(existing.Last) && !identical(.Last, existing.Last)) {
-        warning(".Last already exists in globalenv -- not installing track.Last, user must call track.stop(all=TRUE) before ending R session")
+    if (!is.null(existing.Last)) {
+        if (!identical(.Last, existing.Last))
+            warning(".Last already exists in globalenv -- not installing track.Last, user must call track.stop(all=TRUE) before ending R session")
     } else {
         assign(".Last", .Last, pos=1)
+        ## Do the same thing as in track.sync.callback() for the globalenv
+        if (env.is.tracked(pos=1))
+            try(track.sync(pos=1, master="envir", taskEnd=TRUE))
     }
+    ## Save the tracking summary after working with .Last
+    if (!opt$readonly) {
+        save.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=objSummaryPath, compress=FALSE), silent=TRUE)
+        if (is(save.res, "try-error"))
+            stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again")
+    }
+    assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     ## Store the Pid of this R session so that we can identify
     ## situations where a dead .trackEnv has been loaded in by
     ## mistake (probably as a result of saving and reloading an
