@@ -59,6 +59,18 @@ track.summary(expr, pos = 1, envir = as.environment(pos), list = NULL, pattern =
     \item{length:}{(integer) from \code{length()} (will be
     \code{NA} if \code{length(obj)} causes an error)}
     \item{size:}{(integer) from \code{object.size()}}
+    \item{cache:}{(character): Indicates whether the objected should
+      always be kept cached.  Possible values are
+      \describe{
+	\item{yes, no:}{Automatically determined from
+      \code{track.options("alwaysCache")} (object names)
+      or \code{track.options("alwaysCacheClass")} (object classes); re-evaluated when
+      object changes}
+	\item{fixedyes, fixedno:}{Always do this; don't re-evaluate when
+      object changes.  This is intended to allow manually setting this
+      for each object if desired, but as of version 1.0.9 no way for the
+      user to do this safely has been provided.}
+      }}
     \item{modified:}{most recent modification time}
     \item{created:}{time object created}
     \item{read:}{most recent modification time}
