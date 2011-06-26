@@ -10,7 +10,7 @@ track.plugin.lru <- function(objs, inmem, envname) {
     imobjs <- objs[inmem,]
     keep <- inmem
     max.size <- (2^20) * getOption("track.cache.size", default=min(200, memory.limit()/6, na.rm=T))
-    # get the order, youngest first (though ones with cache='yes' or 'fixedyes'
+    # get the order, youngest first (prioritize ones with cache='yes' or 'fixedyes')
     by.age <- order(imobjs[,"cache"]=="yes" | imobjs[,"cache"]=="fixedyes", imobjs[,"accessed"], decreasing=TRUE)
     # which ones can we definitely keep?
     keep.by.age <- cumsum.ordered(imobjs[,"size"], by.age) <= max.size
