@@ -1,7 +1,12 @@
 * change to use a custom generic save/load function to allow objects
   to use their own save/read/access functions.
 
-* make track.stop() handle more gracefully the situation where the
+* think about whether should just make .Last a non-tracked variable; it
+  causes track.stop() when called from q() (as in testBrokenFileSystem.Rt)
+  to need to save the tracking summary (because .Last was accessed, which
+  changed the tracking summary).
+
+* make interactive track.stop() handle more gracefully the situation where the
   tracking db becomes unavailable: disconnect all active bindings,
   but keep unsaved objects in place
 
