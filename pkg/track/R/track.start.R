@@ -25,10 +25,10 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     track.stop.finalizer <- function(trackingEnv) {
         ## Finalizer is difficult because it can be called long
         ## after a tracking environment has been disconnected.
-        ## Had the checks in here because I thought I was seeing some
-        ## problems with invalid calls to the finalizer, but they all
-        ## turned out to be calling the finalizer on the object long
-        ## after it had stopped being used.
+        ## Had the following disabled checks in here because I thought I was
+        ## seeing some problems with invalid calls to the finalizer, but they
+        ## all turned out to be a result of the finalizer on the object being
+        ## called long after it had stopped being used.
         if (exists(".trackingFinished", envir=trackingEnv, inherits=FALSE))
             return(NULL)
         if (!exists(".trackingEnv", envir=envir, inherits=FALSE)) {
@@ -55,7 +55,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         ## if (interactive()) browser()
         ## Seems to sometimes be called when not appropriate, so don't
         ## do anything drastic -- just flush.
-        ## Example is the track.load() commands in track.status.Rd
+        ## Example is the track.load() commands in the examples in track.status.Rd
         track.flush(envir=envir)
     }
     if (!readonly) {
@@ -178,8 +178,8 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         }
     }
     if (length(old.options)==0) {
-        # Couldn't read any options from the file, initialize them
-        # from remaining gopt.
+        ## Couldn't read any options from the file, initialize them
+        ## from remaining gopt.
         gopt$autoTrack <- NULL
         gopt$RDataSuffixes <- NULL
         old.options <- gopt
@@ -311,15 +311,17 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again")
     }
     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
-    if (dir!=dataDir && !file.exists(dfn)) {
+    if (dir!=dataDir) {
         ## Only use a "DESCRIPTION" file when we use a 'data' subdirectory
         ## in the tracking dir.
         dfn <- file.path(dir, "DESCRIPTION")
-        write.res <- try(cat(track.package.desc(basename(dir)), "\n", sep="\n", file=dfn), silent=TRUE)
-        if (is(write.res, "try-error"))
-            warning("had problem writing ", dfn, " (", as.character(write.res), ")")
+        if (!file.exists(dfn)) {
+            write.res <- try(cat(track.package.desc(basename(dir)), "\n", sep="\n", file=dfn), silent=TRUE)
+            if (is(write.res, "try-error"))
+                warning("had problem writing ", dfn, " (", as.character(write.res), ")")
+        }
     }
-    ## load bindings for the vars already in the tracking dir
+    ## create bindings for the vars already in the tracking dir
     for (objName in names(fileMap)) {
         f <- substitute(function(v) {
             if (missing(v))
@@ -348,15 +350,26 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                 warning("There are more than one .Last.sys() functions on the search path -- the one from track masks others and they will not run\n")
     }
     ## Note that locking the environment is irreversible, and it prevents
-    ## rescaning (because the main reason to do that would be to pick up
-    ## new variables and delete old ones).  Locking doesn't however prevent
-    ## caching, because caching uses the tracking env, not the tracked env,
-    ## and the tracking env is not locked.
+    ## rescaning in-place (because the main reason to do that would be to
+    ## pick up new variables and delete old ones).  Locking doesn't however
+    ## prevent caching, because caching uses the tracking env, not the
+    ## tracked env, and the tracking env is not locked.
     if (lockEnv && opt$readonly && environmentName(envir) != "R_GlobalEnv")
         lockEnvironment(envir)
+    ## Setup .Last to be track.last(), which will make sure that all
+    ## tracked envs are sync'd to disk when R quits.
+    ## This is a good candidate for a different way of doing things, either
+    ## a 'Last' hook (doesn't exist in R, but would be nice if it did,
+    ## or something like a finalizer on an object, though I wasn't able
+    ## to get that to work reliably -- it wasn't always called when R
+    ## quitting R.
     .Last <- track.Last
     environment(.Last) <- globalenv()
     existing.Last <- NULL
+    ## Fetching an existing .Last here has the side effect that it will be
+    ## cached (because .Last is a default member of track.options('alwaysCache'))
+    ## Thus, in the case tracking db becomes unavailable, the R-termination
+    ## will not be affected by not being able read .Last from disk.
     if (exists(".Last", where=1, inherits=FALSE)) {
         existing.Last <- get(".Last", pos=1, inherits=FALSE)
         environment(existing.Last) <- globalenv()
@@ -367,9 +380,9 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         assign(".Last", .Last, pos=1)
     }
     ## Store the Pid of this R session so that we can identify
-    ## situations where are dead .trackEnv has been loaded
-    ## in by mistake (probably as a result of saving and
-    ## reloading an entire environment.)
+    ## situations where a dead .trackEnv has been loaded in by
+    ## mistake (probably as a result of saving and reloading an
+    ## entire tracked environment.)
     assign(".trackingPid", Sys.getpid(), envir=trackingEnv)
     if (!is.element("track.auto.monitor", getTaskCallbackNames()))
         addTaskCallback(track.auto.monitor, name="track.auto.monitor")
