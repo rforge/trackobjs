@@ -1,7 +1,16 @@
-* make track.start() read in objects for which summary$cache
-  is TRUE (e.g., .Last)
+* change to use a custom generic save/load function to allow objects
+  to use their own save/read/access functions.
 
-* make end-of-top-level-command syncing and cache flushing
+* make track.stop() handle more gracefully the situation where the
+  tracking db becomes unavailable: disconnect all active bindings,
+  but keep unsaved objects in place
+
+* DONE: make track.start() read in .Last so that if the tracking
+  db becomes unavailable, R can still shut down (because .Last will
+  be cached, allowing it to be retrieved without accessing the
+  file system.)
+
+* DONE: make end-of-top-level-command syncing and cache flushing
   work in a global way doing all environments at once,
   allowing a policy to work across all tracked environments.
 
@@ -23,7 +32,7 @@
 * DONE: figure out a way of using full commands in history without
   inserting time stamps into the interactive history.
 
-* move track.rescan() from track.setup.Rd into track.sync.Rd ?
+* DONE: link track.rescan() from track.sync.Rd
 
 * DONE: track.stop() behaving weirdly -- saw tracking envs still attached -- fixed
 
