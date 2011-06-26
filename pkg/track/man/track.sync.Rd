@@ -1,7 +1,8 @@
 \name{track.sync}
 \alias{track.sync}
 \title{
-  Synchronize the tracking database to reflect new and/or deleted objects
+  Synchronize the tracking database stored in files on disk to reflect
+  changed, new, or deleted objects in R
 }
 \description{
   Synchronize the tracking database to reflect new and/or deleted
@@ -9,6 +10,11 @@
   that the tracking database keeps up with new and deleted object
   automatically.  The appropriate task callback is installed by
   \code{track.start(..., auto = TRUE)}.
+
+  This function differs from \code{\link{track.rescan}()} in that
+  \code{track.rescan()} updates R view of the database to agree with
+  changes on disk, while \code{track.sync()} is primarily intended to
+  go the other way (to make the disk database agree with R).
 }
 \usage{
 track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(pos),
@@ -68,17 +74,19 @@ track.sync(pos = 1, master=c("auto", "envir", "files"), envir = as.environment(p
 }
 \note{
   The check that all apparently tracked variables have an active binding
-  currently only checks that there is an active binding -- there is no
+  currently only checks that the variable has an active binding -- there is no
   way (at the R level) to check that the active binding is the correct one.
 }
 \author{
   Tony Plate <tplate@acm.org>
 }
-\seealso{ \code{\link{track.rescan}} for rescanning the files in a tracked database
-  that is attached at a position 2 or greater after the files on disk
-  have changed.
+\seealso{ \code{\link{track.rescan}} for rescanning a tracked database
+  after the files on disk have changed (this is usually only used for
+  tracked environment attached at a position 2 or greater.)
 
-  \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
+  \link[=track-package]{Overview} and \link[=track.design]{design} of
+  the \code{track} package.
+}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ data }

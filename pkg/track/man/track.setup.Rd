@@ -7,7 +7,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Setup and stop tracking }
 \description{
-  Functions to setup and stop tracking
+  Functions to setup and stop tracking, and resync to a changed disk db
 }
 \section{Simple Usage}{
 These functions have many arguments providing much control over
@@ -16,7 +16,7 @@ tracking, but the arguments used in simple usage are:
 track.start()
 track.start(dir = "rdatadir")
 track.stop(pos = 1, all = FALSE)
-track.rescan(pos = 1)
+track.rescan(pos = 2)
 }
 }
 \usage{
@@ -29,7 +29,8 @@ track.start(dir="rdatadir", pos = 1, envir = as.environment(pos),
 track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
         stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE,
         verbose = TRUE, detach = TRUE, callFrom = NULL)
-track.rescan(pos = 1, envir = as.environment(pos), forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
+track.rescan(pos = 1, envir = as.environment(pos),
+             forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
 track.Last()
 % .Last()
 }
@@ -153,7 +154,10 @@ available.
    and removes tracked variables from the environment.}
 }
 \author{Tony Plate \email{tplate@acm.org}}
-\seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
+\seealso{
+  \link[=track-package]{Overview} and \link[=track.design]{design} of
+  the \code{track} package.
+}
 \examples{
 library(track)
 unlink("tmp1", recursive=TRUE)
