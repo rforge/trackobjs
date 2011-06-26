@@ -1,0 +1,31 @@
+> library(track)
+> # Simulated a broken file system by moving the tracking db after it has been attached.
+> # Want to be able to quit R (previous versions caused .Last() to stop with an error,
+> # which made quitting an interactive session difficult)
+> # Set the locale used by order() so that track.status() & track.summary() put
+> # rows in the same order on different systems (so that the test output matches).
+> invisible(Sys.setlocale("LC_COLLATE", "C"))
+> options(error=function() NULL)
+> track.start("tmp22")
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp22'
+> x <- 33
+> track.stop(pos=1)
+Stopping tracking on <env R_GlobalEnv>
+> track.start("tmp22")
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp22'
+> get(".trackingSummaryChanged", .trackingEnv)
+[1] FALSE
+> file.rename("tmp22", "tmp22.deleteme")
+[1] TRUE
+> get(".trackingSummaryChanged", .trackingEnv)
+[1] FALSE
+> # Ideally, should not see errors/warnings about not being able so save .trackingSummary;
+> # but we do see errors because .Last is accessed during the q() process, which changes
+> # the tracking summary.
+> # get(".trackingSummary", .trackingEnv)
+> # attach(NULL, pos=2)
+> # load("tmp22.deleteme/.trackingSummary.rda", env=as.environment(2))
+> # get(".trackingSummary", 2)
+> # get(".trackingSummaryChanged", .trackingEnv)
+> q('yes')
+#@ignore-output
