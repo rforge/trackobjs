@@ -9,7 +9,20 @@ track.plugin.lru <- function(objs, inmem, envname) {
     # just work with the objects that are in memory
     imobjs <- objs[inmem,]
     keep <- inmem
-    max.size <- (2^20) * getOption("track.cache.size", default=min(200, memory.limit()/6, na.rm=T))
+    # cache.size is in Mb
+    cache.size <- getOption("track.cache.size")
+    if (is.null(cache.size) || is.na(as.numeric(cache.size))) {
+        cache.size <- NA
+        if (.Platform$OS.type=="windows")
+            cache.size <- memory.limit()/6
+        if (is.na(cache.size))
+            if (.Machine$sizeof.pointer > 4)
+                cache.size <- 2048
+            else
+                cache.size <- 256
+        options(track.cache.size=cache.size)
+    }
+    max.size <- (2^20) * cache.size
     # get the order, youngest first (prioritize ones with cache='yes' or 'fixedyes')
     by.age <- order(imobjs[,"cache"]=="yes" | imobjs[,"cache"]=="fixedyes", imobjs[,"accessed"], decreasing=TRUE)
     # which ones can we definitely keep?
