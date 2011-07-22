@@ -49,6 +49,31 @@ tracked.envs(envirs=search())
   by \code{track.datadir()}.  It is not advisable to write other RData
   files to that directory.  Filenames for variables may change when an
   object is deleted and then recreated.
+
+  A warning message like "env R_GlobalEnv (pos 1 on search list) appears
+  to be an inactive tracked environment, saved from another session and
+  loaded here inappropriately" indicates that the environment has some
+  but not all of the structure of a tracked environment.  In particular,
+  the variable \code{.trackingEnv} exists in it, but does not seem to be
+  connected properly.  Some of the bindings may be active bindings, but
+  they may have come disconnected from the tracking environment.  The
+  most common way that this kind of situation can arise is from doing
+  \code{save.image()} before \code{track.stop()}, and then reloading the
+  saved image (e.g., when restarting R).
+  To fix this situation, do the following:
+  \enumerate{
+    \item \code{rm(.trackingEnv, pos=1)}
+    \item \code{names(which(!sapply(ls(pos=1), bindingIsActive,
+      as.environment(1))))} # to see which variables have active bindings
+    \item \code{x1 <- x} # for each variable x that has an active binding
+    and that you want to save
+    \item \code{rm(x, pos=1)}
+    \item \code{save.image()} # to overwrite the old saved .RData file
+  (only works with position 1)
+  }
+  If the inactive tracked environment is at a position other than 1 on the
+  search list, substitute the appropriate position for 1 in the above.
+
 }
 \author{Tony Plate \email{tplate@acm.org}}
 \seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
