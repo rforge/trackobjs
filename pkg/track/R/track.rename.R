@@ -243,6 +243,3 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
     }
     return(invisible(list(old=old, new=new)))
 }
-
-track.move <- function(from, to=1, list=NULL, pattern=NULL, glob=NULL, delete=TRUE, clobber=FALSE, verbose=TRUE, do.untrackable=FALSE)
-    track.copy(from=from, to=to, list=list, pattern=pattern, glob=glob, delete=delete, clobber=clobber, verbose=verbose, do.untrackable=do.untrackable)

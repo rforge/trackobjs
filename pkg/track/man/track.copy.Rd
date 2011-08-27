@@ -8,15 +8,16 @@
   Copy or move objects from one tracking db to another.
 }
 \usage{
-track.copy(from, to = 1, list = NULL, pattern = NULL, glob = NULL,
-           delete = FALSE, clobber = FALSE, verbose = TRUE, do.untrackable = FALSE)
-track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL,
-           delete = TRUE, clobber = FALSE, verbose = TRUE, do.untrackable = FALSE)
+track.copy(from, to = 1, list = NULL, pattern = NULL, glob = NULL, delete = FALSE,
+           clobber = FALSE, skipExisting = FALSE, verbose = TRUE, do.untrackable = FALSE)
+track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL, delete = TRUE,
+           clobber = FALSE, skipExisting = FALSE, verbose = TRUE, do.untrackable = FALSE)
 }
 \arguments{
   \item{from}{
     The position on the search list of the source db.  Can be numeric or
-    the name as returned by \code{search()}.
+    the name as returned by \code{search()}.  Can be a vector, in which
+    case the action is repeated for each element of \code{from}.
 }
   \item{to}{
     The position on the search list of the destination db.  Can be numeric or
@@ -35,14 +36,17 @@ track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL,
   Should the objects in the source db be removed? The default is
   \code{FALSE} for \code{track.copy} and \code{TRUE} for \code{track.move}.
 }
-  \item{clobber}{
+\item{clobber}{
   Should the objects in the destination db be overwritten?
+}
+\item{skipExisting}{
+  If \code{TRUE}, skip objects where an object of the same name already exists in the destination db .
 }
 \item{verbose}{
   If \code{TRUE}, write out what is being done.
 }
 \item{do.untrackable}{
-  If \code{TRUE}, also copy untrackable objects.
+  If \code{TRUE}, also copy untrackable objects.  Not yet implemented.
 }
 }
 \details{
