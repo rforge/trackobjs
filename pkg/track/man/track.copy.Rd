@@ -64,7 +64,7 @@ track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL, delete = TRUE
   flag conflicts with what it needs to do.
 
   The metadata in source and destination tracking dbs (i.e., the file
-  map and the object summary) are update after each object is copied.
+  map and the object summary) are updated after each object is copied.
   Thus, if an error occurs during copying, e.g., due to filesystem
   permissions or lack of space, the source and destination dbs will be
   left in a consistent state.
@@ -72,6 +72,8 @@ track.move(from, to = 1, list = NULL, pattern = NULL, glob = NULL, delete = TRUE
   \code{track.move} calls \code{track.copy} with a default of
   \code{delete=TRUE} to remove the source object.
 
+  \strong{NB: \code{do.untrackable} is not yet implemented:
+  untracked/untrackable objects are ignored.}
   By default, untrackable objects in the source tracking db will not be
   copied or moved, and a warning will be given.  The rules for
   untrackability are those of the destination db, as specified by the

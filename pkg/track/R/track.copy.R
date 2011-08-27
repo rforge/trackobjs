@@ -17,6 +17,8 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
         }
         return(invisible(NULL))
     }
+    if (do.untrackable)
+        warning("do.untrackable not yet implemented")
     env.to <- as.environment(to)
     env.from <- as.environment(from)
     if (identical(env.to, env.from))
