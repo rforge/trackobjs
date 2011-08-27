@@ -1,5 +1,6 @@
 track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                         create=TRUE, clobber=c("no", "files", "variables", "vars", "var"),
+                        discardMissing=FALSE,
                         cache=NULL, cachePolicy=NULL,
                         options=NULL, RDataSuffix=NULL, auto=NULL,
                         readonly=FALSE, lockEnv=FALSE, check.Last=TRUE,
@@ -189,7 +190,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         opt$readonly <- readonly
     assign(".trackingOptions", opt, envir=trackingEnv)
     fileMapPath <- file.path(dataDir, "filemap.txt")
-    fileMapCreated <- FALSE
+    fileMapChanged <- FALSE
     objSummaryPath <- file.path(dataDir, paste(".trackingSummary.", opt$RDataSuffix, sep=""))
     ## Create a default empty objSummary -- an existing one will replace this
     objSummary <- summaryRow(name="", opt=opt)[0,]
@@ -203,7 +204,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             stop("failed to create tracking dir '", dataDir, "'")
         fileMap <- character(0)
         assign(".trackingFileMap", fileMap, envir=trackingEnv)
-        fileMapCreated <- TRUE
+        fileMapChanged <- TRUE
         assign(".trackingSummary", objSummary, envir=trackingEnv)
     } else {
         ## Try to read the summary first, because if there is a problem with fileMap,
@@ -229,9 +230,20 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             fileMap <- readFileMapFile(trackingEnv, dataDir, TRUE)
             if (length(fileMap)) {
                 fileExists <- file.exists(file.path(dataDir, paste(fileMap, sep=".", opt$RDataSuffix)))
-                if (any(!fileExists))
-                    warning("missing files for some variables in the fileMap (remove or assign variables to repair): ",
-                         paste(names(fileMap)[!fileExists], collapse=", "))
+                if (any(!fileExists)) {
+                    if (discardMissing) {
+                        if (verbose)
+                            cat('Discarding info about objects with missing save files: ',
+                                 paste(names(fileMap)[!fileExists], collapse=", "), "\n", sep="")
+                        if (any(names(fileMap)[!fileExists] %in% rownames(objSummary)))
+                            objSummary <- objSummary[! (rownames(objSummary) %in% names(fileMap)[!fileExists]), , drop=FALSE]
+                        fileMap <- fileMap[!fileExists]
+                        fileMapChanged <- TRUE
+                    } else {
+                        warning("missing files for some variables in the fileMap (supply discardMissing=TRUE or remove or assign variables to repair): ",
+                                paste(names(fileMap)[!fileExists], collapse=", "))
+                    }
+                }
             }
             alreadyExists <- logical(0)
             if (length(fileMap))
@@ -284,7 +296,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             if (length(files)==0) {
                 ## No files: start with a new fileMap and objSummary
                 fileMap <- character(0)
-                fileMapCreated <- TRUE
+                fileMapChanged <- TRUE
                 assign(".trackingFileMap", fileMap, envir=trackingEnv)
             } else {
                 stop("tracking dir \"", dir, "\" has some data files in it, but has no filemap.txt file -- use track.rebuild() to fix it")
@@ -300,7 +312,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         }
     }
     ## Do we need to save the fileMap ? (only if changed)
-    if (fileMapCreated && !opt$readonly)
+    if (fileMapChanged && !opt$readonly)
         writeFileMapFile(fileMap, trackingEnv, dataDir, TRUE)
     ## We always need to save the summary...
     assign(".trackingSummary", objSummary, envir=trackingEnv)

@@ -102,7 +102,7 @@ Removing <env track:tmp14> from the search path
 Attaching tracking db in 'tmp14' to env in pos 2 (readonly)
 Warning message:
 In track.start(trackingDir, pos = pos, readonly = readonly, create = create,  :
-  missing files for some variables in the fileMap (remove or assign variables to repair): y
+  missing files for some variables in the fileMap (supply discardMissing=TRUE or remove or assign variables to repair): y
 > track.stop(pos=2)
 Stopping tracking on <env track:tmp14>
 Removing <env track:tmp14> from the search path

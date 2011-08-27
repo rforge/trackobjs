@@ -23,13 +23,14 @@ track.rescan(pos = 2)
 track.start(dir="rdatadir", pos = 1, envir = as.environment(pos),
         create = TRUE,
         clobber = c("no", "files", "variables", "vars", "var"),
+        discardMissing = FALSE,
         cache = NULL, cachePolicy = NULL, options = NULL,
         RDataSuffix = NULL, auto = NULL, readonly = FALSE,
         lockEnv = FALSE, check.Last = TRUE, verbose = TRUE)
 track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
         stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE,
         verbose = TRUE, detach = TRUE, callFrom = NULL)
-track.rescan(pos = 1, envir = as.environment(pos),
+track.rescan(pos = 1, envir = as.environment(pos), discardMissing = FALSE,
              forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
 track.Last()
 % .Last()
@@ -51,6 +52,8 @@ track.Last()
   \code{vars} or \code{var} means
     use the version in \code{envir} (and overwrite the version in the
     tracking directory)}
+  \item{discardMissing}{ Discard all information about objects whose save
+    file is missing?}
   \item{cache}{ Should objects be keep cached in memory?  Default is \code{TRUE}.  This option is a shorthand way of supplying \code{options=list(cache=...)}.}
   \item{cachePolicy}{ Policy for keeping cached objects in memory.
   Default is \code{tltPurge}, for which cached objects are removed
@@ -82,7 +85,7 @@ track.Last()
   it (though not if it was not created by \code{track.attach}).}
   \item{callFrom}{A character string used in a message saying where
   \code{track.stop()} was called from.}
-  \item{forgetModified}{ If \code{TRUE}, discard copies that are
+  \item{forgetModified}{ If \code{TRUE}, discard the versions of objects that are
     modified and in memory }
   \item{RDataSuffix}{The suffix to use for \code{RData} files.  This
     should not normally need to be specified.}

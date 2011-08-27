@@ -33,7 +33,7 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp18'
 Warning message:
 In track.start(dir = "tmp18") :
-  missing files for some variables in the fileMap (remove or assign variables to repair): x
+  missing files for some variables in the fileMap (supply discardMissing=TRUE or remove or assign variables to repair): x
 > x
 #@gsub("file '.*/x.rda' does not exist", "file 'x.rda' does not exist", both)
 Error in getTrackedVar("x", <environment>) : 

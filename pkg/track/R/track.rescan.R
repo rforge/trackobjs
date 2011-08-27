@@ -1,4 +1,5 @@
-track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE, level=c("high", "low"), dryRun=FALSE) {
+track.rescan <- function(pos=1, envir=as.environment(pos), discardMissing=FALSE,
+                         forgetModified=FALSE, level=c("high", "low"), dryRun=FALSE) {
     ## Rescan the tracking dir, so that if anything has changed there,
     ## the current variables on file will be used instead of any cached
     ## in memory.
@@ -9,6 +10,13 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
     ## this session) will disappear from visibility, and variables added
     ## to the tracking dir will become available.
     level <- match.arg(level)
+    if (length(pos)>1) {
+        if (!missing(envir))
+            stop("cannot supply both envir and pos with length > 1")
+        for (p in pos)
+            track.rescan(p, discardMissing=discardMissing, forgetModified=forgetModified, level=level, dryRun=dryRun)
+        return(invisible(NULL))
+    }
     unsaved <- track.unsaved(envir=envir)
     if (!forgetModified && length(unsaved))
         stop("env ", envname(envir), " has unsaved variables: ",
@@ -45,6 +53,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
         if (!dryRun) {
             track.stop(envir=envir, detach=FALSE, verbose=TRUE)
             track.start(dir=dir, envir=envir, create=FALSE, verbose=TRUE,
+                        discardMissing=discardMissing,
                         readonly=opt$readonly, lockEnv=environmentIsLocked(envir))
         }
         return(invisible(NULL))
@@ -163,4 +172,5 @@ track.rescan <- function(pos=1, envir=as.environment(pos), forgetModified=FALSE,
             assign(".trackingFileMap", fileMap, envir=trackingEnv)
         }
     }
+    invisible(NULL)
 }
