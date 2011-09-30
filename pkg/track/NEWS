@@ -1,3 +1,8 @@
+                CHANGES in track version 1.0-10 (2011-05-01)
+FIXES
+    o   Bug fix: track.start(discardMissing=TRUE) was not
+        working.
+
                 CHANGES in track version 1.0-8 (2011-05-01)
 ENHANCEMENTS
     o   Changed task callback 'track.auto' to call track.sync()
