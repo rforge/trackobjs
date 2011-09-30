@@ -509,19 +509,19 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             cat(paste(format(c("Object", names(fileMap)[i])), " ", format(c("File", paste(fileMap[i], suffix, sep="."))), "\n", sep=""), sep="")
             filesToRead <- c(filesToRead, fileMap[i])
         }
-        ## Reuse data for objects in the fileMap that are in the summary
-        ## and have objects or files.
-        ## First look at objects in the env
-        objNames <- intersect(names(fileMap), row.names(envSummary))
-        reuseSummary <- envSummary[objNames,,drop=FALSE]
-        objNames <- setdiff(intersect(names(fileMap), row.names(fileSummary)), objNames)
-        if (length(objNames))
-            reuseSummary <- rbind(reuseSummary, fileSummary[objNames,,drop=FALSE])
-        reuseObjs <- row.names(reuseSummary)
-        # reuseFileMap <- fileMap[reuseObjs]
     } else {
         filesToRead <- unique(c(names(dbFiles), fileMap))
     }
+    ## Reuse data for objects in the fileMap that are in the summary
+    ## and have objects or files.
+    ## First look at objects in the env
+    objNames <- intersect(names(fileMap), row.names(envSummary))
+    reuseSummary <- envSummary[objNames,,drop=FALSE]
+    objNames <- setdiff(intersect(names(fileMap), row.names(fileSummary)), objNames)
+    if (length(objNames))
+        reuseSummary <- rbind(reuseSummary, fileSummary[objNames,,drop=FALSE])
+    reuseObjs <- row.names(reuseSummary)
+    # reuseFileMap <- fileMap[reuseObjs]
 
     ##
     ## Read each of the files in filesToRead (or its object in the env)
