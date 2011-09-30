@@ -795,4 +795,121 @@ x3     tracked FALSE       x3       TRUE  TRUE
 > track.stop()
 Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp7", recursive=TRUE)
+> rm(list=ls(all=TRUE))
+> 
+> #############
+> # Badly damage a tracking db: two missing files, and two objects missing from the filemap
+> # First time, start tracking with discardMissing=TRUE and check that works
+> track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp7'
+> track(aa <- 1)
+> track(bb <- 2)
+> track(cc <- 3)
+> track(dd <- 4)
+> track(ee <- 5)
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> unlink('tmp7/aa.rda')
+> unlink('tmp7/bb.rda')
+> x <- readLines('tmp7/fileMap.txt')[1:3]
+> writeLines(x, con='tmp7/fileMap.txt')
+> rm(x)
+> track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none", discardMissing=TRUE)
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
+Discarding info about objects with missing save files: aa, bb
+> cc
+[1] 3
+> list.files('tmp7')
+[1] "cc.rda"      "dd.rda"      "ee.rda"      "filemap.txt"
+> 
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> unlink("tmp7", recursive=TRUE)
+> 
+> #############
+> # Second time, start tracking with discardMissing=FALSE and check that track.rebuild() works
+> track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp7'
+> track(aa <- 1)
+> track(bb <- 2)
+> track(cc <- 3)
+> track(dd <- 4)
+> track(ee <- 5)
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> unlink('tmp7/aa.rda')
+> unlink('tmp7/bb.rda')
+> x <- readLines('tmp7/fileMap.txt')[1:3]
+> writeLines(x, con='tmp7/fileMap.txt')
+> rm(x)
+> track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
+Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
+Warning message:
+In track.start("tmp7", auto = FALSE, cache = FALSE, cachePolicy = "none") :
+  missing files for some variables in the fileMap (supply discardMissing=TRUE or remove or assign variables to repair): aa, bb
+> 
+> track.rebuild()
+dryRun=TRUE: no changes will be actually be made
+Rebuilding an active tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Found a fileMap in the environment and on disk
+Using tracking summary from tracking environment.
+Using tracking summary read from file.
+Cannot find some objects in the fileMap: no file on disk, and object is not in the tracking environment:
+   filename
+aa   aa.rda
+bb   bb.rda
+Error in track.rebuild() : 
+  can only proceed with level='all' -- and in that case the meta info for these lost objects will be lost
+> track.rebuild(level='all')
+dryRun=TRUE: no changes will be actually be made
+Rebuilding an active tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Found a fileMap in the environment and on disk
+Using tracking summary from tracking environment.
+Using tracking summary read from file.
+Cannot find some objects in the fileMap: no file on disk, and object is not in the tracking environment:
+   filename
+aa   aa.rda
+bb   bb.rda
+loaded 'cc'
+loaded 'dd'
+loaded 'ee'
+Object 'aa' is not stored on file ('./tmp7/aa.rda') and is not cached -- forgetting about it
+Object 'bb' is not stored on file ('./tmp7/bb.rda') and is not cached -- forgetting about it
+Would rebuild 2 missing active bindings: dd, ee
+Run with dryRun=FALSE to actually make changes
+> track.rebuild(level='all', dryRun=FALSE)
+Rebuilding an active tracking database
+Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
+Found a fileMap in the environment and on disk
+Using tracking summary from tracking environment.
+Using tracking summary read from file.
+Cannot find some objects in the fileMap: no file on disk, and object is not in the tracking environment:
+   filename
+aa   aa.rda
+bb   bb.rda
+loaded 'cc'
+loaded 'dd'
+loaded 'ee'
+Object 'aa' is not stored on file ('./tmp7/aa.rda') and is not cached -- forgetting about it
+Object 'bb' is not stored on file ('./tmp7/bb.rda') and is not cached -- forgetting about it
+Rebuilding 2 missing active bindings: dd, ee
+> ls()
+[1] "cc" "dd" "ee"
+> track.status()
+    Status InMem FileBase FileExists Saved
+cc tracked FALSE       cc       TRUE  TRUE
+dd tracked FALSE       dd       TRUE  TRUE
+ee tracked FALSE       ee       TRUE  TRUE
+> cc
+[1] 3
+> dd
+[1] 4
+> ee
+[1] 5
+> 
+> track.stop()
+Stopping tracking on <env R_GlobalEnv>
+> unlink("tmp7", recursive=TRUE)
 > 

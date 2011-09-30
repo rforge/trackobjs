@@ -1,7 +1,11 @@
-                CHANGES in track version 1.0-10 (2011-05-01)
+                CHANGES in track version 1.0-10 (2011-09-29)
+ENHANCEMENTS
+    o   from= argument on track.move()/track.copy() can take a vector
+    o   add skipExisting= argument to track.move()/track.copy()
 FIXES
-    o   Bug fix: track.start(discardMissing=TRUE) was not
-        working.
+    o   track.start(discardMissing=TRUE) was not working.
+    o   track.rebuild() was not working in some cases; fixed &
+        added tests
 
                 CHANGES in track version 1.0-8 (2011-05-01)
 ENHANCEMENTS

@@ -556,6 +556,11 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             i <- match(objName, names(fileMap))
             if (!is.na(i))
                 fileMap <- fileMap[-i]
+            ## Remove the active binding
+            if (!dryRun && activeTracking && exists(objName, envir=envir, inherits=FALSE))
+                rm(list=objName, envir=envir)
+            if (is.element(objName, rownames(reuseSummary)))
+                reuseSummary <- reuseSummary[-match(objName, rownames(reuseSummary)), , drop=FALSE]
         } else {
             if (verbose > 1)
                 cat("Loading file '", abbrevWD(file.path(dataDir, objFile)), "' for ",
@@ -749,7 +754,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                 "newly constructed entries and uses",  sumRowsReused, "recovered and",
                 (if (is.null(reuseSummary)) 0 else nrow(reuseSummary)),
                 "old entries\n")
-        newSummary <- rbind(reuseSummary, newSummary)
+        newSummary <- rbind(reuseSummary, newSummary[!(rownames(newSummary) %in% rownames(reuseSummary)), , drop=FALSE])
     } else {
         if (verbose>1)
             cat("New summary has zero entries\n")
@@ -779,7 +784,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                             setTrackedVar(x, v, envir)
                     }, list(x=objName, envir=trackingEnv))
                     mode(f) <- "function"
-                    environment(f) <- emptyenv()
+                    environment(f) <- parent.env(environment(f))
                     makeActiveBinding(objName, env=envir, fun=f)
                 }
             }
@@ -799,7 +804,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         res$masked <- masked
     if (dryRun) {
         cat("Run with dryRun=FALSE to actually make changes\n")
-        return(res)
+        return(invisible(res))
     } else {
         if (activeTracking) {
             if (verbose>1)

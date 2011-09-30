@@ -69,7 +69,7 @@ track.rebuild(pos = 1, envir = as.environment(pos), dir = NULL,
   \item{masked}{(optinal) The names of tracked variables that are masked
     by other variables in the tracked environment.
     This component is only present if it is non-empty.}
-  The returned value is visible if \code{dryRun=TRUE} and invisible otherwise.
+  The returned value is invisible.
 }
 
 \author{Tony Plate <tplate@acm.org>}
