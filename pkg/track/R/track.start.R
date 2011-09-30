@@ -236,8 +236,8 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                             cat('Discarding info about objects with missing save files: ',
                                  paste(names(fileMap)[!fileExists], collapse=", "), "\n", sep="")
                         if (any(names(fileMap)[!fileExists] %in% rownames(objSummary)))
-                            objSummary <- objSummary[! (rownames(objSummary) %in% names(fileMap)[!fileExists]), , drop=FALSE]
-                        fileMap <- fileMap[!fileExists]
+                            objSummary <- objSummary[(rownames(objSummary) %in% names(fileMap)[fileExists]), , drop=FALSE]
+                        fileMap <- fileMap[fileExists]
                         fileMapChanged <- TRUE
                     } else {
                         warning("missing files for some variables in the fileMap (supply discardMissing=TRUE or remove or assign variables to repair): ",
