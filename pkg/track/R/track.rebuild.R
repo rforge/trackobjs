@@ -114,7 +114,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         ## (different names for the same directory) by creating a
         ## temporary file in the directory, and then looking for it.
         activeTracking <- FALSE
-        if (!file.exists(dir))
+        if (!dir.exists(dir))
             stop("'", dir, "' does not exist")
         tmpfile <- tempfile(".rebuildTest", dir)
         tmpfilebase <- basename(tmpfile)
@@ -179,7 +179,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         suffixRegExp <- gopt$RDataSuffixes
     else
         suffixRegExp <- paste("(", paste(gopt$RDataSuffixes, collapse="|", sep=""), ")", sep="")
-    if (!file.exists(file.path(dataDir)))
+    if (!dir.exists(file.path(dataDir)))
         stop("dataDir does not exist: \"", dataDir, "\"")
 
     ## Try to work out the suffix being used
@@ -637,7 +637,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                     newFileMap <- setNamedElt(newFileMap, load.res, objFileBase)
             } else if (fix) {
                 if (!dryRun) {
-                    if (!file.exists(quarantineDir))
+                    if (!dir.exists(quarantineDir))
                         dir.create(quarantineDir)
                     if (!file.rename(file.path(dataDir, objFile), file.path(quarantineDir, objFile)))
                         cat("Unable to move '", objFile, "' to quarantine\n", sep="")

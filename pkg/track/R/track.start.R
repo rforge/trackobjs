@@ -93,7 +93,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         else
             auto <- TRUE
     optionsPath <- NULL
-    if (file.exists(file.path(dataDir))) {
+    if (dir.exists(file.path(dataDir))) {
         ## Try to work out the suffix being used
         ## First look for .trackingOptions file
         suffix <- NULL
@@ -194,13 +194,13 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     objSummaryPath <- file.path(dataDir, paste(".trackingSummary.", opt$RDataSuffix, sep=""))
     ## Create a default empty objSummary -- an existing one will replace this
     objSummary <- summaryRow(name="", opt=opt)[0,]
-    if (!file.exists(file.path(dataDir))) {
+    if (!dir.exists(file.path(dataDir))) {
         if (!create)
             stop("dir \"", dataDir, "\" does not exist (supply create=TRUE to create it)")
         res <- dir.create(file.path(dataDir), recursive=TRUE)
         if (is(res, "try-error"))
             stop("could not creating tracking dir '", dataDir, "': ", res)
-        if (!file.exists(dataDir))
+        if (!dir.exists(dataDir))
             stop("failed to create tracking dir '", dataDir, "'")
         fileMap <- character(0)
         assign(".trackingFileMap", fileMap, envir=trackingEnv)

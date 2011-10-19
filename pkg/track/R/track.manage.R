@@ -126,7 +126,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
                 if (length(load.res)<1 || load.res[1] != objName) {
                     warning("file '", filePath, "' did not contain obj '", objName,
                             "' as its first object - moving this file to ", quarantine.dir)
-                    if (!file.exists(quarantine.dir))
+                    if (!dir.exists(quarantine.dir))
                         dir.create(quarantine.dir)
                     file.rename(filePath, file.path(dataDir, "quarantine", file))
                 } else {

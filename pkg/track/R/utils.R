@@ -396,7 +396,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
     ## Find the directory where we are saving, and create subdirs if necessary
     dir <- getTrackingDir(trackingEnv)
     for (d in unique(c(dir, getDataDir(dir))))
-        if (!file.exists(d))
+        if (!dir.exists(d))
             dir.create(d)
     ## Work out the name of the file to use for this var
     if (is.null(file)) {
@@ -663,6 +663,14 @@ exclude.from.tracking <- function(objName, objClasses=NULL, opt) {
     for (re in opt$autoTrackExcludePattern)
         exclude <- exclude | regexpr(re, objName) >= 1
     exclude
+}
+
+dir.exists <- function(dir) {
+    ## Need this because sometimes directories on network drives
+    ## under windows aren't seen by file.exists().  (Even if
+    ## they have files in them.  But the tests for existence for
+    ## the files in them work fine.)
+    file.exists(dir) || (file.access(dir, mode=0)==0)
 }
 
 if (FALSE) {

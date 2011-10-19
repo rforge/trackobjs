@@ -3,8 +3,10 @@
 ##  because the R.utils package requires the R.oo package,
 ##  which redefines a whole lot of stuff, which I'd rather not do.
 
-##  TAP: would it make sense to change [A-Z] to [[:alpha:]] or at least [A-Za-z]?
+##  TAP: * changed [A-Z] to [A-Za-z] (want to change to [[:alpha:]]?)
 ##       (for detecting drive letters in paths)
+##       * call dir.exists() instead of file.exists() on directories
+##
 
 extract.file.utils.funcs <- function(file=NULL) {
     # have to have R.utils attached ahead of track when running this func
@@ -48,7 +50,7 @@ filePath <-
         pathname
     }
     removeUpsFromPathname <- function(pathname, split = FALSE) {
-        if (regexpr("^[A-Z]:[/\\]$", pathname) != -1)
+        if (regexpr("^[A-Za-z]:[/\\]$", pathname) != -1)
             return(gsub("\\\\", "/", pathname))
         components <- strsplit(pathname, split = "[/\\]")[[1]]
         if (length(components) > 1) {
@@ -116,14 +118,14 @@ filePath <-
             lnkFile <- pathname
         }
         else {
-            if (file.exists(pathname)) {
+            if (dir.exists(pathname)) {
                 expandedPathname <- pathname
                 isFirst <- FALSE
                 next
             }
             if (isFirst) {
                 isFirst <- FALSE
-                if (file.exists(paste(pathname, "", sep = fsep))) {
+                if (dir.exists(paste(pathname, "", sep = fsep))) {
                   expandedPathname <- pathname
                   next
                 }

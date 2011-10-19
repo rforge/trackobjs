@@ -61,7 +61,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
         old.tempDir <- tempfile(pattern="__renamedir", tmpdir=dir)
         dir.create(old.tempDir)
         on.exit(unlink(old.tempDir, recursive=TRUE), add=TRUE)
-        if (!file.exists(old.tempDir))
+        if (!dir.exists(old.tempDir))
             stop("failed to create temporary directory '", old.tempDir, "' to use for temp copies of files")
         for (objName in old[old.inTempFile]) {
             oldFile <- file.path(dir, paste(fileMap[objName], opt$RDataSuffix, sep="."))
