@@ -811,8 +811,8 @@ Tracking <env R_GlobalEnv> (writable) using new directory 'tmp7'
 Stopping tracking on <env R_GlobalEnv>
 > unlink('tmp7/aa.rda')
 > unlink('tmp7/bb.rda')
-> x <- readLines('tmp7/fileMap.txt')[1:3]
-> writeLines(x, con='tmp7/fileMap.txt')
+> x <- readLines('tmp7/filemap.txt')[1:3]
+> writeLines(x, con='tmp7/filemap.txt')
 > rm(x)
 > track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none", discardMissing=TRUE)
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
@@ -839,8 +839,8 @@ Tracking <env R_GlobalEnv> (writable) using new directory 'tmp7'
 Stopping tracking on <env R_GlobalEnv>
 > unlink('tmp7/aa.rda')
 > unlink('tmp7/bb.rda')
-> x <- readLines('tmp7/fileMap.txt')[1:3]
-> writeLines(x, con='tmp7/fileMap.txt')
+> x <- readLines('tmp7/filemap.txt')[1:3]
+> writeLines(x, con='tmp7/filemap.txt')
 > rm(x)
 > track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
