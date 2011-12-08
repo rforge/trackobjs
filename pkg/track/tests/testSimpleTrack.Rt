@@ -5,7 +5,8 @@
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > options(width=100)
-> track:::create.fake.Sys.time(0)
+> source('fake.Sys.time.Rcode')
+> create.fake.Sys.time(0)
 > unlink("tmp8", recursive=TRUE)
 > options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp8")

@@ -29,7 +29,8 @@
 > #################################################
 > 
 > # Test (1) rebuild a complete unlinked directory (nothing to do)
-> track:::create.fake.Sys.time(0)
+> source('fake.Sys.time.Rcode')
+> create.fake.Sys.time(0)
 > options(global.track.options=list(cacheKeepFun='none'))
 > track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp7'
@@ -118,7 +119,8 @@ Stopping tracking on <env R_GlobalEnv>
 > 
 > # Test (3) rebuild a unlinked directory with filemap gone
 > unlink("tmp7/filemap.txt")
-> track:::create.fake.Sys.time(3600)
+> source('fake.Sys.time.Rcode')
+> create.fake.Sys.time(3600)
 > res <- track.rebuild(dir="tmp7", verbose=2, dryRun=FALSE)
 Rebuilding an inactive tracking database
 Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
@@ -200,7 +202,8 @@ Stopping tracking on <env R_GlobalEnv>
 > save(".trackingSummary", file="tmp7/.trackingSummary.rda")
 > remove(list=c("filemap", ".trackingSummary"))
 > # Put the 'time' forward another hour to make new times clearly visible
-> track:::create.fake.Sys.time(2*3600)
+> source('fake.Sys.time.Rcode')
+> create.fake.Sys.time(2 * 3600)
 > res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, dryRun=FALSE)
 Rebuilding an inactive tracking database
 Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
@@ -273,7 +276,8 @@ Stopping tracking on <env R_GlobalEnv>
 > save("X6", file="tmp7/_6.rda")
 > remove(list=c("filemap", ".trackingSummary", "x1", "x2", "x1.1", "x3", "X4", "X5", "X6"))
 > # Put the 'time' forward another hour to make new times clearly visible
-> track:::create.fake.Sys.time(3*3600)
+> source('fake.Sys.time.Rcode')
+> create.fake.Sys.time(3 * 3600)
 > res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, dryRun=TRUE, fix=FALSE)
 dryRun=TRUE: no changes will be actually be made
 Rebuilding an inactive tracking database
@@ -512,7 +516,8 @@ Stopping tracking on <env R_GlobalEnv>
 > # Test (7) rebuild an active directory with the filemap & summary
 > #   missing entries (different missing in the env & file
 > #   versions), & new .rda files
-> track:::create.fake.Sys.time(3600 * 4)
+> source('fake.Sys.time.Rcode')
+> create.fake.Sys.time(4 * 3600)
 > track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
 > track(x <- 33)
@@ -582,7 +587,8 @@ x3     tracked FALSE       x3       TRUE  TRUE
 > # put an extra object in the tracking directory
 > assign("cc", list(6), envir=get(".trackingEnv", envir=globalenv()))
 > # and see if we can rebuild ...
-> track:::create.fake.Sys.time(3600 * 5)
+> source('fake.Sys.time.Rcode')
+> create.fake.Sys.time(3600 * 5)
 > res <- track.rebuild(verbose=2, fix=TRUE, dryRun=TRUE, use.file.times=FALSE)
 dryRun=TRUE: no changes will be actually be made
 Rebuilding an active tracking database
