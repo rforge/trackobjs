@@ -101,6 +101,9 @@ $compression_level
 $debug
 [1] 0
 
+$use.fake.Sys.time
+[1] FALSE
+
 $maintainSummary
 [1] TRUE
 

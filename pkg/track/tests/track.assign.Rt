@@ -2,10 +2,8 @@
 > # Set the locale used by order() so that track.status() & track.summary() put
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(0)
 > unlink("tmp21", recursive=TRUE)
-> options(global.track.options=list(cacheKeepFun='none'))
+> options(global.track.options=list(cacheKeepFun='none', use.fake.Sys.time=TRUE))
 > track.start("tmp21")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp21'
 > track.assign("y", 1)

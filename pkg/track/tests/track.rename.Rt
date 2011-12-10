@@ -1,9 +1,7 @@
 > # want to make sure creation & mod times are carried over when renaming
 > # so use fake times to make test output always the same
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(0)
 > invisible(if (file.exists("tmp21")) unlink("tmp21", recursive=TRUE))
-> options(global.track.options=list(cacheKeepFun='none'))
+> options(global.track.options=list(cacheKeepFun='none', use.fake.Sys.time=TRUE))
 > track.start(dir="tmp21")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp21'
 > a <- 1

@@ -29,9 +29,8 @@
 > #################################################
 > 
 > # Test (1) rebuild a complete unlinked directory (nothing to do)
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(0)
-> options(global.track.options=list(cacheKeepFun='none'))
+> options(global.track.options=list(cacheKeepFun='none', use.fake.Sys.time=TRUE))
+> track:::set.fake.Sys.time(1)
 > track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp7'
 > track(x <- 33)
@@ -119,8 +118,7 @@ Stopping tracking on <env R_GlobalEnv>
 > 
 > # Test (3) rebuild a unlinked directory with filemap gone
 > unlink("tmp7/filemap.txt")
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(3600)
+> track:::set.fake.Sys.time(3600)
 > res <- track.rebuild(dir="tmp7", verbose=2, dryRun=FALSE)
 Rebuilding an inactive tracking database
 Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
@@ -177,7 +175,7 @@ Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2
 abc character character     [1]      1 2001-01-01 09:00:09 2001-01-01 09:00:09 2001-01-01 09:00:14  3  1
 def      list      list   [[3]]      3 2001-01-01 09:00:10 2001-01-01 09:00:10 2001-01-01 09:00:10  0  1
 x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
-z     numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08  0  1
+z     numeric   numeric     [1]      1 2001-01-01 10:00:07 2001-01-01 10:00:07 2001-01-01 10:00:07  0  1
 > track.status()
        Status InMem FileBase FileExists Saved
 X     tracked FALSE       _1       TRUE  TRUE
@@ -202,8 +200,7 @@ Stopping tracking on <env R_GlobalEnv>
 > save(".trackingSummary", file="tmp7/.trackingSummary.rda")
 > remove(list=c("filemap", ".trackingSummary"))
 > # Put the 'time' forward another hour to make new times clearly visible
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(2 * 3600)
+> track:::set.fake.Sys.time(2 * 3600)
 > res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, dryRun=FALSE)
 Rebuilding an inactive tracking database
 Guessing RDataSuffix to be 'rda' from name '.trackingSummary.rda'
@@ -226,10 +223,10 @@ Saving object summary to file.
         class      mode  extent length            modified             created            accessed A ES SA SW PA PW
 X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  3  0  0  2  3
 Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  3  0  0  1  1
-abc character character     [1]      1 2001-01-01 11:00:03 2001-01-01 11:00:03 2001-01-01 11:00:03 1  1  0  1  0  0
-def      list      list   [[3]]      3 2001-01-01 11:00:04 2001-01-01 11:00:04 2001-01-01 11:00:04 1  1  0  1  0  0
+abc character character     [1]      1 2001-01-01 11:00:02 2001-01-01 11:00:02 2001-01-01 11:00:02 1  1  0  1  0  0
+def      list      list   [[3]]      3 2001-01-01 11:00:03 2001-01-01 11:00:03 2001-01-01 11:00:03 1  1  0  1  0  0
 x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  3  0  0  0  1
-z     numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08 1  1  0  1  0  0
+z     numeric   numeric     [1]      1 2001-01-01 10:00:07 2001-01-01 10:00:07 2001-01-01 10:00:07 1  1  0  1  0  0
     cache
 X      no
 Y      no
@@ -243,10 +240,10 @@ Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
         class      mode  extent length            modified             created            accessed TA TW
 X       array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
 Y        list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11  1  1
-abc character character     [1]      1 2001-01-01 11:00:03 2001-01-01 11:00:03 2001-01-01 11:00:03  0  1
-def      list      list   [[3]]      3 2001-01-01 11:00:04 2001-01-01 11:00:04 2001-01-01 11:00:04  0  1
+abc character character     [1]      1 2001-01-01 11:00:02 2001-01-01 11:00:02 2001-01-01 11:00:02  0  1
+def      list      list   [[3]]      3 2001-01-01 11:00:03 2001-01-01 11:00:03 2001-01-01 11:00:03  0  1
 x     numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
-z     numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08  0  1
+z     numeric   numeric     [1]      1 2001-01-01 10:00:07 2001-01-01 10:00:07 2001-01-01 10:00:07  0  1
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -276,8 +273,7 @@ Stopping tracking on <env R_GlobalEnv>
 > save("X6", file="tmp7/_6.rda")
 > remove(list=c("filemap", ".trackingSummary", "x1", "x2", "x1.1", "x3", "X4", "X5", "X6"))
 > # Put the 'time' forward another hour to make new times clearly visible
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(3 * 3600)
+> track:::set.fake.Sys.time(3 * 3600)
 > res <- track.rebuild(dir="tmp7", verbose=2, use.file.times=FALSE, dryRun=TRUE, fix=FALSE)
 dryRun=TRUE: no changes will be actually be made
 Rebuilding an inactive tracking database
@@ -325,18 +321,18 @@ Run with dryRun=FALSE to actually make changes
 > res$summary[ , -5]
          class      mode  extent length            modified             created            accessed A ES SA SW PA PW
 X        array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  4  0  0  2  3
-X4     numeric   numeric     [1]      1 2001-01-01 12:00:11 2001-01-01 12:00:11 2001-01-01 12:00:11 1  1  0  1  0  0
-X5     numeric   numeric     [1]      1 2001-01-01 12:00:03 2001-01-01 12:00:03 2001-01-01 12:00:03 1  1  0  1  0  0
-X6     numeric   numeric     [1]      1 2001-01-01 12:00:05 2001-01-01 12:00:05 2001-01-01 12:00:05 1  1  0  1  0  0
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:10 2001-01-01 12:00:10 2001-01-01 12:00:10 1  1  0  1  0  0
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:02 2001-01-01 12:00:02 2001-01-01 12:00:02 1  1  0  1  0  0
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:04 2001-01-01 12:00:04 2001-01-01 12:00:04 1  1  0  1  0  0
 Y         list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  4  0  0  1  1
-abc  character character     [1]      1 2001-01-01 12:00:06 2001-01-01 12:00:06 2001-01-01 12:00:06 1  1  0  1  0  0
-def       list      list   [[3]]      3 2001-01-01 12:00:12 2001-01-01 12:00:12 2001-01-01 12:00:12 1  1  0  1  0  0
+abc  character character     [1]      1 2001-01-01 12:00:05 2001-01-01 12:00:05 2001-01-01 12:00:05 1  1  0  1  0  0
+def       list      list   [[3]]      3 2001-01-01 12:00:11 2001-01-01 12:00:11 2001-01-01 12:00:11 1  1  0  1  0  0
 x      numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  4  0  0  0  1
-x1     numeric   numeric     [1]      1 2001-01-01 12:00:08 2001-01-01 12:00:08 2001-01-01 12:00:08 1  1  0  1  0  0
-x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:07 2001-01-01 12:00:07 2001-01-01 12:00:07 1  1  0  1  0  0
-x2     numeric   numeric     [1]      1 2001-01-01 12:00:09 2001-01-01 12:00:09 2001-01-01 12:00:09 1  1  0  1  0  0
-x3     numeric   numeric     [1]      1 2001-01-01 12:00:10 2001-01-01 12:00:10 2001-01-01 12:00:10 1  1  0  1  0  0
-z      numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08 1  2  0  0  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:07 2001-01-01 12:00:07 2001-01-01 12:00:07 1  1  0  1  0  0
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:06 2001-01-01 12:00:06 2001-01-01 12:00:06 1  1  0  1  0  0
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:08 2001-01-01 12:00:08 2001-01-01 12:00:08 1  1  0  1  0  0
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:09 2001-01-01 12:00:09 2001-01-01 12:00:09 1  1  0  1  0  0
+z      numeric   numeric     [1]      1 2001-01-01 10:00:07 2001-01-01 10:00:07 2001-01-01 10:00:07 1  2  0  0  0  1
      cache
 X       no
 X4      no
@@ -397,18 +393,18 @@ Saving object summary to file.
 > res$summary[ , -5]
          class      mode  extent length            modified             created            accessed A ES SA SW PA PW
 X        array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06 1  4  0  0  2  3
-X4     numeric   numeric     [1]      1 2001-01-01 12:00:23 2001-01-01 12:00:23 2001-01-01 12:00:23 1  1  0  1  0  0
-X5     numeric   numeric     [1]      1 2001-01-01 12:00:15 2001-01-01 12:00:15 2001-01-01 12:00:15 1  1  0  1  0  0
-X6     numeric   numeric     [1]      1 2001-01-01 12:00:17 2001-01-01 12:00:17 2001-01-01 12:00:17 1  1  0  1  0  0
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:22 2001-01-01 12:00:22 2001-01-01 12:00:22 1  1  0  1  0  0
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:14 2001-01-01 12:00:14 2001-01-01 12:00:14 1  1  0  1  0  0
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:16 2001-01-01 12:00:16 2001-01-01 12:00:16 1  1  0  1  0  0
 Y         list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11 1  4  0  0  1  1
-abc  character character     [1]      1 2001-01-01 12:00:18 2001-01-01 12:00:18 2001-01-01 12:00:18 1  1  0  1  0  0
-def       list      list   [[3]]      3 2001-01-01 12:00:24 2001-01-01 12:00:24 2001-01-01 12:00:24 1  1  0  1  0  0
+abc  character character     [1]      1 2001-01-01 12:00:17 2001-01-01 12:00:17 2001-01-01 12:00:17 1  1  0  1  0  0
+def       list      list   [[3]]      3 2001-01-01 12:00:23 2001-01-01 12:00:23 2001-01-01 12:00:23 1  1  0  1  0  0
 x      numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02 1  4  0  0  0  1
-x1     numeric   numeric     [1]      1 2001-01-01 12:00:20 2001-01-01 12:00:20 2001-01-01 12:00:20 1  1  0  1  0  0
-x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:19 2001-01-01 12:00:19 2001-01-01 12:00:19 1  1  0  1  0  0
-x2     numeric   numeric     [1]      1 2001-01-01 12:00:21 2001-01-01 12:00:21 2001-01-01 12:00:21 1  1  0  1  0  0
-x3     numeric   numeric     [1]      1 2001-01-01 12:00:22 2001-01-01 12:00:22 2001-01-01 12:00:22 1  1  0  1  0  0
-z      numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08 1  2  0  0  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:19 2001-01-01 12:00:19 2001-01-01 12:00:19 1  1  0  1  0  0
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:18 2001-01-01 12:00:18 2001-01-01 12:00:18 1  1  0  1  0  0
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:20 2001-01-01 12:00:20 2001-01-01 12:00:20 1  1  0  1  0  0
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:21 2001-01-01 12:00:21 2001-01-01 12:00:21 1  1  0  1  0  0
+z      numeric   numeric     [1]      1 2001-01-01 10:00:07 2001-01-01 10:00:07 2001-01-01 10:00:07 1  2  0  0  0  1
      cache
 X       no
 X4      no
@@ -428,18 +424,18 @@ Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
 > track.summary(time=3, size=FALSE, access=1)
          class      mode  extent length            modified             created            accessed TA TW
 X        array   numeric [2x3x4]     24 2001-01-01 09:00:08 2001-01-01 09:00:03 2001-01-01 09:00:06  2  3
-X4     numeric   numeric     [1]      1 2001-01-01 12:00:23 2001-01-01 12:00:23 2001-01-01 12:00:23  0  1
-X5     numeric   numeric     [1]      1 2001-01-01 12:00:15 2001-01-01 12:00:15 2001-01-01 12:00:15  0  1
-X6     numeric   numeric     [1]      1 2001-01-01 12:00:17 2001-01-01 12:00:17 2001-01-01 12:00:17  0  1
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:22 2001-01-01 12:00:22 2001-01-01 12:00:22  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:14 2001-01-01 12:00:14 2001-01-01 12:00:14  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:16 2001-01-01 12:00:16 2001-01-01 12:00:16  0  1
 Y         list      list   [[2]]      2 2001-01-01 09:00:04 2001-01-01 09:00:04 2001-01-01 09:00:11  1  1
-abc  character character     [1]      1 2001-01-01 12:00:18 2001-01-01 12:00:18 2001-01-01 12:00:18  0  1
-def       list      list   [[3]]      3 2001-01-01 12:00:24 2001-01-01 12:00:24 2001-01-01 12:00:24  0  1
+abc  character character     [1]      1 2001-01-01 12:00:17 2001-01-01 12:00:17 2001-01-01 12:00:17  0  1
+def       list      list   [[3]]      3 2001-01-01 12:00:23 2001-01-01 12:00:23 2001-01-01 12:00:23  0  1
 x      numeric   numeric     [1]      1 2001-01-01 09:00:02 2001-01-01 09:00:02 2001-01-01 09:00:02  0  1
-x1     numeric   numeric     [1]      1 2001-01-01 12:00:20 2001-01-01 12:00:20 2001-01-01 12:00:20  0  1
-x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:19 2001-01-01 12:00:19 2001-01-01 12:00:19  0  1
-x2     numeric   numeric     [1]      1 2001-01-01 12:00:21 2001-01-01 12:00:21 2001-01-01 12:00:21  0  1
-x3     numeric   numeric     [1]      1 2001-01-01 12:00:22 2001-01-01 12:00:22 2001-01-01 12:00:22  0  1
-z      numeric   numeric     [1]      1 2001-01-01 10:00:08 2001-01-01 10:00:08 2001-01-01 10:00:08  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:19 2001-01-01 12:00:19 2001-01-01 12:00:19  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:18 2001-01-01 12:00:18 2001-01-01 12:00:18  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:20 2001-01-01 12:00:20 2001-01-01 12:00:20  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:21 2001-01-01 12:00:21 2001-01-01 12:00:21  0  1
+z      numeric   numeric     [1]      1 2001-01-01 10:00:07 2001-01-01 10:00:07 2001-01-01 10:00:07  0  1
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -491,24 +487,24 @@ Saving object summary to file.
   "_2"   "_1"   "_6"   "x1" "x1.1"   "x2"   "x3" 
 > res$summary[ , -5]
        class    mode extent length            modified             created            accessed A ES SA SW PA PW cache
-X4   numeric numeric    [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33 1  1  0  1  0  0    no
-X5   numeric numeric    [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27 1  1  0  1  0  0    no
-X6   numeric numeric    [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28 1  1  0  1  0  0    no
-x1   numeric numeric    [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30 1  1  0  1  0  0    no
-x1.1 numeric numeric    [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29 1  1  0  1  0  0    no
-x2   numeric numeric    [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31 1  1  0  1  0  0    no
-x3   numeric numeric    [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32 1  1  0  1  0  0    no
+X4   numeric numeric    [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32 1  1  0  1  0  0    no
+X5   numeric numeric    [1]      1 2001-01-01 12:00:26 2001-01-01 12:00:26 2001-01-01 12:00:26 1  1  0  1  0  0    no
+X6   numeric numeric    [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27 1  1  0  1  0  0    no
+x1   numeric numeric    [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29 1  1  0  1  0  0    no
+x1.1 numeric numeric    [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28 1  1  0  1  0  0    no
+x2   numeric numeric    [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30 1  1  0  1  0  0    no
+x3   numeric numeric    [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31 1  1  0  1  0  0    no
 > track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
 > track.summary(time=3, size=FALSE, access=1)
        class    mode extent length            modified             created            accessed TA TW
-X4   numeric numeric    [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
-X5   numeric numeric    [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
-X6   numeric numeric    [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
-x1   numeric numeric    [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
-x1.1 numeric numeric    [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
-x2   numeric numeric    [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
-x3   numeric numeric    [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X4   numeric numeric    [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X5   numeric numeric    [1]      1 2001-01-01 12:00:26 2001-01-01 12:00:26 2001-01-01 12:00:26  0  1
+X6   numeric numeric    [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+x1   numeric numeric    [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x1.1 numeric numeric    [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+x2   numeric numeric    [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x3   numeric numeric    [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > 
@@ -516,8 +512,7 @@ Stopping tracking on <env R_GlobalEnv>
 > # Test (7) rebuild an active directory with the filemap & summary
 > #   missing entries (different missing in the env & file
 > #   versions), & new .rda files
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(4 * 3600)
+> track:::set.fake.Sys.time(4 * 3600)
 > track.start("tmp7", auto=FALSE, cache=FALSE, cachePolicy="none")
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
 > track(x <- 33)
@@ -529,18 +524,18 @@ Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
 > invisible(Y); invisible(abc); invisible(abc); invisible(abc)
 > track.summary(time=3, size=FALSE, access=1) # omit the 'size' column: it varies by machine
          class      mode  extent length            modified             created            accessed TA TW
-X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06  2  3
-X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
-X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
-X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
-Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11  1  1
-abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14  3  1
-def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10  0  1
-x      numeric   numeric     [1]      1 2001-01-01 13:00:02 2001-01-01 13:00:02 2001-01-01 13:00:02  0  1
-x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
-x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
-x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
-x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:07 2001-01-01 13:00:02 2001-01-01 13:00:05  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:26 2001-01-01 12:00:26 2001-01-01 12:00:26  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:03 2001-01-01 13:00:03 2001-01-01 13:00:10  1  1
+abc  character character     [1]      1 2001-01-01 13:00:08 2001-01-01 13:00:08 2001-01-01 13:00:13  3  1
+def       list      list   [[3]]      3 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:09  0  1
+x      numeric   numeric     [1]      1 2001-01-01 13:00:01 2001-01-01 13:00:01 2001-01-01 13:00:01  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
 > track.status()
         Status InMem FileBase FileExists Saved
 X      tracked FALSE       _3       TRUE  TRUE
@@ -587,8 +582,7 @@ x3     tracked FALSE       x3       TRUE  TRUE
 > # put an extra object in the tracking directory
 > assign("cc", list(6), envir=get(".trackingEnv", envir=globalenv()))
 > # and see if we can rebuild ...
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(3600 * 5)
+> track:::set.fake.Sys.time(3600 * 5)
 > res <- track.rebuild(verbose=2, fix=TRUE, dryRun=TRUE, use.file.times=FALSE)
 dryRun=TRUE: no changes will be actually be made
 Rebuilding an active tracking database
@@ -617,21 +611,21 @@ Run with dryRun=FALSE to actually make changes
   "_3"   "_2"   "_1"   "_6"   "_4"   "aa"  "abc"   "bb"   "cc"  "def"    "x"   "x1" "x1.1"   "x2"   "x3" 
 > res$summary[ , -5]
          class      mode  extent length            modified             created            accessed A ES SA SW PA PW
-X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06 1  1  2  3  0  0
-X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33 1  3  0  0  0  1
-X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27 1  3  0  0  0  1
-X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28 1  3  0  0  0  1
-Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11 1  1  1  1  0  0
-aa        list      list   [[3]]      3 2001-01-01 14:00:07 2001-01-01 14:00:07 2001-01-01 14:00:07 1  1  0  1  0  0
-abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14 1  1  3  1  0  0
-bb        list      list   [[2]]      2 2001-01-01 14:00:04 2001-01-01 14:00:04 2001-01-01 14:00:04 1  1  0  1  0  0
-cc        list      list   [[1]]      1 2001-01-01 14:00:08 2001-01-01 14:00:08 2001-01-01 14:00:08 1  1  0  1  0  0
-def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10 1  1  0  1  0  0
-x      numeric   numeric     [1]      1 2001-01-01 14:00:05 2001-01-01 14:00:05 2001-01-01 14:00:05 1  1  0  1  0  0
-x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30 1  3  0  0  0  1
-x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29 1  3  0  0  0  1
-x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31 1  3  0  0  0  1
-x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32 1  3  0  0  0  1
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:07 2001-01-01 13:00:02 2001-01-01 13:00:05 1  1  2  3  0  0
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32 1  3  0  0  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:26 2001-01-01 12:00:26 2001-01-01 12:00:26 1  3  0  0  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27 1  3  0  0  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:03 2001-01-01 13:00:03 2001-01-01 13:00:10 1  1  1  1  0  0
+aa        list      list   [[3]]      3 2001-01-01 14:00:06 2001-01-01 14:00:06 2001-01-01 14:00:06 1  1  0  1  0  0
+abc  character character     [1]      1 2001-01-01 13:00:08 2001-01-01 13:00:08 2001-01-01 13:00:13 1  1  3  1  0  0
+bb        list      list   [[2]]      2 2001-01-01 14:00:03 2001-01-01 14:00:03 2001-01-01 14:00:03 1  1  0  1  0  0
+cc        list      list   [[1]]      1 2001-01-01 14:00:07 2001-01-01 14:00:07 2001-01-01 14:00:07 1  1  0  1  0  0
+def       list      list   [[3]]      3 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:09 1  1  0  1  0  0
+x      numeric   numeric     [1]      1 2001-01-01 14:00:04 2001-01-01 14:00:04 2001-01-01 14:00:04 1  1  0  1  0  0
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29 1  3  0  0  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28 1  3  0  0  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30 1  3  0  0  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31 1  3  0  0  0  1
      cache
 X       no
 X4      no
@@ -674,21 +668,21 @@ Writing file map to file.
 Saving object summary to file.
 > track.summary(time=3, size=FALSE, access=1) # omit the 'size' column: it varies by machine
          class      mode  extent length            modified             created            accessed TA TW
-X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06  2  3
-X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
-X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
-X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
-Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11  1  1
-aa        list      list   [[3]]      3 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
-abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14  3  1
-bb        list      list   [[2]]      2 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
-cc        list      list   [[1]]      1 2001-01-01 14:00:16 2001-01-01 14:00:16 2001-01-01 14:00:16  0  1
-def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10  0  1
-x      numeric   numeric     [1]      1 2001-01-01 14:00:13 2001-01-01 14:00:13 2001-01-01 14:00:13  0  1
-x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
-x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
-x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
-x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:07 2001-01-01 13:00:02 2001-01-01 13:00:05  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:26 2001-01-01 12:00:26 2001-01-01 12:00:26  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:03 2001-01-01 13:00:03 2001-01-01 13:00:10  1  1
+aa        list      list   [[3]]      3 2001-01-01 14:00:14 2001-01-01 14:00:14 2001-01-01 14:00:14  0  1
+abc  character character     [1]      1 2001-01-01 13:00:08 2001-01-01 13:00:08 2001-01-01 13:00:13  3  1
+bb        list      list   [[2]]      2 2001-01-01 14:00:11 2001-01-01 14:00:11 2001-01-01 14:00:11  0  1
+cc        list      list   [[1]]      1 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
+def       list      list   [[3]]      3 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:09  0  1
+x      numeric   numeric     [1]      1 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
 Warning message:
 In track.summary(time = 3, size = FALSE, access = 1) :
   some vars are in the summary but not tracked (info in summary may be wrong for the visible instances of these vars): 'Y'
@@ -725,21 +719,21 @@ Writing file map to file.
 Saving object summary to file.
 > track.summary(time=3, size=FALSE, access=1) # omit the 'size' column: it varies by machine
          class      mode  extent length            modified             created            accessed TA TW
-X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06  2  3
-X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
-X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
-X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
-Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11  1  1
-aa        list      list   [[3]]      3 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
-abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14  3  1
-bb        list      list   [[2]]      2 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
-cc        list      list   [[1]]      1 2001-01-01 14:00:16 2001-01-01 14:00:16 2001-01-01 14:00:16  0  1
-def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10  0  1
-x      numeric   numeric     [1]      1 2001-01-01 14:00:13 2001-01-01 14:00:13 2001-01-01 14:00:13  0  1
-x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
-x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
-x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
-x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:07 2001-01-01 13:00:02 2001-01-01 13:00:05  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:26 2001-01-01 12:00:26 2001-01-01 12:00:26  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:03 2001-01-01 13:00:03 2001-01-01 13:00:10  1  1
+aa        list      list   [[3]]      3 2001-01-01 14:00:14 2001-01-01 14:00:14 2001-01-01 14:00:14  0  1
+abc  character character     [1]      1 2001-01-01 13:00:08 2001-01-01 13:00:08 2001-01-01 13:00:13  3  1
+bb        list      list   [[2]]      2 2001-01-01 14:00:11 2001-01-01 14:00:11 2001-01-01 14:00:11  0  1
+cc        list      list   [[1]]      1 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
+def       list      list   [[3]]      3 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:09  0  1
+x      numeric   numeric     [1]      1 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
 > track.status()
         Status InMem FileBase FileExists Saved
 X      tracked FALSE       _3       TRUE  TRUE
@@ -764,21 +758,21 @@ Stopping tracking on <env R_GlobalEnv>
 Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp7'
 > track.summary(time=3, size=FALSE, access=1)
          class      mode  extent length            modified             created            accessed TA TW
-X        array   numeric [2x3x4]     24 2001-01-01 13:00:08 2001-01-01 13:00:03 2001-01-01 13:00:06  2  3
-X4     numeric   numeric     [1]      1 2001-01-01 12:00:33 2001-01-01 12:00:33 2001-01-01 12:00:33  0  1
-X5     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
-X6     numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
-Y         list      list   [[2]]      2 2001-01-01 13:00:04 2001-01-01 13:00:04 2001-01-01 13:00:11  1  1
-aa        list      list   [[3]]      3 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
-abc  character character     [1]      1 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:14  3  1
-bb        list      list   [[2]]      2 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
-cc        list      list   [[1]]      1 2001-01-01 14:00:16 2001-01-01 14:00:16 2001-01-01 14:00:16  0  1
-def       list      list   [[3]]      3 2001-01-01 13:00:10 2001-01-01 13:00:10 2001-01-01 13:00:10  0  1
-x      numeric   numeric     [1]      1 2001-01-01 14:00:13 2001-01-01 14:00:13 2001-01-01 14:00:13  0  1
-x1     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
-x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
-x2     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
-x3     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X        array   numeric [2x3x4]     24 2001-01-01 13:00:07 2001-01-01 13:00:02 2001-01-01 13:00:05  2  3
+X4     numeric   numeric     [1]      1 2001-01-01 12:00:32 2001-01-01 12:00:32 2001-01-01 12:00:32  0  1
+X5     numeric   numeric     [1]      1 2001-01-01 12:00:26 2001-01-01 12:00:26 2001-01-01 12:00:26  0  1
+X6     numeric   numeric     [1]      1 2001-01-01 12:00:27 2001-01-01 12:00:27 2001-01-01 12:00:27  0  1
+Y         list      list   [[2]]      2 2001-01-01 13:00:03 2001-01-01 13:00:03 2001-01-01 13:00:10  1  1
+aa        list      list   [[3]]      3 2001-01-01 14:00:14 2001-01-01 14:00:14 2001-01-01 14:00:14  0  1
+abc  character character     [1]      1 2001-01-01 13:00:08 2001-01-01 13:00:08 2001-01-01 13:00:13  3  1
+bb        list      list   [[2]]      2 2001-01-01 14:00:11 2001-01-01 14:00:11 2001-01-01 14:00:11  0  1
+cc        list      list   [[1]]      1 2001-01-01 14:00:15 2001-01-01 14:00:15 2001-01-01 14:00:15  0  1
+def       list      list   [[3]]      3 2001-01-01 13:00:09 2001-01-01 13:00:09 2001-01-01 13:00:09  0  1
+x      numeric   numeric     [1]      1 2001-01-01 14:00:12 2001-01-01 14:00:12 2001-01-01 14:00:12  0  1
+x1     numeric   numeric     [1]      1 2001-01-01 12:00:29 2001-01-01 12:00:29 2001-01-01 12:00:29  0  1
+x1.1   numeric   numeric     [1]      1 2001-01-01 12:00:28 2001-01-01 12:00:28 2001-01-01 12:00:28  0  1
+x2     numeric   numeric     [1]      1 2001-01-01 12:00:30 2001-01-01 12:00:30 2001-01-01 12:00:30  0  1
+x3     numeric   numeric     [1]      1 2001-01-01 12:00:31 2001-01-01 12:00:31 2001-01-01 12:00:31  0  1
 > track.status()
         Status InMem FileBase FileExists Saved
 X      tracked FALSE       _3       TRUE  TRUE

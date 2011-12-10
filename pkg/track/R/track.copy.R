@@ -87,7 +87,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
             objSmy.from.i <- NA
             objVal <- get(objName, envir=env.from, inherits=FALSE)
             objClasses <- class(objVal)
-            smyRow <- summaryRow(objName, NULL, obj=objVal, file=NULL, change=TRUE, times=NULL)
+            smyRow <- summaryRow(objName, opt.from, obj=objVal, file=NULL, change=TRUE, times=NULL)
         }
         trackInDest <- (trackedInSource || auto.to) && !exclude.from.tracking(objName, objClasses, opt.to)
         if (trackInDest) {

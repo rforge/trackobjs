@@ -1,10 +1,8 @@
 > # want to make sure creation & mod times are carried over when copying
 > # so use fake times to make test output always the same
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(0)
 > invisible(if (file.exists("tmp19")) unlink("tmp19", recursive=TRUE))
 > invisible(if (file.exists("tmp20")) unlink("tmp20", recursive=TRUE))
-> options(global.track.options=list(cacheKeepFun='none'))
+> options(global.track.options=list(cacheKeepFun='none', use.fake.Sys.time=TRUE))
 > track.start(dir="tmp19")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp19'
 > track.attach("tmp20", name="track:tmp20", readonly=FALSE, pos=2, create=TRUE)

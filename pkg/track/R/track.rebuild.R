@@ -247,6 +247,8 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         }
         opt <- track.options(old.options=opt, envir=NULL, only.preprocess=TRUE)
     }
+    if (length(gopt))
+        opt <- replace(opt, names(gopt), gopt)
     if (opt$RDataSuffix != suffix) {
         if (fix) {
             cat("Changing RDataSuffix saved in options to '", suffix, "'")

@@ -5,10 +5,8 @@
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
 > options(width=100)
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(0)
 > unlink("tmp8", recursive=TRUE)
-> options(global.track.options=list(cacheKeepFun='none'))
+> options(global.track.options=list(cacheKeepFun='none', use.fake.Sys.time=TRUE))
 > track.start("tmp8")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp8'
 > x <- 33

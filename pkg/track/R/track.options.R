@@ -67,7 +67,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     optionNames <- c("alwaysCache", "alwaysCacheClass", "alwaysSaveSummary", "autoTrackExcludeClass",
                      "autoTrackExcludePattern", "autoTrackFullSyncWait", "cache",
                      "cacheKeepFun", "cachePolicy", "clobberVars", "compress", "compression_level",
-                     "debug", "maintainSummary", "RDataSuffix", "readonly", "recordAccesses",
+                     "debug", "use.fake.Sys.time", "maintainSummary", "RDataSuffix", "readonly", "recordAccesses",
                      "summaryAccess", "summaryTimes", "writeToDisk")
     if (!is.null(names(values))) {
         ## Attempt to set some of the options (including saving to file)
@@ -115,6 +115,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                                   recordAccesses=TRUE,
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
                                   debug=0,
+                                  use.fake.Sys.time=FALSE,
                                   autoTrackExcludePattern=c("^\\.track", "^\\.required", "^\\*tmp\\*$", "^.vimplemented", "^.vcoerceable"),
                                   autoTrackExcludeClass=c("RODBC"),
                                   autoTrackFullSyncWait=-1,
@@ -179,6 +180,9 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
             } else if (opt=="debug") {
                 if (!is.integer(values[[opt]]))
                     values[[opt]] <- as.integer(values[[opt]])
+            } else if (opt=="use.fake.Sys.time") {
+                if (!is.logical(values[[opt]]))
+                    values[[opt]] <- as.logical(values[[opt]])
             } else if (opt=="autoTrackExcludePattern" || opt=="autoTrackExcludeClass"
                        || opt=="alwaysCacheClass") {
                 single <- FALSE

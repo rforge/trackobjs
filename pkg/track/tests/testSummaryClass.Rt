@@ -4,10 +4,8 @@
 > # Set the locale used by order() so that track.status() & track.summary() put
 > # rows in the same order on different systems (so that the test output matches).
 > invisible(Sys.setlocale("LC_COLLATE", "C"))
-> source('fake.Sys.time.Rcode')
-> create.fake.Sys.time(0)
 > unlink("tmp9", recursive=TRUE)
-> options(global.track.options=list(cacheKeepFun='none'))
+> options(global.track.options=list(cacheKeepFun='none', use.fake.Sys.time=TRUE))
 > track.start("tmp9")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp9'
 > data <- data.frame(x=rnorm(10), y=rnorm(10))
@@ -21,8 +19,8 @@ Tracking <env R_GlobalEnv> (writable) using new directory 'tmp9'
 X             array numeric  [2x3x4]     24    no 2001-01-01 09:00:05  0  1
 Y            matrix numeric    [3x2]      6    no 2001-01-01 09:00:06  0  1
 data     data.frame    list [[10x2]]      2    no 2001-01-01 09:00:04  2  1
-fit          glm,lm    list   [[30]]     30    no 2001-01-01 09:00:11  0  1
-tt   POSIXct,POSIXt numeric      [1]      1    no 2001-01-01 09:00:08  0  1
+fit          glm,lm    list   [[30]]     30    no 2001-01-01 09:00:10  0  1
+tt   POSIXct,POSIXt numeric      [1]      1    no 2001-01-01 09:00:07  0  1
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp9", recursive=TRUE)
