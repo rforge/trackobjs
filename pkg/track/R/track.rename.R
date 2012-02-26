@@ -118,7 +118,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
             # situation (1)
             old.isSimpleName <- isSimpleName(oldObjName)
             new.isSimpleName <- isSimpleName(newObjName)
-            # If both old a new are not simple, can keep using the same underlying file,
+            # If both old and new are not simple, can keep using the same underlying file,
             # otherwise need to rename
             if (old.isSimpleName | new.isSimpleName) {
                 newFileName <- makeObjFileName(newObjName, fileMap)
@@ -143,6 +143,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
                     if (is(res, "try-error")) {
                         warning("failed to rename obj '", oldObjName, "' to '", newObjName,
                                 "' because could not make copy of object for saving")
+                        next
                     }
                     remove(list=oldObjName, envir=tmpEnv, inherits=FALSE)
                 }
