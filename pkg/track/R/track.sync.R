@@ -264,12 +264,29 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 }
                 ## If there is a cacheKeepFun, see what it says...
                 keep <- try(do.call(opt$cacheKeepFun, list(objs=objSummary, inmem=flushCand, envname=envname(envir))), silent=TRUE)
+                ## Expecting a logical vector matching rows of objSummary.
+                ## Be informative about any problems with what it returns because this can be a user-supplied function.
                 if (is(keep, "try-error")) {
-                    warning("opt$cacheKeepFun stopped with an error: ", keep)
-                    keep <- F
-                } else if (!is.logical(keep) || length(keep)!=nrow(objSummary) || any(is.na(keep))) {
-                    warning("opt$cacheKeepFun did not return a TRUE/FALSE vector of the correct length")
-                    keep <- F
+                    warning("opt$cacheKeepFun on ", envname(envir), " stopped with an error: ", keep)
+                    keep <- FALSE
+                } else if (!is.atomic(keep)) {
+                    warning("opt$cacheKeepFun on ", envname(envir), " returned a ", class(keep), " object; expecting a logical vector")
+                    keep <- FALSE
+                } else if (length(keep)!=nrow(objSummary)) {
+                    warning("opt$cacheKeepFun on ", envname(envir), " returned an object of length ", length(keep),
+                            "; expected a logical vector of length ", nrow(objSummary))
+                    keep <- FALSE
+                } else if (is.numeric(keep)) {
+                    if (any(is.na(keep) | (keep != 0 & keep != 1)))
+                        warning("opt$cacheKeepFun on ", envname(envir), " returned a numeric vector with values other than 0 or 1; interpreting as > 0 as TRUE")
+                    keep <- ifelse(is.na(keep), FALSE, keep > 0)
+                } else if (!is.logical(keep)) {
+                    warning("opt$cacheKeepFun on ", envname(envir), " returned a ", mode(keep), " vector; expecting logical")
+                    keep <- FALSE
+                } else if (any(is.na(keep))) {
+                    warning("opt$cacheKeepFun on ", envname(envir), " returned NAs for ", sum(is.na(keep)), " object(s); e.g.: ",
+                            paste(rownames(objSummary)[head(which(is.na(keep)), 3)], collapse=', '))
+                    keep <- ifelse(is.na(keep), FALSE, keep)
                 }
                 flushVars <- rownames(objSummary)[flushCand & !keep]
                 saveVars <- intersect(rownames(objSummary)[flushCand & keep], unsavedVars)
