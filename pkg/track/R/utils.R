@@ -585,10 +585,10 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
 }
 
 if (FALSE) {
-create.fake.Sys.time2 <- function() {
-    ## Old version
+create.fake.Sys.time <- function() {
     ## The Sys.time() function created by this function doesn't get
-    ## called by functions in a different environment.
+    ## called by functions in a different environment, so it doesn't
+    ## work properly with scriptests when running in the interpreter.
     ## Create a fake Sys.time() function that just counts 1 second forward
     ## from a fixed starting time each time it is called.
     if (!is.element("fake.Sys.time", search())) {
@@ -599,26 +599,6 @@ create.fake.Sys.time2 <- function() {
                      }})
         attach(environment(f), name="fake.Sys.time", warn.conflicts=FALSE)
     }
-    invisible(NULL)
-}
-
-create.fake.Sys.time <- function(offset) {
-    ## New version, but don't define it here, because quality control
-    ## warns the user about use of unlockBinding.
-    ## Create a fake Sys.time() function that just counts 1 second forward
-    ## from a fixed starting time each time it is called.
-    if (!exists("Sys.time.counter", envir=baseenv(), inherits=FALSE)) {
-        ## Assign a new Sys.time() function in the base environment.
-        unlockBinding("Sys.time", baseenv())
-        if (!exists("Sys.time.orig", envir=baseenv(), inherits=FALSE))
-            assign("Sys.time.orig", get("Sys.time", envir=baseenv()), envir=baseenv())
-        assign("Sys.time", function() {
-            Sys.time.counter <- get("Sys.time.counter", envir=baseenv()) + 1
-            assign("Sys.time.counter", Sys.time.counter, envir=baseenv())
-            return(Sys.time.counter)
-        }, envir=baseenv())
-    }
-    assign("Sys.time.counter", as.POSIXct("2001/01/01 09:00:00", tz="GMT")+offset, envir=baseenv())
     invisible(NULL)
 }
 }
