@@ -513,6 +513,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         }
     } else {
         filesToRead <- unique(c(names(dbFiles), fileMap))
+        reuseObjs <- character(0)
     }
     ## Reuse data for objects in the fileMap that are in the summary
     ## and have objects or files.
