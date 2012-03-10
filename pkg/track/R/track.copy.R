@@ -98,7 +98,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
             }
             file.to.abs <- file.path(dir.to, paste(file.to, opt.to$RDataSuffix, sep="."))
             if (file.exists(file.to.abs) && !clobber)
-                stop("file '", file.to.abs, "' for obj '", objName, "' already exists and clobber=F")
+                stop("file '", file.to.abs, "' for obj '", objName, "' already exists and clobber=FALSE")
         } else {
             objVal <- get(objName, envir=env.from, inherits=FALSE)
         }

@@ -291,7 +291,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 flushVars <- rownames(objSummary)[flushCand & !keep]
                 saveVars <- intersect(rownames(objSummary)[flushCand & keep], unsavedVars)
             } else {
-                keep <- F
+                keep <- FALSE
                 flushVars <- rownames(objSummary)[flushCand & !keep]
                 saveVars <- intersect(rownames(objSummary)[flushCand & keep], unsavedVars)
             }
