@@ -54,7 +54,7 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
         }
         list <- c(objName, list)
     }
-    all.objs <- .Internal(ls(envir, all.names || reserved))
+    all.objs <- ls(envir=envir, all.names= all.names || reserved)
     fileMap.names <- names(fileMap)
     if (!(all.names || reserved))
         fileMap.names <- fileMap.names[substring(fileMap.names, 1, 1)!="."]

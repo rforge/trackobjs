@@ -1,3 +1,7 @@
+                CHANGES in track version 1.0-15 (2012-04-12)
+CHANGES
+    o   Remove use of .Internal() (R CMD check objects)
+
                 CHANGES in track version 1.0-14 (2012-02-26)
 FIXES
     o   Give more informative warning messages when the caching

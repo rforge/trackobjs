@@ -192,7 +192,7 @@ isReservedName <- function(objName)
                                    ".trackingPid", ".trackingCreated", ".trackingCacheMark",
                                    ".trackAuto", ".trackingFinished")))
 
-objIsTracked <- function(objNames, envir, trackingEnv, all.objs=.Internal(ls(envir, TRUE))) {
+objIsTracked <- function(objNames, envir, trackingEnv, all.objs=ls(envir=envir, all.names=TRUE)) {
     if (length(objNames)==0)
         return(logical(0))
     fileMap <- getFileMapObj(trackingEnv)

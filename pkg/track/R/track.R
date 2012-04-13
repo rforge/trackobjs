@@ -57,7 +57,7 @@ track <- function(expr, pos=1, envir=as.environment(pos), list=NULL, pattern=NUL
                 paste("'", list[i], "'", sep="", collapse=", "))
         list <- list[-i]
     }
-    all.objs <- .Internal(ls(envir, TRUE))
+    all.objs <- ls(envir=envir, all.names=TRUE)
     for (objName in list) {
         ## Doesn't matter if it already exists....
         ## if (exists(objName, trackingEnv))

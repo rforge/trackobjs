@@ -67,7 +67,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), discardMissing=FALSE,
         dir <- getTrackingDir(trackingEnv)
         fileMap <- getFileMapObj(trackingEnv)
         dataDir <- getDataDir(dir)
-        all.objs <- .Internal(ls(envir, TRUE))
+        all.objs <- ls(envir=envir, all.names=TRUE)
         ## The use case here is that the tracking db on disk has changed
         ## (and the tracking env is readonly), so need to delete/add active bindings
         ## as appropriate.  Here, just delete unneeded active bindings, and let the

@@ -32,7 +32,7 @@ track.load <- function(files, pos=1, envir=as.environment(pos), list=NULL, patte
             pattern <- glob2rx(glob)
         if (!is.null(pattern))
             list <- grep(pattern, list, value=TRUE)
-        all.objs <- .Internal(ls(envir, TRUE))
+        all.objs <- ls(envir=envir, all.names=TRUE)
         i <- is.element(list, all.objs) | duplicated(list)
         if (any(i)) {
             if (!clobber) {

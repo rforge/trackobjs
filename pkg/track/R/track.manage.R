@@ -42,7 +42,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         list <- track.status(envir=envir, pattern=pattern, glob=glob, file.status=FALSE,
                              what=if (op=="save") "unsaved" else "tracked", tracked=TRUE, all.names=TRUE)
     }
-    all.objs <- .Internal(ls(envir, TRUE))
+    all.objs <- ls(envir=envir, all.names=TRUE)
     if (length(list)) {
         isTracked <- objIsTracked(list, envir, trackingEnv, all.objs)
         if (!force && !all(isTracked)) {

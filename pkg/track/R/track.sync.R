@@ -48,7 +48,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     ## Get info about the state of things
     autoTrack <- mget(".trackAuto", envir=trackingEnv, ifnotfound=list(list(on=FALSE, last=-1)))[[1]]
     fileMap <- getFileMapObj(trackingEnv)
-    all.objs <- .Internal(ls(envir, TRUE))
+    all.objs <- ls(envir=envir, all.names=TRUE)
     ## 'untracked' will be the untracked vars that we want to track
     untracked <- setdiff(all.objs, names(fileMap))
     reserved <- isReservedName(untracked)
@@ -252,7 +252,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         objSummary <- getObjSummary(trackingEnv, opt=opt)
         if (!is.null(objSummary)) {
             ## which variables are currently cached in memory and are candidate for flushing?
-            inmem <- is.element(rownames(objSummary), .Internal(ls(trackingEnv, TRUE)))
+            inmem <- is.element(rownames(objSummary), ls(envir=trackingEnv, all.names=TRUE))
             keep1 <- !is.na(objSummary$cache) & (objSummary$cache %in% c("yes", "fixedyes"))
             flushCand <- inmem & !keep1
             if (!any(flushCand)) {
@@ -309,7 +309,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             saveVars <- unique(c(saveVars, intersect(rownames(objSummary)[keep1 & inmem], unsavedVars)))
         } else {
             warning(".trackingSummary does not exist in trackingEnv ", envname(trackingEnv))
-            flushVars <- .Internal(ls(trackingEnv, TRUE))
+            flushVars <- ls(envir=trackingEnv, all.names=TRUE)
             flushVars <- flushVars[is.element(flushVars, names(fileMap))]
         }
         if (dryRun) {
