@@ -12,18 +12,20 @@
   \code{track.ff.remove} and \code{track.ff.delete} are synonyms for  \code{track.ff.rm}.
 }
 \usage{
-track.ff(expr, pos = 1, envir = as.environment(pos))
-track.ff.rm(expr, pos = 1, envir = as.environment(pos))
-track.ff.filename(expr, pos = 1, envir = as.environment(pos), relative = TRUE)
-track.ff.remove(expr, pos = 1, envir = as.environment(pos))
-track.ff.delete(expr, pos = 1, envir = as.environment(pos))
+track.ff(expr, pos = 1, envir = as.environment(pos), varname = NULL)
+track.ff.rm(expr, pos = 1, envir = as.environment(pos), list = NULL)
+track.ff.remove(expr, pos = 1, envir = as.environment(pos), list = NULL)
+track.ff.delete(expr, pos = 1, envir = as.environment(pos), list = NULL)
+track.ff.filename(expr, pos = 1, envir = as.environment(pos), relative = TRUE, list = NULL)
 }
 \arguments{
   \item{expr}{
     For \code{track.ff}, either the name of an existing non-ff object or
     an expression that evaluates to one, or an assignment expression
-    whose RHS is a call to \code{ff()} or \code{as.ff()}.
+    whose RHS is a call to \code{ff()} or \code{as.ff()}, or, when
+    \code{varname} is also supplied, just a call to \code{ff()} or \code{as.ff()}.
   }
+  \item{varname}{The name of the ff object to create.}
   \item{pos}{ The search path position of the environment being tracked
     (default is 1 for the global environment)}
   \item{envir}{ The environment being tracked.  This is an alternate way
@@ -31,6 +33,8 @@ track.ff.delete(expr, pos = 1, envir = as.environment(pos))
     of specifying the environment being tracked, but should be rarely needed.}
   \item{relative}{ Should the filename be returned as an absolute or
     relative path?}
+  \item{list}{A vector object names to operate one (must be of length 1
+    for \code{track.ff.filename()}.}
 }
 \details{
 
@@ -112,6 +116,7 @@ track.ff(x2 <- as.ff(x2))
 # various ways of creating new ff object
 track.ff(x3 <- matrix(1:12, nrow=3, dimnames=list(LETTERS[1:3], letters[22:25])))
 track.ff(x4 <- ff(1:12, dim=3:4, dimnames=list(LETTERS[1:3], letters[22:25])))
+track.ff(varname='x5', ff(1:12, dim=4:3, dimnames=list(LETTERS[1:4], letters[23:25])))
 track.stop()
 unlink("tmp1", recursive=TRUE)
 }
