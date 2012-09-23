@@ -75,11 +75,20 @@ track.rebuild(pos = 1, envir = as.environment(pos), dir = NULL,
 \author{Tony Plate <tplate@acm.org>}
 \seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \examples{
+##############################################################
+# Warning: running this example will cause variables currently
+# in the R global environment to be written to .RData files
+# in a tracking database on the filesystem under R's temporary
+# directory, and will cause the variables to be removed temporarily
+# from the R global environment.
+# It is recommended to run this example with a fresh R session
+# with no important variables in the global environment.
+##############################################################
+
 # Rebuild a damaged tracking database
 library(track)
-unlink("tmp1", recursive=TRUE)
 # first build a tracking dir populated with some variables
-track.start("tmp1")
+track.start(dir=file.path(tempdir(), 'rdatadir7'))
 x <- 33
 X <- array(1:24, dim=2:4)
 Y <- list(a=1:3,b=2)
@@ -90,14 +99,15 @@ invisible(Y); invisible(abc); invisible(abc); invisible(abc)
 track.summary()
 track.stop(pos=1)
 # damage the database (remove the filemap)
-unlink("tmp1/filemap.txt")
+unlink(file.path(tempdir(), 'rdatadir7', 'filemap.txt'))
 # and rebuild
-track.rebuild(dir="tmp1", verbose=2, dryRun=FALSE, fix=TRUE)
-track.start("tmp1")
+track.rebuild(dir=file.path(tempdir(), 'rdatadir7'), verbose=2, dryRun=FALSE, fix=TRUE)
+track.start(file.path(tempdir(), 'rdatadir7'))
 track.summary()
 track.status()
-track.stop(pos=1)
-unlink("tmp1", recursive=TRUE)
+# Would normally not call track.stop(), but do so here to clean up after
+# running this example.
+track.stop(pos=1, keepVars=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

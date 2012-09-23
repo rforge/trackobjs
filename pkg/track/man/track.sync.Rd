@@ -5,10 +5,11 @@
   changed, new, or deleted objects in R
 }
 \description{
+
   Synchronize the tracking database to reflect new and/or deleted
   objects.  This function is intended to be called by a task callback so
-  that the tracking database keeps up with new and deleted object
-  automatically.  The appropriate task callback is installed by
+  that the tracking database automatically keeps up with new and deleted
+  objects.  The appropriate task callback is installed by
   \code{track.start(..., auto = TRUE)}.
 
   This function differs from \code{\link{track.rescan}()} in that

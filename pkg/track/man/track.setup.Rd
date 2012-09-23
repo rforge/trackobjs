@@ -26,7 +26,7 @@ track.start(dir="rdatadir", pos = 1, envir = as.environment(pos),
         discardMissing = FALSE,
         cache = NULL, cachePolicy = NULL, options = NULL,
         RDataSuffix = NULL, auto = NULL, readonly = FALSE,
-        lockEnv = FALSE, check.Last = TRUE, verbose = TRUE)
+        lockEnv = FALSE, check.Last = TRUE, autoCheckSize = 1e6, verbose = TRUE)
 track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
         stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE,
         verbose = TRUE, detach = TRUE, callFrom = NULL)
@@ -47,11 +47,12 @@ track.Last()
     doesn't exist }
   \item{clobber}{ Controls action taken when there are objects of the
     same name in the
-    tracking directory and in \code{envir}: \code{no} means stop; \code{files} means use the
+    tracking directory and in \code{envir}: \code{no} means stop (unless
+  objects are have the same values and are small); \code{files} means use the
     version from the tracking directory; and \code{variables},
   \code{vars} or \code{var} means
     use the version in \code{envir} (and overwrite the version in the
-    tracking directory)}
+    tracking directory).  See also argument \code{autoCheckSize}.}
   \item{discardMissing}{ Discard all information about objects whose save
     file is missing?}
   \item{cache}{ Should objects be keep cached in memory?  Default is \code{TRUE}.  This option is a shorthand way of supplying \code{options=list(cache=...)}.}
@@ -99,6 +100,15 @@ track.Last()
   function in the \code{track} package is masked by any other
   \code{.Last} function.  Supplying \code{check.Last=FALSE}
   inhibits this check and warning.}
+
+  \item{autoCheckSize}{If there are objects with the same name in an
+  existing tracking db being attached, and the environment, and \code{clobber='no'},
+  \code{track.start()} will check whether the objects are the same
+  (using \code{identical()}).  If they are the same,
+  \code{track.start()} will proceed.  This check is only performed if
+  the total size of the objects, and the files, is less than
+  \code{autoCheckSize} bytes.
+  }
 
 \item{level}{Should the rescan be done at a high or low level: a high
   level just stops tracking and restarts it; a low level tries to
@@ -162,9 +172,18 @@ available.
   the \code{track} package.
 }
 \examples{
+##############################################################
+# Warning: running this example will cause variables currently
+# in the R global environment to be written to .RData files
+# in a tracking database on the filesystem under R's temporary
+# directory, and will cause the variables to be removed temporarily
+# from the R global environment.
+# It is recommended to run this example with a fresh R session
+# with no important variables in the global environment.
+##############################################################
+
 library(track)
-unlink("tmp1", recursive=TRUE)
-track.start("tmp1")
+track.start(dir=file.path(tempdir(), 'rdatadir9'))
 x <- 33
 X <- array(1:24, dim=2:4)
 Y <- list(a=1:3,b=2)
@@ -177,10 +196,11 @@ env.is.tracked(pos=2)
 ls(all=TRUE)
 track.stop(pos=1)
 ls(all=TRUE)
-track.start("tmp1")
+track.start(dir=file.path(tempdir(), 'rdatadir9'))
 ls(all=TRUE)
 track.summary(time=0, access=1, size=FALSE)
-track.stop(pos=1)
-unlink("tmp1", recursive=TRUE)
+# Would normally not call track.stop(), but do so here to clean up after
+# running this example.
+track.stop(pos=1, keepVars=TRUE)
 }
 \keyword{ data }

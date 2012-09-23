@@ -188,9 +188,18 @@ See \link{track.plugins} for further info.
   \link[=track.design]{design} of the \code{track} package. See
   \link{track.plugins} for description of cache plugin functions}
 \examples{
+##############################################################
+# Warning: running this example will cause variables currently
+# in the R global environment to be written to .RData files
+# in a tracking database on the filesystem under R's temporary
+# directory, and will cause the variables to be removed temporarily
+# from the R global environment.
+# It is recommended to run this example with a fresh R session
+# with no important variables in the global environment.
+##############################################################
+
 library(track)
-unlink("tmp1", recursive=TRUE)
-track.start("tmp1")
+track.start(dir=file.path(tempdir(), 'rdatadir6'))
 x <- 33
 X <- array(1:24, dim=2:4)
 track.status()
@@ -207,17 +216,17 @@ track.status()
 track.flush()
 track.status()
 track.stop(pos=1)
-track.start("tmp1")
+track.start(dir=file.path(tempdir(), 'rdatadir6'))
 # note that options previously changed are back at defaults (because default
 # to track.options() is save=FALSE
 track.options(c("cache", "writeToDisk"))
 track.options(cache=TRUE, writeToDisk=FALSE, save=TRUE) # change the options on disk
 track.options(c("cache", "writeToDisk"))
 track.stop(pos=1)
-track.start("tmp1")
+track.start(dir=file.path(tempdir(), 'rdatadir6'))
 # now options previously changed are remembered (because track.options(..., save=TRUE) was used)
 track.options(c("cache", "writeToDisk"))
-track.stop(pos=1)
+track.stop(pos=1, keepVars=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

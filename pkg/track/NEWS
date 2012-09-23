@@ -1,3 +1,13 @@
+                CHANGES in track version 1.0-19 (2012-09-22)
+CHANGES
+    o   Tweak examples to write in R's tempdir() rather than
+    	the current working directory.
+    o	track.start() when finding variables of the same
+    	name will check if they are the same object, and proceed
+	if they are, instead of stopping with an error.  This
+	check is only performed if the total size of objects
+	and files is below a threshold.
+
                 CHANGES in track version 1.0-15 (2012-04-12)
 CHANGES
     o   Remove use of .Internal() (R CMD check objects)

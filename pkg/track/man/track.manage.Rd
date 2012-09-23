@@ -13,7 +13,10 @@
 \description{
   Functions to start and stop tracking objects, remove them, load objects from
   RData files, and manage cached and saved copies of objects.  These
-  functions should not be needed in plain vanilla use of the track package.
+  functions should not be needed in plain vanilla use of the track
+  package.
+
+  For an introduction to the track package, see \link[=track-package]{Overview}.
 }
 \usage{
 track(expr, pos = 1, envir = as.environment(pos), list = NULL,
@@ -131,9 +134,18 @@ track.load(files, pos = 1, envir = as.environment(pos), list = NULL,
 \author{Tony Plate <tplate@acm.org>}
 \seealso{ \link[=track-package]{Overview} and \link[=track.design]{design} of the \code{track} package. }
 \examples{
+##############################################################
+# Warning: running this example will cause variables currently
+# in the R global environment to be written to .RData files
+# in a tracking database on the filesystem under R's temporary
+# directory, and will cause the variables to be removed temporarily
+# from the R global environment.
+# It is recommended to run this example with a fresh R session
+# with no important variables in the global environment.
+##############################################################
+
 library(track)
-unlink("tmp1", recursive=TRUE)
-track.start("tmp1")
+track.start(dir=file.path(tempdir(), 'rdatadir5'))
 x <- 33
 X <- array(1:24, dim=2:4)
 Y <- list(a=1:3,b=2)
@@ -151,15 +163,16 @@ track.stop(pos=1)
 ls(all=TRUE)
 a <- 7
 b <- 8
-save(list=c("a", "b"), file="ab.rda")
+save(list=c("a", "b"), file=file.path(tempdir(), "ab.rda"))
 remove(list=c("a", "b"))
-track.start("tmp1")
+track.start(dir=file.path(tempdir(), 'rdatadir5'))
 track.summary(time=0, access=1, size=FALSE)
-track.load("ab.rda")
+track.load(file.path(tempdir(), "ab.rda"))
 track.summary(time=0, access=1, size=FALSE)
 track.status()
-track.stop(pos=1)
-unlink("tmp1", recursive=TRUE)
+# Would normally not call track.stop(), but do so here to clean up after
+# running this example.
+track.stop(pos=1, keepVars=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
