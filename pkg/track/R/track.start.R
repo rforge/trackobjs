@@ -4,6 +4,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                         cache=NULL, cachePolicy=NULL,
                         options=NULL, RDataSuffix=NULL, auto=NULL,
                         readonly=FALSE, lockEnv=FALSE, check.Last=TRUE,
+                        autoCheckSize=1e6,
                         verbose=TRUE) {
     ## Start tracking the specified environment to a directory
     clobber <- match.arg(clobber)
@@ -267,12 +268,48 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                 warning("tracking db contains some vars that have reserved names (this shouldn't happen, and may affect the correct operation of tracking): ", names(fileMap)[i])
             if (length(alreadyExists)) {
                 if (clobber=="no") {
-                    assign(".trackAlreadyExists", alreadyExists, envir=envir)
-                    stop("cannot start tracking to dir \"", dir, "\" because it contains ",
-                         length(alreadyExists), " vars that currently exist in ", envname(envir),
-                         ", e.g.: ", paste("'", alreadyExists[seq(len=min(3,length(alreadyExists)))], "'", sep="", collapse=", "),
-                         if (length(alreadyExists)>3) ", ...",
-                         " (try track.start(..., clobber='files') or track.start(..., clobber='vars') to clobber one or the other")
+                    # If the objects and files are small, see if they are the same
+                    objSizes <- sapply(alreadyExists, function(v) object.size(get(v, envir=envir, inherits=FALSE)))
+                    fileSizes <- file.info(file.path(dataDir, paste(fileMap, sep='.', opt$RDataSuffix)))$size
+                    knowSame <- rep(FALSE, length(alreadyExists))
+                    if (sum(objSizes) < autoCheckSize && sum(fileSizes, na.rm=TRUE) < autoCheckSize) {
+                        knowSame <- sapply(alreadyExists, function(objName) {
+                            objFile <- file.path(dataDir, paste(fileMap[objName], sep='.', opt$RDataSuffix))
+                            load.res <- try(load(objFile, envir=tmpenv), silent=TRUE)
+                            if (is(load.res, "try-error"))
+                                stop("Failed to load R object ", objName, " from file ", objFile,
+                                     " when checking whether existing R objects are same as those in the",
+                                     " tracking db on the file system -- repair or delete file and try again;",
+                                     " problem was: ", as.character(load.res))
+                            if (length(load.res)!=1 || load.res != objName)
+                                stop(objSummaryPath, " does not contain just '.trackingSummary' -- for recovery see ?track.rebuild")
+                            objValueFile <- get(objName, envir=tmpenv, inherits=FALSE)
+                            objValueEnv <- get(objName, envir=envir, inherits=FALSE)
+                            rm(list=objName, envir=tmpenv, inherits=FALSE)
+                            return(identical(objValueEnv, objValueFile))
+                        })
+                        if (all(knowSame)) {
+                            # Must remove objs from the env to make way for the active bindings
+                            # Todo: if some vars have special treatment such as alwaysCache,
+                            # then transfer them into the tracking environment.
+                            if (verbose)
+                                warning('Have identical vars with same names in tracking db in "', dir, '" and in ',
+                                        envname(envir), ': ', paste("'", alreadyExists, "'", sep='', collapse=', '))
+                            remove(list=alreadyExists, envir=envir)
+                        } else {
+                            # If not all vars are the same, put ones that differ at the start of
+                            # 'alreadyExists' to make for a more informative error message.
+                            alreadyExists <- alreadyExists[order(knowSame, alreadyExists)]
+                        }
+                    }
+                    if (!all(knowSame)) {
+                        assign(".trackAlreadyExists", alreadyExists, envir=envir)
+                        stop("cannot start tracking to dir \"", dir, "\" because it contains ",
+                             length(alreadyExists), " vars that currently exist in ", envname(envir),
+                             ", e.g.: ", paste("'", alreadyExists[seq(len=min(3,length(alreadyExists)))], "'", sep="", collapse=", "),
+                             if (length(alreadyExists)>3) ", ...",
+                             " (try track.start(..., clobber='files') or track.start(..., clobber='vars') to clobber one or the other")
+                    }
                 } else if (clobber=="files") {
                     if (opt$readonly) {
                         warning("will not clobber files corresponding to existing variables because readonly=TRUE: ", paste(alreadyExists, collapse=", "))
