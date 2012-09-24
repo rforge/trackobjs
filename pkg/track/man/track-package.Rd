@@ -1,6 +1,10 @@
 \name{track-intro}
-\alias{track-package}
 \alias{track-intro}
+\alias{track-package}
+\alias{track-overview}
+\alias{track.intro}
+\alias{track.package}
+\alias{track.overview}
 \docType{package}
 \title{
 Overview of track package

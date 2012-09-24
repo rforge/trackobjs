@@ -16,7 +16,8 @@
   functions should not be needed in plain vanilla use of the track
   package.
 
-  For an introduction to the track package, see \link[=track-package]{Overview}.
+  For an introduction to the track package, see
+  \link[=track-package]{Overview} (\code{?track.intro}).
 }
 \usage{
 track(expr, pos = 1, envir = as.environment(pos), list = NULL,
