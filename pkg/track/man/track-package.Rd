@@ -40,33 +40,6 @@ called each time a top-level-task completes does three major things:
   \item deletes cached objects from memory.
   }
 
-Tracking is not particularly suitable for storing objects that contain
-environments, because those environments and their contents will be
-fully written out in the saved file (in a live R session, environments
-are references, and there can be multiple references to one
-environment.)  Functions are one of the most common objects that contain
-environments, which can contain data objects local to the function
-(e.g., see the examples in the R FAQ in the section "Lexical scoping"
-under "What are the differences between R and S?"
-\url{http://cran.r-project.org/doc/FAQ/R-FAQ.html#Lexical-scoping}).
-Additionally, the results of some modeling functions contain
-environments, e.g., \code{lm} holds several references to the
-environment that contains the data.  When an \code{lm} object is
-\code{save}'ed, the environment containing the data, and all the other
-objects in that environment, can be saved in the same file.  To work
-with large data objects and modeling functions, consider first creating
-a tracking database that contains the data objects.  Then, in a
-different R session (which can be running at the same time), use
-\code{track.attach} to attach the db of data objects at \code{pos=2} on
-the search list.  When working in this way, the data objects will only
-be kept in memory when being used, and modeling functions that record
-environments in their results can be successful used (though beware of
-modeling functions that store large amounts of data in their results.)
-Alternatively, use modeling functions that do not store references to
-environments.  The utility function \code{\link{show.envs}} from the
-\code{track} package will show what environments are referenced
-within an object (though it is not guaranteed to find them all.)
-
 The track package also provides a self-contained incremental history
 saving function that writes the most recent command to the file
 \code{.Rincr_history} at the end of each top-level task, along with a
@@ -108,6 +81,9 @@ Here is a brief example of tracking some variables in the global environment:
 
 \preformatted{
 > library(track)
+> # By default, track.start() uses/creates a db in the dir
+> # 'rdatadir' in the current working directory; supply arg
+> # dir= to change.
 > track.start()
 > x <- 123                  # Variable 'x' is now tracked
 > y <- matrix(1:6, ncol=2)  # 'y' is assigned & tracked
@@ -343,6 +319,35 @@ Design and internals of tracking:
 track.options(autoTrackExcludePattern="regexp")
 track.options(autoTrackExcludeClass="classname")
 }
+
+Tracking is not particularly suitable for storing objects that contain
+environments, because those environments and their contents will be
+fully written out in the saved file (in a live R session, environments
+are references, and there can be multiple references to one
+environment.)  Functions are one of the most common objects that contain
+environments, which can contain data objects local to the function
+(e.g., see the examples in the R FAQ in the section "Lexical scoping"
+under "What are the differences between R and S?"
+\url{http://cran.r-project.org/doc/FAQ/R-FAQ.html#Lexical-scoping}).
+Additionally, the results of some modeling functions contain
+environments, e.g., \code{lm} holds several references to the
+environment that contains the data.  When an \code{lm} object is
+\code{save}'ed, the environment containing the data, and all the other
+objects in that environment, can be saved in the same file.  To work
+with large data objects and modeling functions, consider first creating
+a tracking database that contains the data objects.  Then, in a
+different R session (which can be running at the same time), use
+\code{track.attach} to attach the db of data objects at \code{pos=2} on
+the search list.  When working in this way, the data objects will only
+be kept in memory when being used, and modeling functions that record
+environments in their results can be successful used (though beware of
+modeling functions that store large amounts of data in their results.)
+Alternatively, use modeling functions that do not store references to
+environments.  The utility function \code{\link{show.envs}} from the
+\code{track} package will show what environments are referenced
+within an object (though it is not guaranteed to find them all.)
+
+
   }
 
 
