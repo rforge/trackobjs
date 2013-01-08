@@ -25,6 +25,10 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
         stop("'from' and 'to' are the same")
     trackingEnv.to <- getTrackingEnv(env.to)
     trackingEnv.from <- getTrackingEnv(env.from)
+    if (verbose)
+        cat(if (delete) "Moving" else "Copying", " objects from ",
+            track.datadir(env.from), " to ",
+            track.datadir(env.to), "\n", sep="")
     opt.to <- track.options(trackingEnv=trackingEnv.to)
     opt.from <- track.options(trackingEnv=trackingEnv.from)
     if (opt.to$readonly)

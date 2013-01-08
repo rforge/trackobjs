@@ -1,12 +1,17 @@
+                CHANGES in track version 1.0-20 (2013-01-07)
+CHANGES
+    o   Detect when a read-only db has been modified and rescan
+        it automatically.
+
                 CHANGES in track version 1.0-19 (2012-09-22)
 CHANGES
     o   Tweak examples to write in R's tempdir() rather than
-    	the current working directory.
-    o	track.start() when finding variables of the same
-    	name will check if they are the same object, and proceed
-	if they are, instead of stopping with an error.  This
-	check is only performed if the total size of objects
-	and files is below a threshold.
+        the current working directory.
+    o   track.start() when finding variables of the same
+        name will check if they are the same object, and proceed
+        if they are, instead of stopping with an error.  This
+        check is only performed if the total size of objects
+        and files is below a threshold.
 
                 CHANGES in track version 1.0-15 (2012-04-12)
 CHANGES
@@ -20,8 +25,8 @@ FIXES
                 CHANGES in track version 1.0-13 (2011-12-10)
 FIXES
     o   Redo the way a fake version of Sys.time() was being
-    	used for testing.  New technique avoids modifying
-	Sys.time() in baseenv.
+        used for testing.  New technique avoids modifying
+        Sys.time() in baseenv.
 
                 CHANGES in track version 1.0-11 (2011-10-18)
 FIXES

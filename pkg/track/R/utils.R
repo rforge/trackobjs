@@ -190,7 +190,7 @@ isReservedName <- function(objName)
                                    ".trackingUnsaved", ".trackingSummary",
                                    ".trackingSummaryChanged", ".trackingOptions",
                                    ".trackingPid", ".trackingCreated", ".trackingCacheMark",
-                                   ".trackAuto", ".trackingFinished")))
+                                   ".trackAuto", ".trackingFinished", ".trackingModTimes")))
 
 objIsTracked <- function(objNames, envir, trackingEnv, all.objs=ls(envir=envir, all.names=TRUE)) {
     if (length(objNames)==0)
@@ -605,8 +605,8 @@ create.fake.Sys.time <- function() {
 
 find.relative.path <- function(path, file) {
     ## Find a way to express file as a relative path to path
-    path <- normalizePath(path)
-    file <- normalizePath(file)
+    path <- normalizePath(path, winslash='/')
+    file <- normalizePath(file, winslash='/')
     if (.Platform$OS.type == "windows") {
         path <- gsub("\\", "/", path, fixed=TRUE)
         file <- gsub("\\", "/", file, fixed=TRUE)

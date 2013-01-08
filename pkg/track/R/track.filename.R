@@ -20,7 +20,6 @@ track.filename <- function(expr, list=character(0), pos=1, envir=as.environment(
 
 track.datadir <- function(pos=1, envir=as.environment(pos), relative=TRUE) {
     trackingEnv <- getTrackingEnv(envir)
-    opt <- track.options(trackingEnv=trackingEnv)
     trackingDir <- getTrackingDir(trackingEnv)
     dataDir <- getDataDir(trackingDir)
     if (relative)

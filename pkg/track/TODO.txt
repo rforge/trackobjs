@@ -1,3 +1,13 @@
+* make auto.sync check mod times on filemap and object summary for read-only
+  objects, and rescan if they have changed.
+
+* make track.rescan() work faster -- don't just do a dumb stop/start
+  - check for new, deleted and changed objects
+  - check mod times for changed objects
+
+* make the auto.sync do flushing on a global basis, rather than
+  for each attached db independently
+
 * make the system more robust to NA values in the object summary table
   -- if these exist, should replace them with correct values
 

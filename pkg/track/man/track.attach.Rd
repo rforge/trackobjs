@@ -12,7 +12,8 @@
 \usage{
 track.attach(dir, pos = 2, name = NULL,
              create = FALSE, readonly = !create,
-             lockEnv = FALSE, verbose = TRUE, auto = NULL)
+             lockEnv = FALSE, verbose = TRUE, auto = NULL,
+             dup.ok = FALSE)
 track.detach(pos = NULL, name = NULL, detach = TRUE)
 }
 \arguments{
@@ -48,6 +49,12 @@ track.detach(pos = NULL, name = NULL, detach = TRUE)
   it (though not if it was not created by \code{track.attach}).}
   \item{auto}{
     Should auto-tracking be used? (see \code{\link{track.start}}).
+}
+\item{dup.ok}{
+  Is it OK to proceed if the tracking database is already attached on
+  the search path?  If \code{dup.ok=FALSE} (the default) and the
+  tracking database is already attached, the function issues a warning
+  and does nothing.
 }
 }
 \details{

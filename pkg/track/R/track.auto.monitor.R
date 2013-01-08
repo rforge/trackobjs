@@ -1,7 +1,8 @@
 track.auto.monitor <- function(expr, value, ok, visible) {
     ## Monitors existence of task callbacks for track.sync and re-adds them if
-    ## they have gone missing (they do seem to go missing occasionally -- hard
-    ## to diagnose, seems to be associated with file system problems.)
+    ## they have gone missing (task callbacks can go missing if they stop with
+    ## an error, which is what happens when the user interrupts the R process,
+    ## or if there are transient file system problems.)
     ## Try to be fast -- only look at environments on the search path that
     ## are candidates for tracking (i.e., not packages).
     trace <- getOption("track.callbacks.trace", FALSE)

@@ -32,6 +32,14 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (verbose)
         cat("track.sync", if (dryRun) "(dryRun)",
             ": syncing tracked env ", envname(envir), "\n", sep="")
+    if (opt$readonly) {
+        ## See if the tracking db has changed
+        modTimes <- file.info(file.path(getTrackingDir(trackingEnv), c('fileMap.txt', '.trackingSummary.rda')))
+        oldModTimes <- mget(envir=trackingEnv, '.trackingModTimes', ifnotfound=list(modTimes-1))[[1]]
+        if (any(modTimes$mtime > oldModTimes$mtime))
+            cat('Looks like ', envname(envir), ' has been modified\n', sep='')
+        try(assign('.trackingModTimes', modTimes, envir=trackingEnv), silent=TRUE)
+    }
     master <- match.arg(master)
     if (master=="auto")
         if (opt$readonly)
