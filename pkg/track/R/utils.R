@@ -523,6 +523,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
         ## hopefully, no actual copies are made while loading the object into tmpenv,
         ## then copying it to envir and returning it as the value of this function
         load.res <- load(fullFile, envir=tmpenv)
+        ## call the load callback
         if (length(load.res)<1 || load.res[1] != objName)
             stop("file '", fullFile, "' did not contain obj '", objName, "' as its first object")
         if (length(load.res)>1)

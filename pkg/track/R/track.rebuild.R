@@ -635,9 +635,10 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             if (ok) {
                 objEnv <- tmpenv
                 objNames <- load.res
-                # Add to the new filemap if it wasn't in the old filemap
+                ## Add to the new filemap if it wasn't in the old filemap
                 if (is.na(objName))
                     newFileMap <- setNamedElt(newFileMap, load.res, objFileBase)
+                ## Call the load callback for this object
             } else if (fix) {
                 if (!dryRun) {
                     if (!dir.exists(quarantineDir))

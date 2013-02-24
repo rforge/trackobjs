@@ -1,3 +1,5 @@
+* bug in track.rename -- files disappear for _* filenames
+
 * make auto.sync check mod times on filemap and object summary for read-only
   objects, and rescan if they have changed.
 

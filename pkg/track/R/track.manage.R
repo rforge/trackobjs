@@ -117,7 +117,8 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
                 remove(list=objName, envir=envir)
             }
         } else if (is.element(op, c("untrack", "lift"))) {
-            ## fetch the value and assign it in envir
+            ## Fetch the value and assign it in envir
+            ## Don't run any load callback on the object
             if (exists(objName, envir=trackingEnv, inherits=FALSE)) {
                 objVal <- get(objName, envir=trackingEnv, inherits=FALSE)
             } else {
