@@ -531,8 +531,26 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
         value <- get(objName, envir=tmpenv, inherits=FALSE)
         if (opt$cache)
             assign(objName, value, envir=trackingEnv)
+        ## Call the load hooks based on class
+        if (FALSE && is.element('ff', class(value))) {
+            fff <- attr(attr(value, 'physical'), 'filename')
+            ffd <- dirname(fff)
+            ffd2 <- dirname(ffd)
+            fff1 <- basename(fff)
+            fff2 <- basename(ffd)
+            ## If the ff filename looks like .../ff/<varfile>.ff, and
+            ## the file <trackingDir>/ff/<varfile>.ff exists, then
+            ## switch to using that file.
+            if (fff2 == 'ff' && fff1 == paste(file, '.ff', sep='')) {
+                fffr <- file.path(dir, 'ff', fff1)
+                if (file.exists(fffr) && fffr != fff) {
+                    attr(attr(value, 'physical'), 'orig.filename') <- fff
+                    attr(attr(value, 'physical'), 'filename') <- fffr
+                }
+            }
+        }
     }
-    ##  update the object table (object characteristics, accesses)
+    ## Update the object table (object characteristics, accesses)
     if (opt$maintainSummary && opt$recordAccesses) {
         objSummary <- getObjSummary(trackingEnv, opt=opt)
         if (!is.data.frame(objSummary)) {

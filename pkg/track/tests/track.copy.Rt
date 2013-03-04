@@ -52,6 +52,7 @@ x2 2001-01-01 09:00:12  2  1
 y3 2001-01-01 09:00:07  0  1
 y4 2001-01-01 09:00:13  1  1
 > track.copy(from=2, pat="^x")
+Copying objects from tmp20 to tmp19
 Copying 'x1'...
 Copying 'x2'...
 > ls(1)
@@ -79,9 +80,11 @@ x2 2001-01-01 09:00:12  2  1
 y3 2001-01-01 09:00:07  0  1
 y4 2001-01-01 09:00:13  1  1
 > track.move(from=2, pat="^y")
+Moving objects from tmp20 to tmp19
 Moving 'y3'...
 Moving 'y4'...
 > track.move(from=1, to=2, pat="^z")
+Moving objects from tmp19 to tmp20
 Moving 'z5'...
 > ls(1)
 [1] "x1" "x2" "y3" "y4"
@@ -90,6 +93,7 @@ Moving 'z5'...
 > c(x1, x2, y3, y4)
 [1] 1 2 3 4
 > track.move(from=2, pat="^x", clobber=TRUE)
+Moving objects from tmp20 to tmp19
 Moving 'x1'...
 Moving 'x2'...
 > ls(1)
@@ -155,6 +159,7 @@ a    tracked  TRUE        a      FALSE FALSE
 b  untracked    NA     <NA>         NA    NA
 z5   tracked FALSE       z5       TRUE  TRUE
 > track.copy(list=c("a", "b"), from=2)
+Copying objects from tmp20 to tmp19
 Copying 'a'...
 Copying 'b'...
 > track.status()
@@ -175,6 +180,7 @@ z5   tracked FALSE       z5       TRUE  TRUE
 > rm(list=c("b"))
 > track.remove(list=c("a"))
 > track.move(list=c("a", "b"), from=2)
+Moving objects from tmp20 to tmp19
 Moving 'a'...
 Moving 'b'...
 > track.status()
@@ -257,6 +263,7 @@ a2z 2001-01-01 09:00:40  0  1
 ya2 2001-01-01 09:00:42  0  1
 z5  2001-01-01 09:00:09  0  1
 > track.copy(pat="[ab]", from=2)
+Copying objects from tmp20 to tmp19
 Copying 'a1'...
 Copying 'a1y'...
 Copying 'a2'...
@@ -324,6 +331,7 @@ y3 tracked FALSE       y3       TRUE  TRUE
 y4 tracked FALSE       y4       TRUE  TRUE
 > 
 > track.move(pat="[ab]", from=2)
+Moving objects from tmp20 to tmp19
 Moving 'a1'...
 Moving 'a1y'...
 Moving 'a2'...
