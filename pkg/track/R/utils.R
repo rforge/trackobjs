@@ -532,7 +532,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
         if (opt$cache)
             assign(objName, value, envir=trackingEnv)
         ## Call the load hooks based on class
-        if (FALSE && is.element('ff', class(value))) {
+        if (is.element('ff', class(value))) {
             fff <- attr(attr(value, 'physical'), 'filename')
             ffd <- dirname(fff)
             ffd2 <- dirname(ffd)
