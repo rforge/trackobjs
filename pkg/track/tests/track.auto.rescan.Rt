@@ -1,0 +1,22 @@
+> # test that track.sync can correctly pick up changes when a readonly DB is changed
+> options(error=function() NULL)
+> invisible(if (file.exists("tmp23")) unlink("tmp23", recursive=TRUE))
+> options(global.track.options=list(cacheKeepFun='none'))
+> track.start(dir="tmp23", auto=FALSE, cache=FALSE)
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp23'
+> x <- 1
+> y <- 2
+> track.status()
+     Status InMem FileBase FileExists Saved
+x untracked    NA     <NA>         NA    NA
+y untracked    NA     <NA>         NA    NA
+> track.sync(master="envir")
+> track.attach(dir='tmp23', pos=2, dup.ok=2)
+Attaching tracking db in 'tmp23' to env in pos 2 (readonly)
+> track.detach(2)
+Stopping tracking on <env D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23[2]>
+Removing <env D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23[2]> from the search path
+> track.stop(1)
+Stopping tracking on <env R_GlobalEnv>
+> unlink("tmp23", recursive=TRUE)
+> 

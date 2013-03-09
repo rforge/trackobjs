@@ -197,9 +197,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
         writeFileMapFile(fileMap, trackingEnv, dataDir, FALSE)
     if ((needSaveObjSummary || resave) && !opt$readonly) {
         assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-        save.res <- try(save(list=".trackingSummary", envir=trackingEnv,
-                              file=file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep=".")),
-                              compress=FALSE), silent=TRUE)
+        save.res <- saveObjSummary(trackingEnv, opt, dataDir)
         if (!is(save.res, "try-error"))
             assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     }

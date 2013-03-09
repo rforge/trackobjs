@@ -830,11 +830,12 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         if (verbose>1)
             cat("Saving object summary to file.\n")
         if (activeTracking) {
-            save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
+            save.res <- saveObjSummary(trackingEnv, opt, getDataDir(dir))
         } else {
             ## Need to have newSummary in a variable named '.trackingSummary' to use save()
             assign(".trackingSummary", newSummary, envir=tmpenv)
-            save.res <- try(save(list=".trackingSummary", file=file, envir=tmpenv, compress=FALSE), silent=TRUE)
+            save.res <- saveObjSummary(trackingEnv, envir=tmpenv, opt=opt, dataDir=getDataDir(dir))
+            # save.res <- try(save(list=".trackingSummary", file=file, envir=tmpenv, compress=FALSE), silent=TRUE)
         }
         if (is(save.res, "try-error"))
             warning("unable to save .trackingSummary to ", dir, " (error was '", formatMsg(save.res), "')")

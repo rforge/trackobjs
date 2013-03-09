@@ -33,7 +33,7 @@ track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, 
                 if (!is.na(i.path) && rel.dir==i.path) {
                     if (dup.ok) {
                         dup.count <- dup.count + 1
-                        if (dup.count==1)
+                        if (dup.count==1 && dup.ok < 2)
                             warning('reattaching already attached tracking database ', rel.dir)
                     } else {
                         warning('tracking database ', rel.dir,

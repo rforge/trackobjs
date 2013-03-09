@@ -35,11 +35,12 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (opt$readonly) {
         ## See if the tracking db has changed
         ## Working here...
-        modTimes <- file.info(file.path(getTrackingDir(trackingEnv), c('fileMap.txt', '.trackingSummary.rda')))
+        modTimes <- file.info(file.path(getTrackingDir(trackingEnv), c('fileMap.txt', paste('.trackingSummary.', opt$RDataSuffix, sep=''))))
         oldModTimes <- mget(envir=trackingEnv, '.trackingModTimes', ifnotfound=list(modTimes$mtime-1))[[1]]
-        if (FALSE && any(modTimes$mtime > oldModTimes))
+        if (FALSE && any(modTimes$mtime > oldModTimes)) {
             cat('Looks like ', envname(envir), ' has been modified\n', sep='')
-        try(assign('.trackingModTimes', modTimes$mtime, envir=trackingEnv), silent=TRUE)
+            try(assign('.trackingModTimes', modTimes$mtime, envir=trackingEnv), silent=TRUE)
+        }
     }
     master <- match.arg(master)
     if (master=="auto")
@@ -370,10 +371,9 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 warning("no .trackingSummary in trackng env ", envname(trackingEnv))
             } else {
                 dir <- getTrackingDir(trackingEnv)
-                file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
                 if (verbose)
                     cat("track.sync: saving .trackingSummary for envir=", envname(envir), " to ", dir, "\n", sep="")
-                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
+                save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
                 if (is(save.res, "try-error"))
                     warning("unable to save .trackingSummary to ", dir)
                 else

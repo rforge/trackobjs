@@ -429,9 +429,9 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     }
     ## Save the tracking summary after working with .Last
     if (!opt$readonly) {
-        save.res <- try(save(list=".trackingSummary", envir=trackingEnv, file=objSummaryPath, compress=FALSE), silent=TRUE)
+        save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
         if (is(save.res, "try-error"))
-            stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again")
+            stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again (", save.res, ")")
     }
     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     ## Store the Pid of this R session so that we can identify

@@ -206,8 +206,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
                         envname(trackingEnv), ": ", assign.res)
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-                file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-                save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
+                save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
                 if (is(save.res, "try-error"))
                     stop("unable to save .trackingSummary to ", dir)
                 else
@@ -236,8 +235,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
                     envname(trackingEnv), ": ", assign.res)
         } else {
             assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
-            file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-            save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
+            save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
             if (is(save.res, "try-error"))
                 stop("unable to save .trackingSummary to ", dir)
             else

@@ -483,8 +483,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
                 if (opt$writeToDisk && !is.element("eotPurge", opt$cachePolicy)) {
-                    file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
+                    save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
                     if (is(save.res, "try-error"))
                         warning("unable to save .trackingSummary to ", dir)
                     else
@@ -590,8 +589,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
                 if (opt$alwaysSaveSummary && !is.element("eotPurge", opt$cachePolicy)) {
                     if (is.null(dir))
                         dir <- getTrackingDir(trackingEnv)
-                    file <- file.path(getDataDir(dir), paste(".trackingSummary", opt$RDataSuffix, sep="."))
-                    save.res <- try(save(list=".trackingSummary", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
+                    save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
                     if (is(save.res, "try-error"))
                         warning("unable to save .trackingSummary to ", dir, ": ", save.res)
                     else
@@ -695,4 +693,19 @@ set.fake.Sys.time <- function(offset=1) {
         attach(what=new.env(), name="fake.Sys.time.control")
     assign("fake.Sys.time.counter", as.POSIXct("2001/01/01 09:00:00", tz="GMT")+offset, pos="fake.Sys.time.control")
     return(invisible(get("fake.Sys.time.counter", pos="fake.Sys.time.control")))
+}
+
+saveObjSummary <- function(trackingEnv,
+                           opt=track.options(trackingEnv=trackingEnv),
+                           dataDir=getDataDir(getTrackingDir(trackingEnv)),
+                           envir=trackingEnv) {
+    # Save the object summary out to the file system
+    # envir is the actual environment where the .trackingSummary object lives; it is
+    # usually the same as trackingEnv
+    file <- file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))
+    save.res <- try(save(list=".trackingSummary", file=file, envir=envir, compress=FALSE), silent=TRUE)
+    modTime <- file.info(file)
+    if (!is.na(modTime$mtime))
+        try(assign('.trackingModTimes', modTimes$mtime, envir=envir), silent=TRUE)
+    save.res
 }
