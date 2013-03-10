@@ -1,5 +1,5 @@
 track.rescan <- function(pos=1, envir=as.environment(pos), discardMissing=FALSE,
-                         forgetModified=FALSE, level=c("high", "low"), dryRun=FALSE) {
+                         forgetModified=FALSE, level=c("low", "high"), dryRun=FALSE) {
     ## Rescan the tracking dir, so that if anything has changed there,
     ## the current variables on file will be used instead of any cached
     ## in memory.
@@ -74,36 +74,26 @@ track.rescan <- function(pos=1, envir=as.environment(pos), discardMissing=FALSE,
         ## code further down take care of adding the new ones.
         fileMapEnv <- fileMap
         fileMap <- readFileMapFile(trackingEnv, getTrackingDir(trackingEnv), assignObj=!dryRun)
-        objSummaryEnv <- getObjSummary(trackingEnv, opt=opt)
-        objSummaryPath <- file.path(dataDir, paste(".trackingSummary.", opt$RDataSuffix, sep=""))
+        objSummaryFromEnv <- getObjSummary(trackingEnv, opt=opt)
+
+
         ## Read and save the summary from file.
-        tmpenv <- new.env(parent=emptyenv())
-        if (!file.exists(objSummaryPath))
-            stop("file storing object summary doesn't exist: ", objSummaryPath)
-        load.res <- try(load(objSummaryPath, envir=tmpenv), silent=TRUE)
-        if (is(load.res, "try-error"))
-            stop(objSummaryPath, " cannot be loaded -- for recovery see ?track.rebuild (",
-                 as.character(load.res), ")")
-        if (length(load.res)!=1 || load.res != ".trackingSummary")
-            stop(objSummaryPath, " does not contain just '.trackingSummary' -- for recovery see ?track.rebuild")
-        ## .trackingSummary has to exist because we just loaded it
-        objSummary <- getObjSummary(tmpenv, opt=opt)
-        if (!is.data.frame(objSummary))
-            stop("'.trackingSummary' from ", objSummaryPath, " is not a data.frame -- see ?track.rebuild")
+        objSummaryFromFile <- loadObjSummary(trackingEnv, opt, dataDir)
+
         ## Use some info from exisiting summary to update the summary read
         ## from file (to retain access counts, etc.)
-        retained <- intersect(rownames(objSummary), rownames(objSummaryEnv))
+        retained <- intersect(rownames(objSummaryFromFile), rownames(objSummaryFromEnv))
         ## Might want to think about what to do with non-zero SA & SW just read
         ## from the file -- these might reflect another session currently
         ## attached to this DB -- currently ignore those here.
-        if (nrow(objSummary))
-            objSummary[, c("SA", "SW")] <- 0
+        if (nrow(objSummaryFromFile))
+            objSummaryFromFile[, c("SA", "SW")] <- 0
         if (length(retained)) {
             if (verbose)
-                cat("updating re-read object summary with session data for vars: ",
+                cat("track.rescan: updating re-read object summary with session read-count data for vars: ",
                     paste(retained, collapse=", "), "\n", sep="")
             if (!dryRun)
-                objSummary[retained, c("SA", "SW")] <- objSummaryEnv[retained, c("SA", "SW")]
+                objSummaryFromFile[retained, c("SA", "SW")] <- objSummaryFromEnv[retained, c("SA", "SW")]
         }
         ## Delete unneeded active bindings and cached objects
         unneeded <- setdiff(names(fileMapEnv), names(fileMap))
@@ -131,19 +121,24 @@ track.rescan <- function(pos=1, envir=as.environment(pos), discardMissing=FALSE,
         ## have changed.
         if (length(fileMap)) {
             cached <- names(fileMap)[sapply(names(fileMap), exists, envir=trackingEnv, inherits=FALSE)]
+            ## Look at which objects are in the objSummary's, and have the same mod time don't need to be flushed
+            cached2 <- cached[(cached %in% rownames(objSummaryFromEnv)) & (cached %in% rownames(objSummaryFromFile))]
+            cached.keep <- cached2[objSummaryFromEnv[cached2, 'modified'] >= objSummaryFromFile[cached2, 'modified']]
+            if (verbose && length(cached.keep))
+                cat("track.rescan: not removing these unchanged cached variables: ",
+                    paste(cached.keep, collapse=", "), "\n", sep="")
+            cached <- setdiff(cached, cached.keep)
             if (length(cached)) {
                 if (verbose)
-                    cat("track.sync: removing cached variables: ", paste(cached, collapse=", "), "\n", sep="")
+                    cat("track.rescan: removing cached variables: ", paste(cached, collapse=", "), "\n", sep="")
                 if (!dryRun)
-                    remove(list=cached, envir=envir)
+                    remove(list=cached, envir=trackingEnv)
             }
         }
-        #   action=retrack, master=file:  remove current obj from envir, create active binding
-        #   action=restore, master=file:  create active binding
         new.vars <- setdiff(names(fileMap), all.objs)
         if (length(new.vars)) {
             if (verbose)
-                cat("track.rescanc: creating active bindings for ", length(new.vars), " new variables: ", paste(new.vars, collapse=", "), "\n", sep="")
+                cat("track.rescan: creating active bindings for ", length(new.vars), " new variables: ", paste(new.vars, collapse=", "), "\n", sep="")
             if (!dryRun) for (objName in new.vars) {
                 f <- substitute(function(v) {
                     if (missing(v))
@@ -168,7 +163,7 @@ track.rescan <- function(pos=1, envir=as.environment(pos), discardMissing=FALSE,
             }
         }
         if (!dryRun) {
-            assign(".trackingSummary", objSummary, envir=trackingEnv)
+            assign(".trackingSummary", objSummaryFromFile, envir=trackingEnv)
             assign(".trackingFileMap", fileMap, envir=trackingEnv)
         }
     }

@@ -43,7 +43,7 @@ Here is another example of a very simple cache plugin function: this one
 keeps in memory variables whose names begin with the letter 'x'.
 
 \preformatted{
-plugin <- function(objs, inmem, envname) {
+my.plugin <- function(objs, inmem, envname) {
     keep <- regexpr("^x", rownames(objs))>0
     # browser() # uncomment for debugging & development
     return(keep)
@@ -52,7 +52,7 @@ plugin <- function(objs, inmem, envname) {
 
 To use this plugin function, supply it to \code{track.options()}:
 \preformatted{
-  track.options(cacheKeepFun=plugin, save=TRUE)
+  track.options(cacheKeepFun=my.plugin, save=TRUE)
 }
 
 }

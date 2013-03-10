@@ -1,21 +1,287 @@
 > # test that track.sync can correctly pick up changes when a readonly DB is changed
 > options(error=function() NULL)
+> # Do with automatic syncing
 > invisible(if (file.exists("tmp23")) unlink("tmp23", recursive=TRUE))
-> options(global.track.options=list(cacheKeepFun='none'))
-> track.start(dir="tmp23", auto=FALSE, cache=FALSE)
+> options(global.track.options=list(cacheKeepFun='track.plugin.lru', cachePolicy='eotPurge', debug=TRUE))
+> track.start(dir="tmp23")
+#@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+Tracking <env R_GlobalEnv> (writable) using new directory 'tmp23'
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: tracking 1 untracked variables: .Last
+setting tracked var '.Last' in <environment: 0x05f34e7c>
+track.sync: no deleted variables
+track.sync: saving 1 vars with call to track.save(envir=<env R_GlobalEnv>, list=c('.Last'))
+> x <- 1
+#@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: tracking 1 untracked variables: x
+setting tracked var 'x' in <environment: 0x05f34e7c>
+track.sync: no deleted variables
+track.sync: saving 1 vars with call to track.save(envir=<env R_GlobalEnv>, list=c('x'))
+> y <- 2
+#@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: tracking 1 untracked variables: y
+setting tracked var 'y' in <environment: 0x05f34e7c>
+track.sync: no deleted variables
+track.sync: saving 1 vars with call to track.save(envir=<env R_GlobalEnv>, list=c('y'))
+> z <- 3
+#@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: tracking 1 untracked variables: z
+setting tracked var 'z' in <environment: 0x05f34e7c>
+track.sync: no deleted variables
+track.sync: saving 1 vars with call to track.save(envir=<env R_GlobalEnv>, list=c('z'))
+> track.status()
+   Status InMem FileBase FileExists Saved
+x tracked  TRUE        x       TRUE  TRUE
+y tracked  TRUE        y       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> track.attach(dir='tmp23', pos=2, dup.ok=2, name='track:tmp23[dup]')
+#@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+Attaching tracking db in 'tmp23' to env in pos 2 (readonly)
+getting tracked var '.Last' from cached obj in <environment: 0x05f34e7c>
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: saving .trackingSummary for envir=<env R_GlobalEnv> to D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: DB backing <env track:tmp23[dup]> has been modified; rescanning...
+track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
+track.sync: no untracked variables
+track.sync: no deleted variables
+> track.info()
+          env.name pos readonly cache auto
+1       .GlobalEnv   1    FALSE  TRUE TRUE
+2 track:tmp23[dup]   2     TRUE  TRUE TRUE
+                                                dir
+1 D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23
+2 D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> track.status(2)
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked FALSE        z       TRUE  TRUE
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> c(get('x', 2), get('z', 2))
+getting tracked var 'x' from file
+getting tracked var 'z' from file
+[1] 1 3
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> track.status(2)
+   Status InMem FileBase FileExists Saved
+x tracked  TRUE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> Sys.sleep(2)
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> x <- 4
+#@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+setting tracked var 'x' in <environment: 0x05f34e7c>
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: saving 1 vars with call to track.save(envir=<env R_GlobalEnv>, list=c('x'))
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: DB backing <env track:tmp23[dup]> has been modified; rescanning...
+track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
+track.rescan: not removing these unchanged cached variables: z
+track.rescan: removing cached variables: x
+track.sync: no untracked variables
+track.sync: no deleted variables
+> # The copy of 'x' in env 2 is the old one that we fetched previously and is still cached.
+> # It has the value 1.
+> track.status(2)
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> c(get('x', 2), get('z', 2))
+#@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+getting tracked var 'x' from file
+getting tracked var 'z' from cached obj in <environment: 0x070166f0>
+[1] 4 3
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> Sys.sleep(2)
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> # Just reading the variables in env 1 causes a rescan, because
+> # reading causes an update of the object summary to update
+> # the read count.
+> c(get('x', 1), get('z', 1))
+#@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+getting tracked var 'x' from cached obj in <environment: 0x05f34e7c>
+getting tracked var 'z' from cached obj in <environment: 0x05f34e7c>
+[1] 4 3
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: saving .trackingSummary for envir=<env R_GlobalEnv> to D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: DB backing <env track:tmp23[dup]> has been modified; rescanning...
+track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
+track.rescan: not removing these unchanged cached variables: x, z
+track.sync: no untracked variables
+track.sync: no deleted variables
+> track.status(2)
+   Status InMem FileBase FileExists Saved
+x tracked  TRUE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: syncing tracked env <env track:tmp23[dup]>
+track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> track.detach(2)
+Stopping tracking on <env track:tmp23[dup]>
+Removing <env track:tmp23[dup]> from the search path
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+> track.stop(1)
+Stopping tracking on <env R_GlobalEnv>
+track.sync: syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
+track.sync: no untracked variables
+track.sync: no deleted variables
+track.sync: calling track.save(envir=<env R_GlobalEnv>)
+> unlink("tmp23", recursive=TRUE)
+> 
+> # Do without all the automatic syncing
+> invisible(if (file.exists("tmp23")) unlink("tmp23", recursive=TRUE))
+> options(global.track.options=list(cacheKeepFun='none', cachePolicy='none', debug=FALSE))
+> track.start(dir="tmp23", auto=FALSE, cache=TRUE)
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp23'
 > x <- 1
 > y <- 2
+> z <- 3
 > track.status()
      Status InMem FileBase FileExists Saved
 x untracked    NA     <NA>         NA    NA
 y untracked    NA     <NA>         NA    NA
+z untracked    NA     <NA>         NA    NA
 > track.sync(master="envir")
-> track.attach(dir='tmp23', pos=2, dup.ok=2)
+> track.status()
+   Status InMem FileBase FileExists Saved
+x tracked  TRUE        x       TRUE  TRUE
+y tracked  TRUE        y       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
+> track.attach(dir='tmp23', pos=2, dup.ok=2, auto=FALSE, name='track:tmp23[dup]')
 Attaching tracking db in 'tmp23' to env in pos 2 (readonly)
+> track.status(2)
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked FALSE        z       TRUE  TRUE
+> c(get('x', 2), get('z', 2))
+[1] 1 3
+> track.status(2)
+   Status InMem FileBase FileExists Saved
+x tracked  TRUE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
+> 
+> x <- 4
+> track.sync(master="envir")
+> c(get('x', 1), get('z', 1))
+[1] 4 3
+> c(get('x', 2), get('z', 2))
+[1] 1 3
+> track.status(2)
+   Status InMem FileBase FileExists Saved
+x tracked  TRUE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
+> track.rescan(2, level='low')
+> track.status(2)
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
+y tracked FALSE        y       TRUE  TRUE
+z tracked  TRUE        z       TRUE  TRUE
+> c(get('x', 2), get('z', 2))
+[1] 4 3
+> c(get('x', 1), get('z', 1))
+[1] 4 3
 > track.detach(2)
-Stopping tracking on <env D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23[2]>
-Removing <env D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23[2]> from the search path
+Stopping tracking on <env track:tmp23[dup]>
+Removing <env track:tmp23[dup]> from the search path
 > track.stop(1)
 Stopping tracking on <env R_GlobalEnv>
 > unlink("tmp23", recursive=TRUE)

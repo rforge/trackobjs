@@ -125,7 +125,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
                 oldFile.needsRemoving <- FALSE
             newFileName <- makeObjFileName(newObjName, fileMap)
             newFile <- file.path(dir, paste(newFileName, opt$RDataSuffix, sep="."))
-            # Unfortuneately, can't just rename the file because the object name has changed,
+            # Unfortunately, can't just rename the file because the object name has changed,
             # and the object is stored in the file.
             # old code doesn't work: ok <- file.rename(oldFile, newFile)
             res <- try(load(oldFile, envir=tmpEnv), silent=TRUE)

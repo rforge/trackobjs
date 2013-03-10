@@ -33,14 +33,20 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         cat("track.sync", if (dryRun) "(dryRun)",
             ": syncing tracked env ", envname(envir), "\n", sep="")
     if (opt$readonly) {
+        if (verbose)
+            cat('track.sync: seeing if readonly db has changed ', envname(envir), '\n', sep='')
         ## See if the tracking db has changed
         ## Working here...
-        modTimes <- file.info(file.path(getTrackingDir(trackingEnv), c('fileMap.txt', paste('.trackingSummary.', opt$RDataSuffix, sep=''))))
-        oldModTimes <- mget(envir=trackingEnv, '.trackingModTimes', ifnotfound=list(modTimes$mtime-1))[[1]]
-        if (FALSE && any(modTimes$mtime > oldModTimes)) {
-            cat('Looks like ', envname(envir), ' has been modified\n', sep='')
-            try(assign('.trackingModTimes', modTimes$mtime, envir=trackingEnv), silent=TRUE)
+        modTime <- file.info(file.path(getTrackingDir(trackingEnv), paste('.trackingSummary', opt$RDataSuffix, sep='.')))
+        oldModTime <- mget(envir=trackingEnv, '.trackingModTime', ifnotfound=list(NULL))[[1]]
+        if (!is.null(oldModTime) && (modTime$mtime > oldModTime$mtime || modTime$size != oldModTime$size)) {
+            cat('track.sync: DB backing ', envname(envir), ' has been modified; rescanning...\n', sep='')
+            track.rescan(envir=envir, forgetModified=TRUE, level='low')
+            # try(assign('.trackingModTime', modTime$mtime, envir=trackingEnv), silent=TRUE)
         }
+    } else {
+        if (verbose)
+            cat('track.sync: proceeding with writeable db ', envname(envir), '\n', sep='')
     }
     master <- match.arg(master)
     if (master=="auto")
@@ -63,7 +69,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     untracked <- setdiff(all.objs, names(fileMap))
     reserved <- isReservedName(untracked)
     ## .trackingEnv will always exist -- don't warn about it
-    warn.reserved <- setdiff(untracked[reserved], ".trackingEnv")
+    warn.reserved <- setdiff(untracked[reserved], c(".trackingEnv", ".trackingCreated"))
     if (verbose && length(warn.reserved))
         cat("track.sync: cannot track variables with reserved names: ", paste(warn.reserved, collapse=", "), "\n", sep="")
     untracked <- untracked[!reserved]
@@ -123,7 +129,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     }
     if (length(deleted)) {
         if (opt$readonly) {
-            warning(length(deleted), "variables deleted from a readonly tracking env, these will not be deleted from the files: ",
+            warning(length(deleted), " variables deleted from a readonly tracking env, these will not be deleted from the files: ",
                     paste(deleted, collapse=", "))
         } else if (dryRun) {
             cat("track.sync(dryRun): would remove ", length(deleted), " deleted variables: ", paste(deleted, collapse=", "), "\n", sep="")
@@ -328,10 +334,10 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             cat("track.sync(dryRun): Would save", length(saveVars), "vars:",
                 paste(saveVars, collapse=", "), "\n")
         } else {
-            if (verbose)
-                cat("track.sync: flushing ", length(flushVars), " vars with call to track.flush(envir=",
-                    envname(envir), ", list=c(", paste("'", flushVars, "'", sep="", collapse=", "), "))\n", sep="")
             if (length(flushVars)) {
+                if (verbose)
+                    cat("track.sync: flushing ", length(flushVars), " vars with call to track.flush(envir=",
+                        envname(envir), ", list=c(", paste("'", flushVars, "'", sep="", collapse=", "), "))\n", sep="")
                 if (trace==2) {
                     cat("f")
                     flush.console()
@@ -339,6 +345,9 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 track.flush(envir=envir, list=flushVars)
             }
             if (length(saveVars)) {
+                if (verbose)
+                    cat("track.sync: saving ", length(saveVars), " vars with call to track.save(envir=",
+                        envname(envir), ", list=c(", paste("'", saveVars, "'", sep="", collapse=", "), "))\n", sep="")
                 if (trace==2) {
                     cat("s")
                     flush.console()
@@ -346,7 +355,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 track.save(envir=envir, list=saveVars)
             }
         }
-    } else {
+    } else if (!opt$readonly) {
         if (dryRun) {
             cat("track.sync(dryRun): Would save all vars\n")
         } else {

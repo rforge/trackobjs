@@ -31,7 +31,7 @@ track.stop(pos = 1, envir = as.environment(pos), all = FALSE,
         stop.on.error = FALSE, keepVars = FALSE, sessionEnd = FALSE,
         verbose = TRUE, detach = TRUE, callFrom = NULL)
 track.rescan(pos = 1, envir = as.environment(pos), discardMissing = FALSE,
-             forgetModified = FALSE, level = c("high", "low"), dryRun = FALSE)
+             forgetModified = FALSE, level = c("low", "high"), dryRun = FALSE)
 track.Last()
 % .Last()
 }

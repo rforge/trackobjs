@@ -192,7 +192,6 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     assign(".trackingOptions", opt, envir=trackingEnv)
     fileMapPath <- file.path(dataDir, "filemap.txt")
     fileMapChanged <- FALSE
-    objSummaryPath <- file.path(dataDir, paste(".trackingSummary.", opt$RDataSuffix, sep=""))
     ## Create a default empty objSummary -- an existing one will replace this
     objSummary <- summaryRow(name="", opt=opt)[0,]
     if (!dir.exists(file.path(dataDir))) {
@@ -211,18 +210,9 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         ## Try to read the summary first, because if there is a problem with fileMap,
         ## we may want to erase the summary (though the code doesn't currently
         ## do that.)
-        tmpenv <- new.env(parent=emptyenv())
-        if (file.exists(objSummaryPath)) {
-            load.res <- try(load(objSummaryPath, envir=tmpenv), silent=TRUE)
-            if (is(load.res, "try-error"))
-                stop(objSummaryPath, " cannot be loaded -- for recovery see ?track.rebuild (",
-                     as.character(load.res), ")")
-            if (length(load.res)!=1 || load.res != ".trackingSummary")
-                stop(objSummaryPath, " does not contain just '.trackingSummary' -- for recovery see ?track.rebuild")
-            ## .trackingSummary has to exist because we just loaded it
-            objSummary <- getObjSummary(tmpenv, opt=opt)
-            if (!is.data.frame(objSummary))
-                stop("'.trackingSummary' from ", objSummaryPath, " is not a data.frame -- see ?track.rebuild")
+        objSummaryFromFile <- loadObjSummary(trackingEnv, opt, stop.on.not.exists=FALSE)
+        if (!is.null(objSummaryFromFile)) {
+            objSummary <- objSummaryFromFile
             assign(".trackingSummary", objSummary, envir=trackingEnv)
         }
         ## Need to confirm that there are no clashes between variables already
@@ -282,7 +272,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                                      " tracking db on the file system -- repair or delete file and try again;",
                                      " problem was: ", as.character(load.res))
                             if (length(load.res)!=1 || load.res != objName)
-                                stop(objSummaryPath, " does not contain just '.trackingSummary' -- for recovery see ?track.rebuild")
+                                stop(objFile, " does not contain just '", objName, "' -- for recovery see ?track.rebuild")
                             objValueFile <- get(objName, envir=tmpenv, inherits=FALSE)
                             objValueEnv <- get(objName, envir=envir, inherits=FALSE)
                             rm(list=objName, envir=tmpenv, inherits=FALSE)
@@ -329,7 +319,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         } else {
             ## if there are in .rda files in this directory, need to rebuild the fileMap
             files <- list.files(path=file.path(dataDir), pattern=paste(".*\\.", opt$RDataSuffix, "$", sep=""), all.files=TRUE)
-            files <- setdiff(files, paste(".trackingSummary.", opt$RDataSuffix, sep=""))
+            files <- setdiff(files, paste(".trackingSummary", opt$RDataSuffix, sep="."))
             if (length(files)==0) {
                 ## No files: start with a new fileMap and objSummary
                 fileMap <- character(0)
@@ -431,7 +421,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     if (!opt$readonly) {
         save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
         if (is(save.res, "try-error"))
-            stop("could not save '.trackingSummary' in ", objSummaryPath, ": fix file problem and try again (", save.res, ")")
+            stop("could not save '.trackingSummary' in ", attr(save.res, 'file'), ": fix file problem and try again (", save.res, ")")
     }
     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     ## Store the Pid of this R session so that we can identify

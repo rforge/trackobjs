@@ -2,8 +2,10 @@
 CHANGES
     o   Detect when a read-only db has been modified and rescan
         it automatically.
-    o   Move code that saves .trackingSummary object into
-    	function saveObjSummary()
+    o   Finished the implementation of low-level rescan
+        and changed default for level to 'low' for track.rescan().
+    o   Move code that saves and loads .trackingSummary object into
+    	functions saveObjSummary() and  loadObjSummary()
 
                 CHANGES in track version 1.0-20 (2013-01-07)
 CHANGES

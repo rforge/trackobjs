@@ -190,7 +190,7 @@ isReservedName <- function(objName)
                                    ".trackingUnsaved", ".trackingSummary",
                                    ".trackingSummaryChanged", ".trackingOptions",
                                    ".trackingPid", ".trackingCreated", ".trackingCacheMark",
-                                   ".trackAuto", ".trackingFinished", ".trackingModTimes")))
+                                   ".trackAuto", ".trackingFinished", ".trackingModTime")))
 
 objIsTracked <- function(objNames, envir, trackingEnv, all.objs=ls(envir=envir, all.names=TRUE)) {
     if (length(objNames)==0)
@@ -301,14 +301,20 @@ readFileMapFile <- function(trackingEnv, dataDir, assignObj) {
     return(fileMap)
 }
 
-getObjSummary <- function(trackingEnv, opt, stop.if.not.found=TRUE) {
+getObjSummary <- function(trackingEnv, opt, stop.if.not.found=TRUE, fromWhere=paste('tracking env ', envname(trackingEnv))) {
     objSummary <- mget(".trackingSummary", envir=trackingEnv, ifnotfound=list(NULL))[[1]]
-    if (stop.if.not.found && is.null(objSummary))
-        stop("no .trackingSummary object in tracking env ", envname(trackingEnv), " - recommend using track.rebuild()")
-    if (stop.if.not.found && !is.data.frame(objSummary))
-        stop(".trackingSummary object found in tracking env ", envname(trackingEnv), " but is not a data frame - recommend using track.rebuild()")
+    problem <- NULL
     if (is.null(objSummary))
-        return(objSummary)
+        problem <- paste("no .trackingSummary object ", fromWhere,
+                         " - recommend using track.rebuild()", sep='')
+    else if (!is.data.frame(objSummary))
+        problem <- paste(".trackingSummary object found in ", fromWhere,
+                         " but is not a data frame - recommend using track.rebuild()", sep='')
+    if (!is.null(problem))
+        if (stop.if.not.found)
+            stop(problem)
+        else
+            return(structure(problem, class='try-error'))
     ## The 'cache' column was added in version 1.03.
     ## If we read a .trackingSummary without it, just add it.
     if (!is.element("cache", names(objSummary)))
@@ -346,8 +352,9 @@ envname <- function(envir) {
     # Use the name it has on the search() list, if possible.
     # This is simpler now that R has the environmentName() function
     n <- environmentName(envir)
-    if (n!="")
+    if (n!="") {
         return(paste("<env ", n, ">", sep=""))
+    }
     return(capture.output(print(envir))[1])
 }
 
@@ -703,9 +710,47 @@ saveObjSummary <- function(trackingEnv,
     # envir is the actual environment where the .trackingSummary object lives; it is
     # usually the same as trackingEnv
     file <- file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))
+    if (!exists(".trackingSummary", envir=envir, inherits=FALSE))
+        return(structure('saveObjSummary: .trackingSummary does not exist', class='try-error'))
+    objSummary <- get(".trackingSummary", envir=envir, inherits=FALSE)
+    pad <- attr(objSummary, 'pad')
+    if (is.null(pad))
+        pad <- raw(1)
+    length(pad) <- (length(pad) + 17) %% 101
+    attr(objSummary, 'pad') <- pad
+    assign(".trackingSummary", objSummary, envir=envir)
     save.res <- try(save(list=".trackingSummary", file=file, envir=envir, compress=FALSE), silent=TRUE)
+    if (is(save.res, 'try-error'))
+        attr(save.res, 'file') <- file
+    if (identical(envir, trackingEnv)) {
+        modTime <- file.info(file)
+        if (!is.na(modTime$mtime))
+            try(assign('.trackingModTime', modTime[,c('size','mtime')], envir=trackingEnv), silent=TRUE)
+    }
+    save.res
+}
+
+loadObjSummary <- function(trackingEnv,
+                           opt=track.options(trackingEnv=trackingEnv),
+                           dataDir=getDataDir(getTrackingDir(trackingEnv)),
+                           stop.on.not.exists=FALSE) {
+    # Load the object summary from the file system
+    file <- file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))
+    tmpenv <- new.env(parent=emptyenv())
+    if (!file.exists(file))
+        if (stop.on.not.exists)
+            stop("file storing object summary doesn't exist: ", file)
+        else
+            return(NULL)
+    load.res <- try(load(file, envir=tmpenv), silent=TRUE)
+    if (is(load.res, "try-error"))
+        stop(file, " cannot be loaded -- for recovery see ?track.rebuild (",
+             as.character(load.res), ")")
+    if (length(load.res)!=1 || load.res != ".trackingSummary")
+        stop(file, " does not contain just '.trackingSummary' -- for recovery see ?track.rebuild")
     modTime <- file.info(file)
     if (!is.na(modTime$mtime))
-        try(assign('.trackingModTimes', modTimes$mtime, envir=envir), silent=TRUE)
-    save.res
+        try(assign('.trackingModTime', modTime[,c('size','mtime')], envir=trackingEnv), silent=TRUE)
+    ## .trackingSummary has to exist in tmpenv because we just loaded it
+    getObjSummary(tmpenv, opt=opt, fromWhere=file)
 }

@@ -436,7 +436,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                 formatMsg(load.res), ")\n")
         } else if(!is.element(".trackingSummary", load.res)) {
             cat("Strange: '", abbrevWD(file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))),
-                " does not containg a '.trackingSummary' object -- rebuilding...\n")
+                " does not contain a '.trackingSummary' object -- rebuilding it ...\n")
         } else {
             fileSummary <- getObjSummary(tmpenv, opt=opt)
             if (!is.data.frame(fileSummary)) {

@@ -82,7 +82,8 @@ track.options(..., pos = 1, envir = as.environment(pos),
       one of them allows special action at the end of a top-level-task:
       \describe{
         \item{\code{"none"}:}{No special action at end of task, i.e., follow option \code{cache}}
-        \item{\code{"eotPurge"}:}{Purge objects from memory at the end }
+        \item{\code{"eotPurge"}:}{Purge objects from memory at the end
+	  of a top-level task}
         }
       Also affects when changes to objects are written to disk - see option
       \code{writeToDisk} below.}
@@ -165,7 +166,7 @@ track.options(..., pos = 1, envir = as.environment(pos),
 
   Global default values can be set in
   \code{options("global.track.options")} as a list like
-  \code{options(global.track.options=list(cache=TRUE, cachePolicy='tltPurge'))}.
+  \code{options(global.track.options=list(cache=TRUE, cachePolicy='eotPurge'))}.
 }
 \value{
   The value returned is a list of option values.  If options were

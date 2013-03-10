@@ -28,6 +28,7 @@ x  tracked FALSE        x       TRUE  TRUE
 y orphaned FALSE        y       TRUE  TRUE
 > track.sync(master="envir", full=FALSE, dryRun=TRUE)
 track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync(dryRun): would remove 1 deleted variables: y
 track.sync(dryRun): Would save all vars
@@ -47,6 +48,7 @@ x   tracked FALSE        x       TRUE  TRUE
 z untracked    NA     <NA>         NA    NA
 > track.sync(master="envir", full=FALSE, dryRun=TRUE)
 track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
 track.sync(dryRun): would track 1 untracked variables: z
 track.sync: no deleted variables
 track.sync(dryRun): Would save all vars
@@ -67,6 +69,7 @@ x  masked FALSE        x       TRUE  TRUE
 z tracked  TRUE        z       TRUE  TRUE
 > track.sync(master="envir", full=FALSE, dryRun=TRUE)
 track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync: no deleted variables
 track.sync(dryRun): Would save all vars
@@ -76,6 +79,7 @@ x  masked FALSE        x       TRUE  TRUE
 z tracked  TRUE        z       TRUE  TRUE
 > track.sync(master="envir", full=TRUE, dryRun=TRUE)
 track.sync(dryRun): syncing tracked env <env R_GlobalEnv>
+track.sync: proceeding with writeable db <env R_GlobalEnv>
 track.sync: no untracked variables
 track.sync: no deleted variables
 track.sync: retracking var: x
