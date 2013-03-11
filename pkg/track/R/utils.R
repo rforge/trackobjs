@@ -706,19 +706,25 @@ saveObjSummary <- function(trackingEnv,
                            opt=track.options(trackingEnv=trackingEnv),
                            dataDir=getDataDir(getTrackingDir(trackingEnv)),
                            envir=trackingEnv) {
-    # Save the object summary out to the file system
-    # envir is the actual environment where the .trackingSummary object lives; it is
-    # usually the same as trackingEnv
+    ## Save the object summary out to the file system
+    ## envir is the actual environment where the .trackingSummary object lives; it is
+    ## usually the same as trackingEnv
     file <- file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))
     if (!exists(".trackingSummary", envir=envir, inherits=FALSE))
         return(structure('saveObjSummary: .trackingSummary does not exist', class='try-error'))
     objSummary <- get(".trackingSummary", envir=envir, inherits=FALSE)
-    pad <- attr(objSummary, 'pad')
-    if (is.null(pad))
-        pad <- raw(1)
-    length(pad) <- (length(pad) + 17) %% 101
-    attr(objSummary, 'pad') <- pad
-    assign(".trackingSummary", objSummary, envir=envir)
+    ## pad just serves to make the saved tracking summary have different size on disk
+    ## which helps with noticing when a tracking summary has changed, because if
+    ## it changes within the same second, it will still have the same mod time.
+    ## However, most of the time, we're not concerned with second-level accuracy.
+    if (opt$debug) {
+        pad <- attr(objSummary, 'pad')
+        if (is.null(pad))
+            pad <- raw(1)
+        length(pad) <- (length(pad) + 17) %% 101
+        attr(objSummary, 'pad') <- pad
+        assign(".trackingSummary", objSummary, envir=envir)
+    }
     save.res <- try(save(list=".trackingSummary", file=file, envir=envir, compress=FALSE), silent=TRUE)
     if (is(save.res, 'try-error'))
         attr(save.res, 'file') <- file
