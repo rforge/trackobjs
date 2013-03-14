@@ -56,8 +56,8 @@ track.sync: no deleted variables
 track.sync: saving .trackingSummary for envir=<env R_GlobalEnv> to D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23
 track.sync: syncing tracked env <env track:tmp23[dup]>
 track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
-track.sync: DB backing <env track:tmp23[dup]> has been modified; rescanning...
-track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
+track.sync: DB backing <env track:tmp23[dup]>[pos=2] has been modified; rescanning... track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
+[0n; 0d; 0c; 0f]
 track.sync: no untracked variables
 track.sync: no deleted variables
 > track.info()[,1:5]
@@ -129,10 +129,10 @@ track.sync: no deleted variables
 track.sync: saving 1 vars with call to track.save(envir=<env R_GlobalEnv>, list=c('x'))
 track.sync: syncing tracked env <env track:tmp23[dup]>
 track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
-track.sync: DB backing <env track:tmp23[dup]> has been modified; rescanning...
-track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
+track.sync: DB backing <env track:tmp23[dup]>[pos=2] has been modified; rescanning... track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
 track.rescan: not removing these unchanged cached variables: z
 track.rescan: removing cached variables: x
+[0n; 0d; 0c; 1f]
 track.sync: no untracked variables
 track.sync: no deleted variables
 > # The copy of 'x' in env 2 is the old one that we fetched previously and is still cached.
@@ -187,9 +187,9 @@ track.sync: no deleted variables
 track.sync: saving .trackingSummary for envir=<env R_GlobalEnv> to D:/tplate/R/rforge/track/track.Rcheck/tests/tmp23
 track.sync: syncing tracked env <env track:tmp23[dup]>
 track.sync: seeing if readonly db has changed <env track:tmp23[dup]>
-track.sync: DB backing <env track:tmp23[dup]> has been modified; rescanning...
-track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
+track.sync: DB backing <env track:tmp23[dup]>[pos=2] has been modified; rescanning... track.rescan: updating re-read object summary with session read-count data for vars: .Last, x, y, z
 track.rescan: not removing these unchanged cached variables: x, z
+[0n; 0d; 0c; 0f]
 track.sync: no untracked variables
 track.sync: no deleted variables
 > track.status(2)
@@ -254,7 +254,7 @@ y tracked FALSE        y       TRUE  TRUE
 z tracked  TRUE        z       TRUE  TRUE
 > Sys.sleep(2)
 > x <- 4
-track.sync: DB backing <env track:tmp23[dup]> has been modified; rescanning...
+track.sync: DB backing <env track:tmp23[dup]>[pos=2] has been modified; rescanning... [0n; 0d; 0c; 1f]
 > # The copy of 'x' in env 2 is the old one that we fetched previously and is still cached.
 > # It has the value 1.
 > track.status(2)
@@ -270,7 +270,7 @@ z tracked  TRUE        z       TRUE  TRUE
 > # the read count.
 > c(get('x', 1), get('z', 1))
 [1] 4 3
-track.sync: DB backing <env track:tmp23[dup]> has been modified; rescanning...
+track.sync: DB backing <env track:tmp23[dup]>[pos=2] has been modified; rescanning... [0n; 0d; 0c; 0f]
 > track.status(2)
    Status InMem FileBase FileExists Saved
 x tracked  TRUE        x       TRUE  TRUE
@@ -329,6 +329,7 @@ x tracked  TRUE        x       TRUE  TRUE
 y tracked FALSE        y       TRUE  TRUE
 z tracked  TRUE        z       TRUE  TRUE
 > track.rescan(2, level='low')
+[0n; 0d; 0c; 1f]
 > track.status(2)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE

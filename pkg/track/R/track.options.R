@@ -67,7 +67,8 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
     optionNames <- c("alwaysCache", "alwaysCacheClass", "alwaysSaveSummary", "autoTrackExcludeClass",
                      "autoTrackExcludePattern", "autoTrackFullSyncWait", "cache",
                      "cacheKeepFun", "cachePolicy", "clobberVars", "compress", "compression_level",
-                     "debug", "use.fake.Sys.time", "maintainSummary", "RDataSuffix", "readonly", "recordAccesses",
+                     "debug", "use.fake.Sys.time", "maintainSummary", "RDataSuffix",
+                     "readonly", "stealable", "recordAccesses",
                      "summaryAccess", "summaryTimes", "writeToDisk")
     if (!is.null(names(values))) {
         ## Attempt to set some of the options (including saving to file)
@@ -110,7 +111,9 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                                   cacheKeepFun="track.plugin.lru",
                                   alwaysCache=c(".Last"),
                                   alwaysCacheClass=c("ff"),
-                                  readonly=FALSE, writeToDisk=TRUE,
+                                  readonly=FALSE,
+                                  stealable=FALSE,
+                                  writeToDisk=TRUE,
                                   maintainSummary=TRUE, alwaysSaveSummary=FALSE,
                                   recordAccesses=TRUE,
                                   summaryTimes=1, summaryAccess=1, RDataSuffix="rda",
@@ -154,6 +157,9 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                         stop("cacheKeepFun must have an arguments namd 'objs' and 'envname'")
                 }
             } else if (opt=="readonly") {
+                if (!is.logical(values[[opt]]))
+                    values[[opt]] <- as.logical(values[[opt]])
+            } else if (opt=="stealable") {
                 if (!is.logical(values[[opt]]))
                     values[[opt]] <- as.logical(values[[opt]])
             } else if (opt=="writeToDisk") {

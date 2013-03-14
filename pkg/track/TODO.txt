@@ -1,12 +1,3 @@
-* bug in track.rename -- files disappear for _* filenames
-
-* make auto.sync check mod times on filemap and object summary for read-only
-  objects, and rescan if they have changed.
-
-* make track.rescan() work faster -- don't just do a dumb stop/start
-  - check for new, deleted and changed objects
-  - check mod times for changed objects
-
 * make the auto.sync do flushing on a global basis, rather than
   for each attached db independently
 
@@ -32,6 +23,15 @@
 * make interactive track.stop() handle more gracefully the situation where the
   tracking db becomes unavailable: disconnect all active bindings,
   but keep unsaved objects in place
+
+* DONE: bug in track.rename -- files disappear for _* filenames
+
+* DONE: make auto.sync check mod times on filemap and object summary for read-only
+  objects, and rescan if they have changed.
+
+* DONE: make track.rescan() work faster -- don't just do a dumb stop/start
+  - check for new, deleted and changed objects
+  - check mod times for changed objects
 
 * DONE: make track.start() read in .Last so that if the tracking
   db becomes unavailable, R can still shut down (because .Last will

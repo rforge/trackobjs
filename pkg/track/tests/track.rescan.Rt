@@ -33,6 +33,7 @@ y tracked FALSE        y       TRUE  TRUE
 > file.rename("tmp15", "tmp16")
 [1] TRUE
 > track.rescan(pos=2)
+[1n; 1d; 0c; 0f]
 > track.status(pos=2)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE

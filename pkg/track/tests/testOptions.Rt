@@ -94,6 +94,9 @@ $RDataSuffix
 $readonly
 [1] FALSE
 
+$stealable
+[1] FALSE
+
 $recordAccesses
 [1] TRUE
 
