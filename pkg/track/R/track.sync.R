@@ -33,16 +33,15 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         cat("track.sync", if (dryRun) "(dryRun)",
             ": syncing tracked env ", envname(envir), "\n", sep="")
     if (opt$readonly) {
+        ## TODO: actually, the only db we don't want to check is a non-stealable writable one
         if (verbose)
             cat('track.sync: seeing if readonly db has changed ', envname(envir), '\n', sep='')
         ## See if the tracking db has changed
-        ## Working here...
         modTime <- file.info(file.path(getTrackingDir(trackingEnv), paste('.trackingSummary', opt$RDataSuffix, sep='.')))
         oldModTime <- mget(envir=trackingEnv, '.trackingModTime', ifnotfound=list(NULL))[[1]]
         if (!is.null(oldModTime) && (modTime$mtime > oldModTime$mtime || modTime$size != oldModTime$size)) {
             cat('track.sync: DB backing ', envname(envir), '[pos=', pos, '] has been modified; rescanning... ', sep='')
             res <- track.rescan(envir=envir, forgetModified=TRUE, level='low', verbose=TRUE)
-            # try(assign('.trackingModTime', modTime$mtime, envir=trackingEnv), silent=TRUE)
         }
     } else {
         if (verbose)

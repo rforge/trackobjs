@@ -400,7 +400,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     .Last <- track.Last
     environment(.Last) <- globalenv()
     existing.Last <- NULL
-    ## Fetching an existing .Last here has the side effect that it will be
+    ## Fetching an existing .Last here has the desirable side effect that it will be
     ## cached (because .Last is a default member of track.options('alwaysCache'))
     ## Thus, in the case tracking db becomes unavailable, the R-termination
     ## will not be affected by not being able read .Last from disk.
@@ -412,7 +412,9 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         if (!identical(.Last, existing.Last))
             warning(".Last already exists in globalenv -- not installing track.Last, user must call track.stop(all=TRUE) before ending R session")
     } else {
-        assign(".Last", .Last, pos=1)
+        ## There is no existing .Last object in the global environment, so restore the saved one
+        Last.pos <- 1
+        assign(".Last", .Last, pos=Last.pos)
         ## Do the same thing as in track.sync.callback() for the globalenv
         if (env.is.tracked(pos=1))
             try(track.sync(pos=1, master="envir", taskEnd=TRUE))

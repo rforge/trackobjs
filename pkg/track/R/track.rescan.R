@@ -76,7 +76,8 @@ track.rescan <- function(pos=1, envir=as.environment(pos), discardMissing=FALSE,
         fileMapEnv <- fileMap
         fileMap <- readFileMapFile(trackingEnv, getTrackingDir(trackingEnv), assignObj=!dryRun)
         objSummaryFromEnv <- getObjSummary(trackingEnv, opt=opt)
-
+        if (discardMissing)
+            warning("discardMissing nyi for level='low' -- need to check on existence of files")
 
         ## Read and save the summary from file.
         objSummaryFromFile <- loadObjSummary(trackingEnv, opt, dataDir)
