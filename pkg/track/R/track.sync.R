@@ -32,8 +32,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (verbose)
         cat("track.sync", if (dryRun) "(dryRun)",
             ": syncing tracked env ", envname(envir), "\n", sep="")
-    if (opt$readonly) {
-        ## TODO: actually, the only db we don't want to check is a non-stealable writable one
+    if (!(opt$stealable && !opt$readonly)) {
+        ## The only db we don't want to check for external modifications is a non-stealable writable one
         if (verbose)
             cat('track.sync: seeing if readonly db has changed ', envname(envir), '\n', sep='')
         ## See if the tracking db has changed
