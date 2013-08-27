@@ -2,7 +2,7 @@
 \alias{track.sync}
 \title{
   Synchronize the tracking database stored in files on disk to reflect
-  changed, new, or deleted objects in R
+  changed, new, or deleted objects in R, and flush excess objects from memeory.
 }
 \description{
 
@@ -10,7 +10,8 @@
   objects.  This function is intended to be called by a task callback so
   that the tracking database automatically keeps up with new and deleted
   objects.  The appropriate task callback is installed by
-  \code{track.start(..., auto = TRUE)}.
+  \code{track.start(..., auto = TRUE)}.  If too much memory is occupied
+  by objects, excess objects are flushed from memory.
 
   This function differs from \code{\link{track.rescan}()} in that
   \code{track.rescan()} updates R view of the database to agree with

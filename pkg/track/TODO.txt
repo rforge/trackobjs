@@ -1,10 +1,16 @@
+* check whether this comment in track.sync is still correct:
+  "Currently, this function will not correctly handle the
+  case where \code{master="files"} and where objects are
+  cached and an underlying file is changed." (should apply
+  to track.rescan).
+
 * make the auto.sync do flushing on a global basis, rather than
   for each attached db independently
 
 * make the system more robust to NA values in the object summary table
   -- if these exist, should replace them with correct values
 
-* make track.auto() check if the object summary and filemap on disk
+* DONE: make track.auto() check if the object summary and filemap on disk
   have changed -- if they have, and the changes are consistent with
   object changes on disk, read those in over the current values in memory.
   (Use case is when track.move() moves objects away, or adds some new

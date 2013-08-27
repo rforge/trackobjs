@@ -277,32 +277,56 @@ Functions for managing tracking and tracked variables:
 \itemize{
   \item \code{\link{track.options}()}: examine and set
   options to control tracking
-  \item \code{\link{track.remove}()}: completely remove all
-  traces of a tracked variable
-  \item \code{\link{track.save}()}: write unsaved variables to disk
-  \item \code{\link{track.flush}()}: write unsaved variables to disk, and remove from memory
-  \item \code{\link{track.forget}()}: delete cached
-  versions without saving to file (file version will be retrieved next
-  time the variable is accessed)
-  \item \code{\link{track.rescan}()}: reload variable
-  values from disk (can forget all cached vars, remove no-longer existing tracked vars)
   \item \code{\link{track.load}()}: load variables from a
   saved RData file into the tracking session
   \item \code{\link{track.copy}()} and \code{\link{track.move}()}: copy
   or move variables from one tracking db to another
   \item \code{\link{track.rename}()} rename variables in a tracking db
+  \item \code{\link{track.rescan}()}: reload variable
+  values from disk (can forget all cached vars, remove no-longer existing tracked vars)
+  \item \code{\link{track.auto}()}: turn auto-tracking on or off
 }
 
-Functions for recovering from errors:
+Functions used internally as part of auto-tracking
+(generally not called by the user when auto-tracking is running):
+\itemize{
+  \item \code{\link{track.sync}()}: write unsaved variables to disk, and
+  remove excess objects from memory.  This function can be called by the
+  user if they wish to remove excess objects from memory during a
+  memory-intensive top-level command.
+  \item \code{track.sync.callback()}: calls \code{\link{track.sync}()},
+  this function is installed as a
+  task callback (to be called each time a top-level task is completed,
+  see \code{\link[base:taskCallback]{taskCallback}}).  This function is
+  not exported by the track package.
+  \item \code{track.auto.monitor()}: an additional callback that
+  monitors the existence of the callback to \code{track.sync.callback}
+  and re-instates it if missing.  This function is
+  not exported by the track package.
+}
+
+Lower-level functions for managing tracking and tracked variables (
+generally not called by the user when auto-tracking is running):
+\itemize{
+  \item \code{\link{track.remove}()}: completely remove all
+  traces of a tracked variable
+  \item \code{\link{track.save}()}: write unsaved variables to disk
+  \item \code{\link{track.flush}()}: write unsaved variables to disk, and remove from memory
+  \item \code{\link{track.forget}()}: delete cached
+  versions without saving to file (the object saved in the file
+  will be retrieved next time the variable is accessed)
+}
+
+Functions for recovering from errors (caused by bugs or by multiple
+sessions updating bookkeeping data):
 \itemize{
   \item \code{\link{track.rebuild}()}: rebuild tracking
   information from objects in memory or on disk
-  \item \code{\link{track.flush}}: write unsaved variables to disk, and remove from memory
 }
 
 Design and internals of tracking:
 \itemize{
-  \item \code{\link{track.design}}
+  \item See help page \code{\link{track.design}}
 }
 }
 \note{

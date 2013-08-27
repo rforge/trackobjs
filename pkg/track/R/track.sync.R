@@ -7,6 +7,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     ##   (3) check that all variables are activeBindings (to catch cases where
     ##       {rm(x); assign("x", value)} is performed, which leaves tracked
     ##       variables without an active binding.) This is only done as part "full"
+    ##   (4) flush excess objects from memory if too much memory is being used
     ##
     ## With master="files", sync the R environment to the tracking database in the filesystem,
     ## which is the job of track.rescan(), so call that.
@@ -32,10 +33,11 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (verbose)
         cat("track.sync", if (dryRun) "(dryRun)",
             ": syncing tracked env ", envname(envir), "\n", sep="")
-    if (!(opt$stealable && !opt$readonly)) {
-        ## The only db we don't want to check for external modifications is a non-stealable writable one
+    if (opt$stealable || opt$readonly) {
         if (verbose)
-            cat('track.sync: seeing if readonly db has changed ', envname(envir), '\n', sep='')
+            cat('track.sync: seeing if ',
+                if (opt$readonly) 'readonly' else 'stealable',
+                ' db has changed ', envname(envir), '\n', sep='')
         ## See if the tracking db has changed
         modTime <- file.info(file.path(getTrackingDir(trackingEnv), paste('.trackingSummary', opt$RDataSuffix, sep='.')))
         oldModTime <- mget(envir=trackingEnv, '.trackingModTime', ifnotfound=list(NULL))[[1]]
@@ -44,6 +46,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             res <- track.rescan(envir=envir, forgetModified=TRUE, level='low', verbose=TRUE)
         }
     } else {
+        ## The only db we don't want to check for external modifications is a non-stealable writable one
         if (verbose)
             cat('track.sync: proceeding with writeable db ', envname(envir), '\n', sep='')
     }

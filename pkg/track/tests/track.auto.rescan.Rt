@@ -47,6 +47,7 @@ track.sync: no untracked variables
 track.sync: no deleted variables
 > track.attach(dir='tmp23', pos=2, dup.ok=2, name='track:tmp23[dup]')
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+#@ gsub(" to [^ ]+/tests/tmp", " to .../tests/tmp", both)
 Attaching tracking db in 'tmp23' to env in pos 2 (readonly)
 getting tracked var '.Last' from cached obj in <environment: 0x05f34e7c>
 track.sync: syncing tracked env <env R_GlobalEnv>
@@ -177,6 +178,7 @@ track.sync: no deleted variables
 > # the read count.
 > c(get('x', 1), get('z', 1))
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
+#@ gsub(" to [^ ]+/tests/tmp", " to .../tests/tmp", both)
 getting tracked var 'x' from cached obj in <environment: 0x05f34e7c>
 getting tracked var 'z' from cached obj in <environment: 0x05f34e7c>
 [1] 4 3
