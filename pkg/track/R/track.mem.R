@@ -1,4 +1,4 @@
-track.mem <- function(pos=1, envir=as.environment(pos), all=is.null(pos)) {
+track.mem <- function(pos=NULL, envir=as.environment(pos), all=is.null(pos)) {
     if (all) {
         envirs <- search()
         is.tracked <- sapply(envirs, function(envir) env.is.tracked(envir=as.environment(envir)))
@@ -19,7 +19,7 @@ track.mem <- function(pos=1, envir=as.environment(pos), all=is.null(pos)) {
         if (!env.is.tracked(envir=envir))
             stop("env ", envname(envir), " is not tracked")
         trackingEnv <- getTrackingEnv(envir)
-        # objs <- track.summary(envir, all=TRUE)
+        # objs <- track.summary(envir=envir, all=TRUE)
         objs <- get('.trackingSummary', envir=trackingEnv)
         objs$InMem <- is.element(rownames(objs), ls(envir=trackingEnv, all=TRUE))
         res <- data.frame(pos=pos, envName=search()[pos], nInMem=sum(objs$InMem, na.rm=TRUE),

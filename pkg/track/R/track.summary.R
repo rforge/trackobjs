@@ -1,4 +1,3 @@
-
 track.summary <- function(expr, pos=1, envir=as.environment(pos), list=NULL,
                           pattern=NULL, glob=NULL, all.names=FALSE,
                           times=track.options("summaryTimes", envir=envir)[[1]],
