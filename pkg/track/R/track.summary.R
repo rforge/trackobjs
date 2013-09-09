@@ -51,7 +51,7 @@ track.summary <- function(expr, pos=1, envir=as.environment(pos), list=NULL,
     if (!is.null(list))
         objs <- intersect(objs, list)
 
-    ## Get an independent idea of what vars are currently tracked.
+    ## Get an independent idea of what vars are currently tracked (this is slow, though...)
     tracked.actual <- unique(track.status(envir=envir, qexpr=qexpr, list=list, pattern=pattern, glob=glob, file.status=FALSE, what="tracked", all.names=all.names))
     ## Might it be better to have a "status" column in the returned summary
     ## than print out a warning message here?
