@@ -1,12 +1,16 @@
+> # How to see a summary of the objects and memory usage
+> res <- merge(track.status(), track.summary(), all.x=TRUE, by='row.names')
+> ddply(res, .(Status, InMem, FileExists, Saved), function(x) c(NObjects=nrow(x), Gb=sum(x$size, na.rm=T)/2^20))[,c(5,6,2,1,3,4)]
+>
 > for (i in 1:1000) assign(paste("a", i, sep=""), i)
 > date(); for (i in 1:1000) assign(paste("b", i, sep=""), i); date()
 [1] "Sun Jul 04 18:01:24 2010"
 [1] "Sun Jul 04 18:02:39 2010"
-> 
+>
 > x <- ls()
 > system.time(sapply(x, bindingIsActive, globalenv()))
-   user  system elapsed 
-   0.11    0.00    0.11 
+   user  system elapsed
+   0.11    0.00    0.11
 > date(); for (i in 1:1000) assign(paste("c", i, sep=""), i); date()
 [1] "Sun Jul 04 18:10:34 2010"
 [1] "Sun Jul 04 18:12:31 2010"
@@ -23,14 +27,14 @@
 > date()
 [1] "Sun Jul 04 18:18:54 2010"
 > system.time(sapply(x, bindingIsActive, globalenv()))
-   user  system elapsed 
-   0.19    0.00    0.19 
+   user  system elapsed
+   0.19    0.00    0.19
 > x <- ls()
 > length(x)
 [1] 5019
 > system.time(sapply(x, bindingIsActive, globalenv()))
-   user  system elapsed 
-   0.33    0.00    0.32 
+   user  system elapsed
+   0.33    0.00    0.32
 > date(); for (i in 1:1000) assign(paste("f", i, sep=""), i); date()
 [1] "Sun Jul 04 18:21:54 2010"
 [1] "Sun Jul 04 18:28:20 2010"
@@ -48,9 +52,9 @@
 [1] "Sun Jul 04 19:28:34 2010"
 > x <- ls()
 > system.time(sapply(x, bindingIsActive, globalenv()))
-   user  system elapsed 
-   0.64    0.00    0.64 
-> 
+   user  system elapsed
+   0.64    0.00    0.64
+>
 
 todo: make track.stop() more versatile -- keep variables (with or without deleting files)
 doing: change existing tests to use auto=FALSE and add tests for the default auto=TRUE
@@ -69,7 +73,7 @@ done: fix behavior of track(x <- 33) so that if 'x' already exists and has a reg
 
 > x <- 1:2
 > track(x <- 33)
-Error in makeActiveBinding(objname, env = envir, fun = f) : 
+Error in makeActiveBinding(objname, env = envir, fun = f) :
   symbol already has a regular binding
 >
 
