@@ -249,6 +249,9 @@ Functions for getting status of tracking and summaries of variables:
   they are saved to disk or not, etc.
   \item \code{\link{track.info}()}: return a data frame
   containing information about which tracking dbs are currently active.
+  \item \code{\link{track.mem}()}: return a data frame
+  containing information about number of objects and memory usage in
+  tracking dbs.
   \item \code{\link{env.is.tracked}()}: tell whether an
   environment is currently tracked
 }

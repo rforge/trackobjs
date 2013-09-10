@@ -2,6 +2,7 @@
 \alias{track.filename}
 \alias{track.datadir}
 \alias{track.info}
+\alias{track.mem}
 \alias{env.is.tracked}
 \alias{tracked.envs}
 \title{Return filenames and directories for tracked variables.}
@@ -9,7 +10,8 @@
 \usage{
 track.filename(expr, list = character(0), pos = 1, envir = as.environment(pos), suffix = FALSE)
 track.datadir(pos = 1, envir = as.environment(pos), relative = TRUE)
-track.info(pos = 1, envir = as.environment(pos), all=TRUE)
+track.info(pos = NULL, envir = as.environment(pos), all=is.null(pos))
+track.mem(pos = NULL, envir = as.environment(pos), all=is.null(pos))
 env.is.tracked(pos = 1, envir = as.environment(pos))
 tracked.envs(envirs=search())
 }
@@ -35,7 +37,11 @@ tracked.envs(envirs=search())
       These names are guaranteed to be distinct for distinct variables.}
     \item{track.datadir()}{ returns the directory in which RData files
       for tracked variables are stored.}
-    \item{\code{track.info}:}{ returns a dataframe of information about
+    \item{\code{track.info}:}{ returns a dataframe of information
+      (directory, readonly/writable status) about
+      environments currently tracked.}
+    \item{\code{track.mem}:}{ returns a dataframe of information (number
+      of objects, memory usage) about
       environments currently tracked.}
     \item{env.is.tracked:}{returns \code{TRUE} or \code{FALSE}}
     \item{tracked.envs:}{with no arguments, it returns the names of
@@ -97,6 +103,8 @@ X[2] <- -1
 track.datadir(relative=TRUE)
 track.datadir(relative=FALSE)
 track.filename(list=c("x", "X"))
+track.info()
+track.mem()
 env.is.tracked(pos=1)
 env.is.tracked(pos=2)
 # Would normally not call track.stop(), but do so here to clean up after

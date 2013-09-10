@@ -1,4 +1,4 @@
-track.info <- function(pos=1, envir=as.environment(pos), all=TRUE) {
+track.info <- function(pos=NULL, envir=as.environment(pos), all=is.null(pos)) {
     if (all) {
         envirs <- search()
         is.tracked <- sapply(envirs, function(envir) env.is.tracked(envir=as.environment(envir)))
