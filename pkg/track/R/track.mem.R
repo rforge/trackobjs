@@ -21,7 +21,7 @@ track.mem <- function(pos=NULL, envir=as.environment(pos), all=is.null(pos)) {
         trackingEnv <- getTrackingEnv(envir)
         # objs <- track.summary(envir=envir, all=TRUE)
         objs <- get('.trackingSummary', envir=trackingEnv)
-        objs$InMem <- is.element(rownames(objs), ls(envir=trackingEnv, all=TRUE))
+        objs$InMem <- is.element(rownames(objs), ls(envir=trackingEnv, all.names=TRUE))
         res <- data.frame(pos=pos, envName=search()[pos], nInMem=sum(objs$InMem, na.rm=TRUE),
                           MBInMem=round(sum(objs$size[objs$InMem], na.rm=TRUE)/1e6, 3),
                           nOutMem=sum(!objs$InMem, na.rm=TRUE),
