@@ -33,11 +33,16 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
     if (verbose)
         cat("track.sync", if (dryRun) "(dryRun)",
             ": syncing tracked env ", envname(envir), "\n", sep="")
-    if (opt$stealable || opt$readonly) {
+    if (!opt$stealable && !opt$readonly) {
+        ## The only db we don't want to check for external modifications is a non-stealable writable one
         if (verbose)
-            cat('track.sync: seeing if ',
-                if (opt$readonly) 'readonly' else 'stealable',
-                ' db has changed ', envname(envir), '\n', sep='')
+            cat('track.sync: proceeding with writeable db ', envname(envir), '\n', sep='')
+    } else {
+        if (verbose)
+            if (opt$stealable)
+                cat('track.sync: seeing if stealable db has changed ', envname(envir), '\n', sep='')
+            else
+                cat('track.sync: seeing if readonly db has changed ', envname(envir), '\n', sep='')
         ## See if the tracking db has changed
         modTime <- file.info(file.path(getTrackingDir(trackingEnv), paste('.trackingSummary', opt$RDataSuffix, sep='.')))
         oldModTime <- mget(envir=trackingEnv, '.trackingModTime', ifnotfound=list(NULL))[[1]]
@@ -45,10 +50,6 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             cat('track.sync: DB backing ', envname(envir), '[pos=', pos, '] has been modified; rescanning... ', sep='')
             res <- track.rescan(envir=envir, forgetModified=TRUE, level='low', verbose=TRUE)
         }
-    } else {
-        ## The only db we don't want to check for external modifications is a non-stealable writable one
-        if (verbose)
-            cat('track.sync: proceeding with writeable db ', envname(envir), '\n', sep='')
     }
     master <- match.arg(master)
     if (master=="auto")
