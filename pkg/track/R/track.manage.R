@@ -202,7 +202,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
             assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     }
     if (is(save.res, "try-error")) {
-        stop("unable to save .trackingSummary in ", file.path(dataDir), ": fix problem and run track.resave()")
+        warning("unable to save .trackingSummary in ", file.path(dataDir), ": if this message appears repeatedly, fix problem and run track.resave()")
     }
     return(invisible(list))
 }

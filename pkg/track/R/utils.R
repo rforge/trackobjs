@@ -268,13 +268,13 @@ writeFileMapFile <- function(fileMap, trackingEnv, dataDir, assignObj=TRUE) {
     ## open in binary mode so that we use just "\n" as a separator
     open.res <- (con <- file(file.path(dataDir, "filemap.txt"), open="wb"))
     if (is(open.res, "try-error")) {
-        warning("failed to open ", file.path(dataDir, "filemap.txt"), " for writing: try to fix problem, then do 'track.resave()'")
+        warning("failed to open ", file.path(dataDir, "filemap.txt"), " for writing: if this message appears repeatedly try to fix problem, then do 'track.resave()'")
         return(FALSE)
     }
     on.exit(close(con))
     save.res <- try(writeLines(text=fileData, con=con, sep="\n"), silent=TRUE)
     if (is(save.res, "try-error")) {
-        warning("failed to save filemap.txt: try to fix problem, then do 'track.resave()'")
+        warning("failed to save filemap.txt: if this message appears repeatedly try to fix problem, then do 'track.resave()'")
         return(FALSE)
     }
     return(TRUE)
