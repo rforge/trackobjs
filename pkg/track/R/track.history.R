@@ -28,7 +28,7 @@ track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, l
             on.exit(unlink(file2))
             writeLines(grep("^##------ .* ------##$",
                             readLines(file, -1), invert=TRUE, value=TRUE), con=file2)
-            utils:::loadhistory(file2)
+            utils::loadhistory(file2)
         } else {
             if (verbose)
                 cat("Incremental history file", file, "does not exist\n")
@@ -61,13 +61,13 @@ track.history.load <- function(times=FALSE) {
         ## Specify namespace utils to make this function work
         ## when called from .Rprofile
         if (times) {
-            utils:::loadhistory(file)
+            utils::loadhistory(file)
         } else {
             file2 <- tempfile(file)
             on.exit(unlink(file2))
             writeLines(grep("^##------ .* ------##$",
                             readLines(file, -1), invert=TRUE, value=TRUE), con=file2)
-            utils:::loadhistory(file2)
+            utils::loadhistory(file2)
         }
     } else {
         cat("Incremental history file", file, "does not exist\n")
