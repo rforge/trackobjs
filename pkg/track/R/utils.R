@@ -701,8 +701,6 @@ fake.Sys.time <- function() {
 }
 
 set.fake.Sys.time <- function(offset=1) {
-    if (!is.element("fake.Sys.time.control", search()))
-        attach(what=new.env(), name="fake.Sys.time.control")
     options("fake.Sys.time.counter" = as.POSIXct("2001/01/01 09:00:00", tz="GMT")+offset)
     return(invisible(getOption("fake.Sys.time.counter")))
 }
