@@ -259,6 +259,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             if (length(alreadyExists)) {
                 if (clobber=="no") {
                     # If the objects and files are small, see if they are the same
+                    tmpenv <- new.env(parent=emptyenv())
                     objSizes <- sapply(alreadyExists, function(v) object.size(get(v, envir=envir, inherits=FALSE)))
                     fileSizes <- file.info(file.path(dataDir, paste(fileMap, sep='.', opt$RDataSuffix)))$size
                     knowSame <- rep(FALSE, length(alreadyExists))
