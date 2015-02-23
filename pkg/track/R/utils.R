@@ -695,16 +695,16 @@ dir.exists <- function(dir) {
 fake.Sys.time <- function() {
     if (!is.element("fake.Sys.time.control", search()))
         set.fake.Sys.time(1)
-    fake.Sys.time.counter <- get("fake.Sys.time.counter", pos="fake.Sys.time.control")
-    assign("fake.Sys.time.counter", fake.Sys.time.counter + 1, pos="fake.Sys.time.control")
+    fake.Sys.time.counter <- getOption("fake.Sys.time.counter", 1)
+    options("fake.Sys.time.counter" = fake.Sys.time.counter + 1)
     return(fake.Sys.time.counter)
 }
 
 set.fake.Sys.time <- function(offset=1) {
     if (!is.element("fake.Sys.time.control", search()))
         attach(what=new.env(), name="fake.Sys.time.control")
-    assign("fake.Sys.time.counter", as.POSIXct("2001/01/01 09:00:00", tz="GMT")+offset, pos="fake.Sys.time.control")
-    return(invisible(get("fake.Sys.time.counter", pos="fake.Sys.time.control")))
+    options("fake.Sys.time.counter" = as.POSIXct("2001/01/01 09:00:00", tz="GMT")+offset)
+    return(invisible(getOption("fake.Sys.time.counter")))
 }
 
 saveObjSummary <- function(trackingEnv,
