@@ -608,29 +608,32 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
     return(value)
 }
 
-if (FALSE) {
-create.fake.Sys.time <- function() {
-    ## The Sys.time() function created by this function doesn't get
-    ## called by functions in a different environment, so it doesn't
-    ## work properly with scriptests when running in the interpreter.
-    ## Create a fake Sys.time() function that just counts 1 second forward
-    ## from a fixed starting time each time it is called.
-    if (!is.element("fake.Sys.time", search())) {
-        f <- local({time.counter <- as.POSIXct("2001/01/01 09:00:00", tz="GMT")
-                     Sys.time <- function() {
-                         time.counter <<- time.counter + 1
-                         return(time.counter)
-                     }})
-        attach(environment(f), name="fake.Sys.time", warn.conflicts=FALSE)
+quietNormalizePath <- function(path, winslash='/', mustWork=FALSE) {
+    if (isTRUE(mustWork))
+        return(normalizePath(path, winslash='/', mustWork=mustWork))
+    newPath <- try(normalizePath(path, winslash='/', mustWork=mustWork), silent=TRUE)
+    if (inherits(newPath, 'try-error'))
+        newPath <- path
+    allComp <- strsplit(gsub('[/\\\\]', winslash, newPath), winslash)[[1]]
+    newComp <- allComp
+    j <- 2
+    for (i in seq(2, len=length(allComp)-1)) {
+        if (allComp[i]=='.') {
+            newComp <- newComp[-j]
+        } else if (allComp[i]=='..') {
+            newComp <- newComp[-c(j, j-1)]
+            j <- max(1, j-1)
+        } else {
+            j <- j+1
+        }
     }
-    invisible(NULL)
-}
+    paste0(allComp, collapse=winslash)
 }
 
 find.relative.path <- function(path, file) {
     ## Find a way to express file as a relative path to path
-    path <- normalizePath(path, winslash='/')
-    file <- normalizePath(file, winslash='/')
+    path <- quietNormalizePath(path, winslash='/')
+    file <- quietNormalizePath(file, winslash='/')
     if (.Platform$OS.type == "windows") {
         path <- gsub("\\", "/", path, fixed=TRUE)
         file <- gsub("\\", "/", file, fixed=TRUE)
@@ -684,8 +687,10 @@ dir.exists <- function(dir) {
     file.exists(dir) || (file.access(dir, mode=0)==0)
 }
 
-## Code in here was an alternate, worse way to override Sys.time() for testing purposes
-## (worse because it introduced permanent overhead for Sys.time(), even in normal operation)
+## Use these to override Sys.time() for testing purposes (to get Sys.time() to return
+## reproducible, steadily incrementing "times".  This  just counts 1 second forward
+## from a fixed starting time each time it is called.
+## Only use these for testing because they introduce overhead for Sys.time().
 
 fake.Sys.time <- function() {
     if (!is.element("fake.Sys.time.control", search()))
