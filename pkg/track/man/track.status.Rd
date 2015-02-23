@@ -21,12 +21,18 @@ track.status(pos = 1, envir = as.environment(pos), expr,
         all.names = FALSE,
         what = c("all", "tracked", "trackable", "untracked",
                  "orphaned", "masked", "unsaved", "untrackable"))
-tracked(        pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
-untracked(      pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
-track.orphaned( pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
-track.masked(   pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
-untrackable(    pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
-track.unsaved(  pos=1, envir=as.environment(pos), list=NULL, pattern=NULL, glob=NULL, all.names = TRUE)
+tracked(        pos=1, envir=as.environment(pos), list=NULL,
+                pattern=NULL, glob=NULL, all.names = TRUE)
+untracked(      pos=1, envir=as.environment(pos), list=NULL,
+                pattern=NULL, glob=NULL, all.names = TRUE)
+track.orphaned( pos=1, envir=as.environment(pos), list=NULL,
+                pattern=NULL, glob=NULL, all.names = TRUE)
+track.masked(   pos=1, envir=as.environment(pos), list=NULL,
+                pattern=NULL, glob=NULL, all.names = TRUE)
+untrackable(    pos=1, envir=as.environment(pos), list=NULL,
+                pattern=NULL, glob=NULL, all.names = TRUE)
+track.unsaved(  pos=1, envir=as.environment(pos), list=NULL,
+                pattern=NULL, glob=NULL, all.names = TRUE)
 }
 
 \arguments{

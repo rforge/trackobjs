@@ -8,7 +8,8 @@
 \title{Return filenames and directories for tracked variables.}
 \description{Return filenames and directories for tracked variables.}
 \usage{
-track.filename(expr, list = character(0), pos = 1, envir = as.environment(pos), suffix = FALSE)
+track.filename(expr, list = character(0), pos = 1,
+               envir = as.environment(pos), suffix = FALSE)
 track.datadir(pos = 1, envir = as.environment(pos), relative = TRUE)
 track.info(pos = NULL, envir = as.environment(pos), all=is.null(pos))
 track.mem(pos = NULL, envir = as.environment(pos), all=is.null(pos))

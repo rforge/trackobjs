@@ -7,7 +7,8 @@
   Rename variables in a tracked environment
 }
 \usage{
-track.rename(old, new, pos = 1, envir = as.environment(pos), clobber = FALSE, verbose = TRUE)
+track.rename(old, new, pos = 1, envir = as.environment(pos),
+             clobber = FALSE, verbose = TRUE)
 }
 \arguments{
   \item{old}{

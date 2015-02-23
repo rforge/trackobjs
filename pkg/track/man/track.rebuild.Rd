@@ -9,7 +9,8 @@
 }
 \usage{
 track.rebuild(pos = 1, envir = as.environment(pos), dir = NULL,
-        fix = FALSE, level=c("missing", "all"), trust=c("unspecified", "environment", "db"),
+        fix = FALSE, level=c("missing", "all"),
+        trust=c("unspecified", "environment", "db"),
         verbose=1, RDataSuffix=NULL, dryRun=TRUE, replace.wd=TRUE,
         use.file.times=TRUE)
 }
