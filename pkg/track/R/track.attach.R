@@ -23,12 +23,12 @@ track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, 
     dup.count <- 0
     if (dir.exists(abs.dir)) {
         ## normalize.path only works if the file exists
-        rel.dir <- normalizePath(find.relative.path(getwd(), abs.dir), mustWork=FALSE, winslash='/')
+        rel.dir <- quietNormalizePath(find.relative.path(getwd(), abs.dir), mustWork=FALSE, winslash='/')
         search.list <- search()
         if (!is.na(rel.dir)) for (i in seq(along=search.list)) {
             i.env <- as.environment(i)
             if (env.is.tracked(envir=i.env)) {
-                i.path <- normalizePath(find.relative.path(getwd(), track.datadir(envir=i.env)),
+                i.path <- quietNormalizePath(find.relative.path(getwd(), track.datadir(envir=i.env)),
                                         mustWork=FALSE, winslash='/')
                 if (!is.na(i.path) && rel.dir==i.path) {
                     if (dup.ok) {
