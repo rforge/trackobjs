@@ -1,3 +1,9 @@
+                CHANGES in track version 1.1-4 (2013-09-09)
+CHANGES
+    o Neaten up code to make it not generate warnings from R CMD check
+    o Make code quieter about minor problems it can encounter when using
+      paths which are not readable their whole way down.
+
                 CHANGES in track version 1.1-3 (2013-09-09)
 CHANGES
     o Export track.resave()

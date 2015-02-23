@@ -43,3 +43,5 @@ export(track.start,
        track.datadir,
        track.plugin.lru,
        show.envs)
+importFrom(methods, slot, slotNames)
+importFrom(utils, loadhistory)
