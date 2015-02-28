@@ -1,3 +1,6 @@
+R CMD build --no-build-vignettes pkg
+R CMD check track_1.1-4.tar.gz -l ~/site-library/
+
 > # How to see a summary of the objects and memory usage
 > res <- merge(track.status(), track.summary(), all.x=TRUE, by='row.names')
 > ddply(res, .(Status, InMem, FileExists, Saved), function(x) c(NObjects=nrow(x), Gb=sum(x$size, na.rm=T)/2^20))[,c(5,6,2,1,3,4)]
@@ -148,3 +151,7 @@ result
 # remove the data objects
 track.remove(list=paste("x", 1:n, sep=""))
 track.stop()
+
+
+# Integration with RStudio, how to make things to that tracked objects show up with a useful description in the "Environment" pane, look for:
+cpp/session/modules/environment/EnvironmentUtils.hpp:core::json::Value varToJson(SEXP env, const r::sexp::Variable& var)

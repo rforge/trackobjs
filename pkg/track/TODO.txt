@@ -30,6 +30,29 @@
   tracking db becomes unavailable: disconnect all active bindings,
   but keep unsaved objects in place
 
+* DONE: find the problem with tracking .Last in track.start() (make this not cause to leave tracking env in an erronious state)
+* DONE figure out new problem making track() not working in
+  runtests() -- somehow the callback is not getting called
+  until the end -- is it getting instantiated?  Is this
+  because of a new version of R, or because of some change
+  in track or scriptests?
+
+* DONE have this infinite loop at the end of testBrokenFileSystem.Rout
+  several problems:
+    .Last active binding is not getting cleaned out from an earlier session
+    .Last is getting flushed (not in memory)
+    .Last is failing to retrieve multiple times (fixed by returning NULL if have problems getting .Last)
+
+> q('yes')
+Error in getTrackedVar(".Last", <environment>) :
+  file '/Users/tap/R/rforge/track/track.Rcheck/tests/tmp22/_1.rda' does not exist (for obj '.Last')
+>
+Error in getTrackedVar(".Last", <environment>) :
+  file '/Users/tap/R/rforge/track/track.Rcheck/tests/tmp22/_1.rda' does not exist (for obj '.Last')
+>
+
+DONE: * fix track.auto(F) so that it doesn't have an error when there is no tracking
+
 * DONE: bug in track.rename -- files disappear for _* filenames
 
 * DONE: make auto.sync check mod times on filemap and object summary for read-only
