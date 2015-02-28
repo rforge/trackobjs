@@ -206,7 +206,11 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         assign(".trackingFileMap", fileMap, envir=trackingEnv)
         fileMapChanged <- TRUE
         assign(".trackingSummary", objSummary, envir=trackingEnv)
+        if (opt$debug >= 2)
+            cat('track.start: created new tracking dir and assigned fileMap and objSummary in trackingEnv\n')
     } else {
+        if (opt$debug >= 2)
+            cat('track.start: attempting to read summary and fileMap from existing tracking db\n')
         ## Try to read the summary first, because if there is a problem with fileMap,
         ## we may want to erase the summary (though the code doesn't currently
         ## do that.)
@@ -369,6 +373,8 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     }
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
     if (auto) {
+        if (opt$debug >= 2)
+            cat('track.start: installing track.auto callback\n')
         callbackName <- "track.auto"
         ## remove the old callback (to avoid having duplicates)
         while (is.element(callbackName, getTaskCallbackNames()))
@@ -391,8 +397,10 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     ## tracked env, and the tracking env is not locked.
     if (lockEnv && opt$readonly && environmentName(envir) != "R_GlobalEnv")
         lockEnvironment(envir)
-    ## Set up .Last to be track.last(), which will make sure that all
-    ## tracked envs are sync'd to disk when R quits.
+    ## Set up .Last in the globalenv to be track.last(), which will make
+    ## sure that all tracked envs are sync'd to disk when R quits.
+    ## Do this in the globalenv regardless of which env this call is
+    ## tracking, because only .Last in the global env is called when R exits.
     ## This is a good candidate for a different way of doing things, either
     ## a 'Last' hook (doesn't exist in R, but would be nice if it did,
     ## or something like a finalizer on an object, though I wasn't able
@@ -405,13 +413,24 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     ## cached (because .Last is a default member of track.options('alwaysCache'))
     ## Thus, in the case tracking db becomes unavailable, the R-termination
     ## will not be affected by not being able read .Last from disk.
+    if (opt$debug >= 2)
+        cat('track.start: attempting to install a .Last to save objects to the tracking db\n')
     if (exists(".Last", where=1, inherits=FALSE)) {
-        existing.Last <- get(".Last", pos=1, inherits=FALSE)
-        environment(existing.Last) <- globalenv()
+        existing.Last <- try(get(".Last", pos=1, inherits=FALSE))
+        if (inherits(existing.Last, 'try-error')) {
+            if (bindingIsActive(".Last", env=globalenv())) {
+                warning(".Last already exists in globalenv as a non-functional active binding -- not installing track.Last; to save objects at end of session, user must call track.stop(all=TRUE) before ending R session (if this copy of .Last is left over from a previous failed initiation of tracking, remove it and try again)")
+                existing.Last <- 'broken active.binding'
+            } else {
+                existing.Last <- 'non-gettable object'
+            }
+        } else {
+            environment(existing.Last) <- globalenv()
+        }
     }
     if (!is.null(existing.Last)) {
-        if (!identical(.Last, existing.Last))
-            warning(".Last already exists in globalenv -- not installing track.Last, user must call track.stop(all=TRUE) before ending R session")
+        if (!identical(.Last, existing.Last) && !identical(existing.Last, 'broken active.binding'))
+            warning(".Last already exists in globalenv -- not installing track.Last; to save objects at end of session, user must call track.stop(all=TRUE) before ending R session")
     } else {
         ## There is no existing .Last object in the global environment, so restore the saved one
         Last.pos <- 1
