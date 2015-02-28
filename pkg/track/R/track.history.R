@@ -1,4 +1,11 @@
 track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, load=TRUE, verbose=FALSE, message="Session start") {
+    if (!track.history.canload()) {
+        # only option is 'fast' style
+        if (missing(load))
+            load <- FALSE
+        if (is.null(style))
+            style <- 'fast'
+    }
     if (!is.null(file))
         options(incr.hist.file=file)
     if (!is.null(width))
@@ -18,7 +25,9 @@ track.history.start <- function(file=NULL, width=NULL, style=NULL, times=NULL, l
         file <- ".Rincr_history"
     if (load) {
         ## Load an existing history?
-        if (file.exists(file)) {
+        if (!track.history.canload()) {
+            cat('Cannot laod history file on', .Platform$OS.type, .Platform$GUI, 'platform\n')
+        } else if (file.exists(file)) {
             if (verbose)
                 cat("Loading incremental history file", file, "\n")
             ## Specify namespace utils to make this function work
@@ -50,25 +59,29 @@ track.history.stop <- function() {
     invisible(NULL)
 }
 
+track.history.canload <- function() substring(casefold(.Platform$GUI), 1, 4)!='aqua'
+
 track.history.load <- function(times=FALSE) {
     file <- getOption("incr.hist.file")
     if (is.null(file) || nchar(file)==0)
         file <- Sys.getenv("R_INCR_HIST_FILE")
     if (is.null(file) || nchar(file)==0)
         file <- ".Rincr_history"
-    if (file.exists(file)) {
-        cat("Loading incremental history file", file, "\n")
-        ## Specify namespace utils to make this function work
-        ## when called from .Rprofile
-        if (times) {
-            utils::loadhistory(file)
-        } else {
-            file2 <- tempfile(file)
-            on.exit(unlink(file2))
-            writeLines(grep("^##------ .* ------##$",
-                            readLines(file, -1), invert=TRUE, value=TRUE), con=file2)
-            utils::loadhistory(file2)
-        }
+    if (!track.history.canload()) {
+        cat('Cannot laod history file on', .Platform$OS.type, .Platform$GUI, 'platform\n')
+    } else if (file.exists(file)) {
+                 cat("Loading incremental history file", file, "\n")
+            ## Specify namespace utils to make this function work
+            ## when called from .Rprofile
+            if (times) {
+                utils::loadhistory(file)
+            } else {
+                file2 <- tempfile(file)
+                on.exit(unlink(file2))
+                writeLines(grep("^##------ .* ------##$",
+                                readLines(file, -1), invert=TRUE, value=TRUE), con=file2)
+                utils::loadhistory(file2)
+            }
     } else {
         cat("Incremental history file", file, "does not exist\n")
     }
@@ -99,7 +112,7 @@ track.history.writer <- function(expr, value, ok, visible) {
     if (is.null(style) || nchar(style)==0)
         style <- Sys.getenv("R_INCR_HIST_STYLE")
     if (is.null(style) || nchar(style)==0)
-        style <- "full"
+        style <- if (.Platform$GUI == 'AQUA') "fast" else "full"
     times <- getOption("incr.hist.times")
     if (is.null(times) || nchar(times)==0)
         times <- Sys.getenv("R_INCR_HIST_TIMES")
