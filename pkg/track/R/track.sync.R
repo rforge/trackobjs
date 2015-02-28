@@ -219,6 +219,8 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             ## exists in 'envir'
             if (!opt$readonly)
                 setTrackedVar(objName, objval, trackingEnv, opt)
+            if (opt$debug >= 2)
+                cat('track.sync: removing', paste(objName, collapse=', '), 'from trackingEnv\n')
             remove(list=objName, envir=envir)
             f <- substitute(function(v) {
                 if (missing(v))

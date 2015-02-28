@@ -433,6 +433,8 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
         save.res <- try(save(list=objName, file=fullFile, envir=trackingEnv,
                              compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
         if (!is(save.res, "try-error")) {
+            if (opt$debug >= 2)
+                cat('setTrackedVar: removing', paste(objName, collapse=', '), 'from trackingEnv\n')
             if (!opt$cache && !is.element(objName, opt$alwaysCache))
                 remove(list=objName, envir=trackingEnv)
             unsaved <- getUnsavedObj(trackingEnv)
@@ -504,12 +506,15 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
 }
 
 getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=trackingEnv)) {
-    ##  get the tracked var if it exists, or load it from disk if it doesn't
+    ## Get the tracked var if it exists, or load it from disk if it doesn't
+    ## Special case when getting variable '.Last' -- don't want to stop with
+    ## an error because that can cause an infinite loop, so if can't retrieve
+    ## that var, then print a warning and return NULL
     if (!is.character(objName) || length(objName)!=1)
         stop("objName must be a length one character vector")
     if (exists(objName, envir=trackingEnv, inherits=FALSE)) {
         if (opt$debug)
-            cat("getting tracked var '", objName, "' from cached obj in ", envname(trackingEnv), "\n", sep="")
+            cat("getTrackedVar: '", objName, "' from cached obj in ", envname(trackingEnv), "\n", sep="")
         value <- get(objName, envir=trackingEnv, inherits=FALSE)
         dir <- NULL
         fullFile <- NULL
@@ -519,12 +524,24 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
         fileMap <- getFileMapObj(trackingEnv)
         file <- fileMap[match(objName, names(fileMap))]
         if (is.na(file))
-            stop("'", objName, "' does not exist in tracking env ", envname(trackingEnv),
-                 " (has no entry in .trackingFileMap)")
+            if (objName=='.Last') {
+                warning("'", objName, "' does not exist in tracking env ", envname(trackingEnv),
+                     " (has no entry in .trackingFileMap); returning NULL")
+                return(NULL)
+            } else {
+                stop("'", objName, "' does not exist in tracking env ", envname(trackingEnv),
+                     " (has no entry in .trackingFileMap)")
+            }
         dir <- getTrackingDir(trackingEnv)
         fullFile <- file.path(getDataDir(dir), paste(file, opt$RDataSuffix, sep="."))
-        if (!file.exists(fullFile))
-            stop("file '", fullFile, "' does not exist (for obj '", objName, "')")
+        if (!file.exists(fullFile)) {
+            if (objName=='.Last') {
+                warning("file '", fullFile, "' does not exist (for obj '", objName, "'); returning NULL")
+                return(NULL)
+            } else {
+                stop("file '", fullFile, "' does not exist (for obj '", objName, "')")
+            }
+        }
         tmpenv <- new.env(parent=emptyenv())
         ## hopefully, no actual copies are made while loading the object into tmpenv,
         ## then copying it to envir and returning it as the value of this function
@@ -763,3 +780,6 @@ loadObjSummary <- function(trackingEnv,
     ## .trackingSummary has to exist in tmpenv because we just loaded it
     getObjSummary(tmpenv, opt=opt, fromWhere=file)
 }
+
+# used to store data around failures in an attempt to avoid infinite loops
+track.private.env <- as.environment(list(standard.Last=FALSE, last.failed.get=character(100), last.failed.time=rep(Sys.time(), 100), last.failed.i=1))
