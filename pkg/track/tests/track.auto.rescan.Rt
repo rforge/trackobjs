@@ -49,7 +49,7 @@ track.sync: no deleted variables
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
 #@ gsub(" to [^ ]+/tests/tmp", " to .../tests/tmp", both)
 Attaching tracking db in 'tmp23' to env in pos 2 (readonly)
-getting tracked var '.Last' from cached obj in <environment: 0x05f34e7c>
+getTrackedVar: '.Last' from cached obj in <environment: 0x05f34e7c>
 track.sync: syncing tracked env <env R_GlobalEnv>
 track.sync: proceeding with writeable db <env R_GlobalEnv>
 track.sync: no untracked variables
@@ -154,7 +154,7 @@ track.sync: no deleted variables
 > c(get('x', 2), get('z', 2))
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
 getting tracked var 'x' from file
-getting tracked var 'z' from cached obj in <environment: 0x070166f0>
+getTrackedVar: 'z' from cached obj in <environment: 0x070166f0>
 [1] 4 3
 track.sync: syncing tracked env <env R_GlobalEnv>
 track.sync: proceeding with writeable db <env R_GlobalEnv>
@@ -179,8 +179,8 @@ track.sync: no deleted variables
 > c(get('x', 1), get('z', 1))
 #@ gsub("<environment: 0x?[0-9a-f]+>", "<environment: 0xXXXX>", both)
 #@ gsub(" to [^ ]+/tests/tmp", " to .../tests/tmp", both)
-getting tracked var 'x' from cached obj in <environment: 0x05f34e7c>
-getting tracked var 'z' from cached obj in <environment: 0x05f34e7c>
+getTrackedVar: 'x' from cached obj in <environment: 0x05f34e7c>
+getTrackedVar: 'z' from cached obj in <environment: 0x05f34e7c>
 [1] 4 3
 track.sync: syncing tracked env <env R_GlobalEnv>
 track.sync: proceeding with writeable db <env R_GlobalEnv>

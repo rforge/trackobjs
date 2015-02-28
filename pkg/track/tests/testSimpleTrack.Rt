@@ -7,9 +7,14 @@
 > options(width=100)
 > unlink("tmp8", recursive=TRUE)
 > options(global.track.options=list(cacheKeepFun='none', use.fake.Sys.time=TRUE))
+> # options(global.track.options=list(debug=2))
+> # options(track.callbacks.trace=1)
 > track.start("tmp8")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp8'
 > x <- 33
+> track.status()
+   Status InMem FileBase FileExists Saved
+x tracked FALSE        x       TRUE  TRUE
 > track.status(tracked=TRUE)
    Status InMem FileBase FileExists Saved
 x tracked FALSE        x       TRUE  TRUE

@@ -9,6 +9,12 @@
 > track.start("tmp22")
 Tracking <env R_GlobalEnv> (writable) using new directory 'tmp22'
 > x <- 33
+> track.status(all=TRUE)
+       Status InMem FileBase FileExists Saved
+.Last tracked  TRUE       _1       TRUE  TRUE
+x     tracked  TRUE        x       TRUE  TRUE
+> x
+[1] 33
 > track.stop(pos=1)
 Stopping tracking on <env R_GlobalEnv>
 > track.start("tmp22")
@@ -19,9 +25,15 @@ Tracking <env R_GlobalEnv> (writable) using existing directory 'tmp22'
 [1] TRUE
 > get(".trackingSummaryChanged", .trackingEnv)
 [1] FALSE
-> # Ideally, should not see errors/warnings about not being able so save .trackingSummary;
-> # but we do see errors because .Last is accessed during the q() process, which changes
-> # the tracking summary.
+> track.status(all=TRUE)
+       Status InMem FileBase FileExists Saved
+.Last tracked  TRUE       _1      FALSE  TRUE
+x     tracked FALSE        x      FALSE  TRUE
+> # Ideally, in this scenario where the DB on the filesystem has disappeared,
+> # we should only see errors regarding objects created by the user and should
+> # not see errors/warnings about not being able so save .trackingSummary;
+> # However, we do see errors because .Last is accessed during the q() process,
+> # which changes the tracking summary.
 > # get(".trackingSummary", .trackingEnv)
 > # attach(NULL, pos=2)
 > # load("tmp22.deleteme/.trackingSummary.rda", env=as.environment(2))
