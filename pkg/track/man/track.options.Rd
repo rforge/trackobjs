@@ -176,13 +176,12 @@ track.options(..., pos = 1, envir = as.environment(pos),
 }
 \section{Cache plugin functions}{
 
-\code{track} contains an experimental feature that allows
-users to supply their own plugin functions that specify
-cache rules.  Currently, the plugin function can specify
-whether or not an object will be flushed from memory at the
-end of a top-level command.
-See \link{track.plugins} for further info.
-}
+\code{track} allows users to supply their own plugin functions that
+specify cache rules.  The plugin function is called at the end of a
+top-level command.  The default plugin function implements a rule that
+flushes least-recently accessed large objects from the cache when more
+memory usage is over a threshold.  See \link{track.plugins} for further
+info.  }
 
 \author{Tony Plate <tplate@acm.org>}
 \seealso{ \link[=track-package]{Overview} and
