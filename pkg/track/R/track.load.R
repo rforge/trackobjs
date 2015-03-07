@@ -52,14 +52,7 @@ track.load <- function(files, pos=1, envir=as.environment(pos), list=NULL, patte
             ## always remove the object and reassign the binding
             if (is.element(objName, all.objs))
                 remove(list=objName, envir=envir)
-            f <- substitute(function(v) {
-                if (missing(v))
-                    getTrackedVar(x, envir)
-                else
-                    setTrackedVar(x, v, envir)
-            }, list(x=objName, envir=trackingEnv))
-            mode(f) <- "function"
-            environment(f) <- parent.env(environment(f))
+            f <- createBindingClosure(objName, trackingEnv)
             makeActiveBinding(objName, env=envir, fun=f)
         }
         all.loaded <- c(all.loaded, list)

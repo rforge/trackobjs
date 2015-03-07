@@ -76,6 +76,7 @@ y tracked FALSE        y       TRUE  TRUE
 x numeric numeric    [1]      1    no  0  1
 y numeric numeric    [1]      1    no  0  1
 > assign("x", 123, pos=2)
+#@gsub("Error in setTrackedVar\\([^)]*\\)", "Error in setTrackedVar(...)", both)
 Error in setTrackedVar("x", v, <environment>) : 
   variable 'x' cannot be changed -- it is in a readonly tracking environment
 > assign("z", 123, pos=2)

@@ -146,15 +146,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
             # and remove the active binding if it exists
             if (exists(objName, envir=env.to, inherits=FALSE))
                 remove(list=objName, envir=env.to)
-            # create an active binding for the 'to' variable
-            f <- substitute(function(v) {
-                if (missing(v))
-                    getTrackedVar(x, envir)
-                else
-                    setTrackedVar(x, v, envir)
-            }, list(x=objName, envir=trackingEnv.to))
-            mode(f) <- "function"
-            environment(f) <- parent.env(environment(f))
+            f <- createBindingClosure(objName, trackingEnv.to)
             makeActiveBinding(objName, env=env.to, fun=f)
             if (!trackedInSource) {
                 # modify options we give here to immediately write out to disk

@@ -1,4 +1,10 @@
-                CHANGES in track version 1.1-4 (2013-09-09)
+                CHANGES in track version 1.1-5 (2015-03-07)
+CHANGES
+    o Use closures for active bindings (was using functions
+      with the default args substituted, but this stopped
+      working in the devel version of R after 3.1.2)
+
+                CHANGES in track version 1.1-4 (2015-02-27)
 CHANGES
     o Neaten up code to make it not generate warnings from R CMD check
     o Make code quieter about minor problems it can encounter when using

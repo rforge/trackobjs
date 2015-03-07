@@ -222,25 +222,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
             if (opt$debug >= 2)
                 cat('track.sync: removing', paste(objName, collapse=', '), 'from trackingEnv\n')
             remove(list=objName, envir=envir)
-            f <- substitute(function(v) {
-                if (missing(v))
-                    getTrackedVar(x, envir)
-                else
-                    setTrackedVar(x, v, envir)
-            }, list(x=objName, envir=trackingEnv))
-            mode(f) <- "function"
-            ## Need to replace the environment of f, otherwise it is this
-            ## function, which can contain a copy of objval, which can
-            ## use up lots of memory!
-            ## Need to be careful with the choice of env to set here:
-            ##   * emptyenv() doesn't work because then the binding can't find
-            ##     any defns
-            ##   * baseenv() doesn't work because then the function in the
-            ##     binding can't find functions from trackObjs
-            ##   * globalenv() doesn't work because the function in the
-            ##     binding can't find non-exported functions from trackObjs
-            ##   * parent.env(environment(f)) works!
-            environment(f) <- parent.env(environment(f))
+            f <- createBindingClosure(objName, trackingEnv)
             makeActiveBinding(objName, env=envir, fun=f)
         }
         ## Do we need to re-read the fileMap?

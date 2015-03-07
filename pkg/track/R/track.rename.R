@@ -174,15 +174,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
             # and remove the active binding if it exists
             if (exists(newObjName, envir=envir, inherits=FALSE))
                 remove(list=newObjName, envir=envir)
-            # create an active binding for the new variable
-            f <- substitute(function(v) {
-                if (missing(v))
-                    getTrackedVar(x, envir)
-                else
-                    setTrackedVar(x, v, envir)
-            }, list(x=newObjName, envir=trackingEnv))
-            mode(f) <- "function"
-            environment(f) <- parent.env(environment(f))
+            f <- createBindingClosure(newObjName, trackingEnv)
             makeActiveBinding(newObjName, env=envir, fun=f)
         } else if (!new.isTracked[obj.i]) {
             # situations (2) & (3) (new obj is not tracked)

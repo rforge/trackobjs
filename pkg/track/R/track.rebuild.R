@@ -781,14 +781,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                 paste(missingBindings, collapse=", "), "\n", sep="")
             if (!dryRun) {
                 for (objName in missingBindings) {
-                    f <- substitute(function(v) {
-                        if (missing(v))
-                            getTrackedVar(x, envir)
-                        else
-                            setTrackedVar(x, v, envir)
-                    }, list(x=objName, envir=trackingEnv))
-                    mode(f) <- "function"
-                    environment(f) <- parent.env(environment(f))
+                    f <- createBindingClosure(objName, trackingEnv)
                     makeActiveBinding(objName, env=envir, fun=f)
                 }
             }

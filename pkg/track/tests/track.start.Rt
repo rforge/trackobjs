@@ -36,6 +36,7 @@ In track.start(dir = "tmp18") :
   missing files for some variables in the fileMap (supply discardMissing=TRUE or remove or assign variables to repair): x
 > x
 #@gsub("file '.*/x.rda' does not exist", "file 'x.rda' does not exist", both)
+#@gsub("Error in getTrackedVar\\([^)]*\\)", "Error in getTrackedVar(...)", both)
 Error in getTrackedVar("x", <environment>) : 
   file 'D:/tplate/R/rforge/trackobjs/tmp18/x.rda' does not exist (for obj 'x')
 > track.summary(size=F, times=F, cache=TRUE)

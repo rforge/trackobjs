@@ -361,16 +361,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     }
     ## create bindings for the vars already in the tracking dir
     for (objName in names(fileMap)) {
-        f <- substitute(function(v) {
-            if (missing(v))
-                getTrackedVar(x, envir)
-            else
-                setTrackedVar(x, v, envir)
-        }, list(x=objName, envir=trackingEnv))
-        # NOT WORKING HERE in R-devel 3.3
-        mode(f) <- "function"
-        environment(f) <- parent.env(environment(f))
-        # f <- createBindingFunction(objName, envir)
+        f <- createBindingClosure(objName, trackingEnv)
         makeActiveBinding(objName, env=envir, fun=f)
     }
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
@@ -463,11 +454,17 @@ track.package.desc <- function(pkg)
       "Title: Tracked R Objects", "Author: track package", "Maintainer: track package",
       "Description: package of saved objects created by track package", "License: None specified")
 
-createBindingFunction <- function(objName, envir) {
+# Create a closure that can be used as the active binding
+# It has to store the objName and environment where the actual
+# object data could be cached.
+createBindingClosure <- function(objName, trackingEnv) {
+    # Need to force evaluation of the args, otherwise the closure
+    # can get the wrong values :-(
+    force(objName); force(trackingEnv)
     function(v) {
         if (missing(v))
-            getTrackedVar(objName, envir)
+            getTrackedVar(objName, trackingEnv)
         else
-            setTrackedVar(objName, v, envir)
+            setTrackedVar(objName, v, trackingEnv)
     }
 }
