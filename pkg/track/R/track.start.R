@@ -367,8 +367,10 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
             else
                 setTrackedVar(x, v, envir)
         }, list(x=objName, envir=trackingEnv))
+        # NOT WORKING HERE in R-devel 3.3
         mode(f) <- "function"
         environment(f) <- parent.env(environment(f))
+        # f <- createBindingFunction(objName, envir)
         makeActiveBinding(objName, env=envir, fun=f)
     }
     setTrackingEnv(trackedEnv=envir, trackingEnv=trackingEnv)
@@ -460,3 +462,12 @@ track.package.desc <- function(pkg)
     c(paste("Package:",pkg), "Version: 1.0", paste("Date:",date()),
       "Title: Tracked R Objects", "Author: track package", "Maintainer: track package",
       "Description: package of saved objects created by track package", "License: None specified")
+
+createBindingFunction <- function(objName, envir) {
+    function(v) {
+        if (missing(v))
+            getTrackedVar(objName, envir)
+        else
+            setTrackedVar(objName, v, envir)
+    }
+}
