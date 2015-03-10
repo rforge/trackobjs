@@ -155,3 +155,165 @@ track.stop()
 
 # Integration with RStudio, how to make things to that tracked objects show up with a useful description in the "Environment" pane, look for:
 cpp/session/modules/environment/EnvironmentUtils.hpp:core::json::Value varToJson(SEXP env, const r::sexp::Variable& var)
+
+
+-- note submitted with CRAN submission 2015/03/07:
+
+Submitted package tarball passes all checks in "R CMD check" with and without --as-cran with these versions of R:
+Windows x64: R Under development (unstable) (2015-03-01 r67921) -- "Unsuffered Consequences"
+Windows x64: R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
+Max OS X: R version 3.1.2
+
+Please note that R CMD check --as-cran issues a NOTE regarding the use of the attach() function.  The use of the attach() function is essential in this package as one of the primary functions of this package is to allow attach()ing a database of R objects to the search path.  This is clearly described in the function documentation.  Please let me know if there is anything else I should do regarding this issue.
+
+This version of 'track' fixes incompatibilities with the current version of R-devel by using closures for active bindings rather than the previous scheme of functions with values substituted into them, which stopped working in the current version of R-devel.
+
+
+tap@Potosi ~/R/rforge/track
+$ R CMD check --as-cran track_1.1.6.tar.gz -l c:/R/site-library
+* using log directory 'D:/tplate/R/rforge/track/track.Rcheck'
+* using R version 3.1.2 (2014-10-31)
+* using platform: i386-w64-mingw32 (32-bit)
+* using session charset: ISO8859-1
+* checking for file 'track/DESCRIPTION' ... OK
+* this is package 'track' version '1.1.6'
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: 'Tony Plate <tplate@acm.org>'
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking whether package 'track' can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+Found the following calls to attach():
+File 'track/R/track.attach.R':
+  attach(what = NULL, pos = pos, name = name)
+See section 'Good practice' in '?attach'.
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... NOTE
+Packages unavailable to check Rd xrefs: 'g.data', 'filehash'
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+ WARNING
+'qpdf' is needed for checks on size reduction of PDFs
+* checking installed files from 'inst/doc' ... OK
+* checking files in 'vignettes' ... OK
+* checking examples ... OK
+* checking for unstated dependencies in tests ... OK
+* checking tests ...
+  Running 'runtests.R'
+ OK
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes in 'inst/doc' ... OK
+* checking running R code from vignettes ...
+   'track.Rnw' ... OK
+ OK
+* checking re-building of vignette outputs ... OK
+* checking PDF version of manual ... OK
+* DONE
+
+WARNING: There was 1 warning.
+NOTE: There were 3 notes.
+See
+  'D:/tplate/R/rforge/track/track.Rcheck/00check.log'
+for details.
+
+
+tap@Potosi ~/R/rforge/track
+$ R CMD check track_1.1.6.tar.gz -l c:/R/site-library
+* using log directory 'D:/tplate/R/rforge/track/track.Rcheck'
+* using R version 3.1.2 (2014-10-31)
+* using platform: i386-w64-mingw32 (32-bit)
+* using session charset: ISO8859-1
+* checking for file 'track/DESCRIPTION' ... OK
+* this is package 'track' version '1.1.6'
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking whether package 'track' can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd cross-references ... NOTE
+Packages unavailable to check Rd xrefs: 'g.data', 'filehash'
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking installed files from 'inst/doc' ... OK
+* checking files in 'vignettes' ... OK
+* checking examples ... OK
+* checking for unstated dependencies in tests ... OK
+* checking tests ...
+  Running 'runtests.R'
+ OK
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes in 'inst/doc' ... OK
+* checking running R code from vignettes ...
+   'track.Rnw' ... OK
+ OK
+* checking re-building of vignette outputs ... OK
+* checking PDF version of manual ... OK
+* DONE
+
+NOTE: There was 1 note.
+See
+  'D:/tplate/R/rforge/track/track.Rcheck/00check.log'
+for details.
+
+
+tap@Potosi ~/R/rforge/track
+$
+
+Checking URLs requires 'libcurl' support in the R build

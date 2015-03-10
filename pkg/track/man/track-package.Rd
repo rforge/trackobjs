@@ -382,8 +382,7 @@ within an object (though it is not guaranteed to find them all.)
 \references{
 Roger D. Peng. Interacting with data using the filehash package. R
 News, 6(4):19-24, October
-2006. \url{http://cran.r-project.org/doc/Rnews} and
-\url{http://sandybox.typepad.com/software}
+2006. \url{http://cran.r-project.org/doc/Rnews}
 
 David E. Brahm. Delayed data packages. R News, 2(3):11-12, December
 2002.  \url{http://cran.r-project.org/doc/Rnews}

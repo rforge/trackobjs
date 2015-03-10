@@ -105,7 +105,9 @@ Simple object names are those conforming to the following rules:
   through \code{lpt9}, and do not begin with one of these names followed
   by a period (i.e., \code{prn.foo} and \code{prn.foo.bar} are both not
   simple names) (these are special file names under Microsoft Windows - see
-  \url{http://en.wikipedia.org/wiki/Filename} and \url{http://msdn.microsoft.com/library/default.asp?url=/library/en-us/fileio/fs/naming_a_file.asp})
+  \url{http://en.wikipedia.org/wiki/Filename} and search the web on the keywords
+  "windows short file names rules prn com" to find an official Microsoft
+  site.)
 }
 The object \code{.trackingFileMap} is always kept in memory and is
 always saved to disk (as text in the file \code{filemap.txt}) whenever it is
@@ -287,7 +289,7 @@ different in R.)
       \item \url{http://tukaani.org/lzma/benchmarks.html}
       \item \url{http://stephane.lesimple.fr/wiki/blog/lzop_vs_compress_vs_gzip_vs_bzip2_vs_lzma_vs_lzma2-xz_benchmark_reloaded}
       \item \url{http://aliver.wordpress.com/2010/06/22/huge-unix-file-compresser-shootout-with-tons-of-datagraphs}
-      \item \url{http://www.maximumcompression.com/index.html}
+      \item \url{http://www.maximumcompression.com/}
       \item \url{http://mattmahoney.net/dc/text.html}
     }
 
@@ -304,8 +306,7 @@ different in R.)
 \references{
 Roger D. Peng. Interacting with data using the filehash package. R
 News, 6(4):19-24, October
-2006. \url{http://cran.r-project.org/doc/Rnews} and
-\url{http://sandybox.typepad.com/software}
+2006. \url{http://cran.r-project.org/doc/Rnews}.
 
 David E. Brahm. Delayed data packages. R News, 2(3):11-12, December
 2002.  \url{http://cran.r-project.org/doc/Rnews}
