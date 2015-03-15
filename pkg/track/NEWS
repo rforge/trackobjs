@@ -1,3 +1,7 @@
+                CHANGES in track version 1.1.8 (2015-03-15)
+CHANGES
+    o Made tests when run with --force-multiarch
+
                 CHANGES in track version 1.1.7 (2015-03-07)
 CHANGES
     o Deleted dead URLs in help files
