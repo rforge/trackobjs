@@ -1,5 +1,6 @@
 \documentclass{article}
 \title{Object tracking in R}
+%\VignetteIndexEntry{Using track}
 \author{Tony Plate}
 \begin{document}
 \maketitle
@@ -128,6 +129,11 @@ track.history.start()
 To turn it off, issue the command
 <<>>=
 track.history.stop()
+@
+
+To delete all saved objects stored in files, remove the database directory:
+<<>>=
+file.remove('rdatadir', recursive=TRUE)
 @
 
 The history is stored in a simple text format with time
