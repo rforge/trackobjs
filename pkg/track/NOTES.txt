@@ -322,3 +322,7 @@ Checking URLs requires 'libcurl' support in the R build
 R CMD check --force-multiarch track_1.1.7.tar.gz -l c:/R/site-library
 
 This matters for tests, because the test directories can look like tests_i386/... instead of tests/, which can matter for gsub's in tests.
+
+This version does not run tests unless the environment variable R_RUN_FULL_TESTS is set to 1.
+
+R CMD check gives a warning regarding use of the attach() function in the function track.attach() in this package.  The use of attach() is essential to this function and is described in the documentation for the function.
