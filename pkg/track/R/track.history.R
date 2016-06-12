@@ -59,7 +59,7 @@ track.history.stop <- function() {
     invisible(NULL)
 }
 
-track.history.canload <- function() is.interactive() && (substring(casefold(.Platform$GUI), 1, 4) %in% c('rgui', 'rterm'))
+track.history.canload <- function() interactive() && (substring(casefold(.Platform$GUI), 1, 4) %in% c('rgui', 'rterm'))
 
 track.history.load <- function(times=FALSE) {
     file <- getOption("incr.hist.file")
