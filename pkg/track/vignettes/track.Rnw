@@ -78,7 +78,7 @@ list.files("rdatadir", all=TRUE)
 
 To delete all saved objects stored in files, remove the database directory:
 <<>>=
-file.remove('rdatadir', recursive=TRUE)
+unlink('rdatadir', recursive=TRUE)
 @
 
 There are several points to note:
