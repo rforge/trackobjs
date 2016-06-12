@@ -43,5 +43,7 @@ export(track.start,
        track.datadir,
        track.plugin.lru,
        show.envs)
-importFrom(methods, slot, slotNames)
-importFrom(utils, loadhistory)
+importFrom("methods", "is", "slot", "slotNames")
+importFrom("utils", "loadhistory", "capture.output", "find", "flush.console",
+           "glob2rx", "head", "memory.limit", "object.size",
+           "savehistory", "str", "timestamp")

@@ -32,7 +32,7 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
             trackingEnv <- getTrackingEnv(trackedEnv, stop.on.not.tracked = FALSE)
             res <- try(track.sync(envir=trackedEnv, trackingEnv=trackingEnv,
                                   full=NA, master="envir", taskEnd=TRUE), silent=TRUE)
-            if (is(res, "try-error"))
+            if (inherits(res, "try-error"))
                 warning("oops: track.sync() had a problem (use track.auto(FALSE, pos=) to turn off): ", res)
         }
     }

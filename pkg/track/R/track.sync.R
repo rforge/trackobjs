@@ -269,7 +269,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 keep <- try(do.call(opt$cacheKeepFun, list(objs=objSummary, inmem=flushCand, envname=envname(envir))), silent=TRUE)
                 ## Expecting a logical vector matching rows of objSummary.
                 ## Be informative about any problems with what it returns because this can be a user-supplied function.
-                if (is(keep, "try-error")) {
+                if (inherits(keep, "try-error")) {
                     warning("opt$cacheKeepFun on ", envname(envir), " stopped with an error: ", keep)
                     keep <- FALSE
                 } else if (!is.atomic(keep)) {
@@ -370,7 +370,7 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
                 if (verbose)
                     cat("track.sync: saving .trackingSummary for envir=", envname(envir), " to ", dir, "\n", sep="")
                 save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
-                if (is(save.res, "try-error"))
+                if (inherits(save.res, "try-error"))
                     warning("unable to save .trackingSummary to ", dir)
                 else
                     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)

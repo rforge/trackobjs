@@ -129,7 +129,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
             # and the object is stored in the file.
             # old code doesn't work: ok <- file.rename(oldFile, newFile)
             res <- try(load(oldFile, envir=tmpEnv), silent=TRUE)
-            if (is(res, "try-error")) {
+            if (inherits(res, "try-error")) {
                 warning("failed to rename obj '", oldObjName, "' to '", newObjName,
                         "' because load('", oldFile, "') failed: ", res)
                 next
@@ -142,7 +142,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
             if (newObjName != oldObjName) {
                 # perverse sitation if newObjName==oldObjName, but try to handle all gracefully...
                 res <- try(assign(newObjName, get(oldObjName, envir=tmpEnv, inherits=FALSE), envir=tmpEnv), silent=TRUE)
-                if (is(res, "try-error")) {
+                if (inherits(res, "try-error")) {
                     warning("failed to rename obj '", oldObjName, "' to '", newObjName,
                             "' because could not make copy of object for saving")
                     next
@@ -153,7 +153,7 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
             }
             res <- try(save(list=newObjName, file=newFile, envir=tmpEnv,
                             compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
-            if (is(res, "try-error")) {
+            if (inherits(res, "try-error")) {
                 warning("failed to rename obj '", oldObjName, "' to '", newObjName,
                         "' because could not save renamed obj in file '", oldFile, "': ", res)
                 next
@@ -193,13 +193,13 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
         }
         if (objSmy.changed) {
             assign.res <- try(assign(".trackingSummary", objSmy, envir=trackingEnv), silent=TRUE)
-            if (is(assign.res, "try-error")) {
+            if (inherits(assign.res, "try-error")) {
                 stop("unable to assign .trackingSummary back to tracking env on ",
                         envname(trackingEnv), ": ", assign.res)
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
                 save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
-                if (is(save.res, "try-error"))
+                if (inherits(save.res, "try-error"))
                     stop("unable to save .trackingSummary to ", dir)
                 else
                     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
@@ -222,13 +222,13 @@ track.rename <- function(old, new, pos=1, envir=as.environment(pos), clobber=FAL
         names(fileMap)[match(old[obj.updateAtEnd], names(fileMap))] <- new[obj.updateAtEnd]
         rownames(objSmy)[match(old[obj.updateAtEnd], rownames(objSmy))] <- new[obj.updateAtEnd]
         assign.res <- try(assign(".trackingSummary", objSmy, envir=trackingEnv), silent=TRUE)
-        if (is(assign.res, "try-error")) {
+        if (inherits(assign.res, "try-error")) {
             stop("unable to assign .trackingSummary back to tracking env on ",
                     envname(trackingEnv), ": ", assign.res)
         } else {
             assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
             save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
-            if (is(save.res, "try-error"))
+            if (inherits(save.res, "try-error"))
                 stop("unable to save .trackingSummary to ", dir)
             else
                 assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)

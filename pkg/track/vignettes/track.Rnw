@@ -76,6 +76,11 @@ track.stop()
 list.files("rdatadir", all=TRUE)
 @
 
+To delete all saved objects stored in files, remove the database directory:
+<<>>=
+file.remove('rdatadir', recursive=TRUE)
+@
+
 There are several points to note:
 \begin{itemize}
   \item The global environment is the default environment for tracking
@@ -129,11 +134,6 @@ track.history.start()
 To turn it off, issue the command
 <<>>=
 track.history.stop()
-@
-
-To delete all saved objects stored in files, remove the database directory:
-<<>>=
-file.remove('rdatadir', recursive=TRUE)
 @
 
 The history is stored in a simple text format with time

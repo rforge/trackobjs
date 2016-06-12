@@ -59,7 +59,7 @@ track.history.stop <- function() {
     invisible(NULL)
 }
 
-track.history.canload <- function() substring(casefold(.Platform$GUI), 1, 4)!='aqua'
+track.history.canload <- function() is.interactive() && (substring(casefold(.Platform$GUI), 1, 4) %in% c('rgui', 'rterm'))
 
 track.history.load <- function(times=FALSE) {
     file <- getOption("incr.hist.file")
@@ -112,7 +112,7 @@ track.history.writer <- function(expr, value, ok, visible) {
     if (is.null(style) || nchar(style)==0)
         style <- Sys.getenv("R_INCR_HIST_STYLE")
     if (is.null(style) || nchar(style)==0)
-        style <- if (.Platform$GUI == 'AQUA') "fast" else "full"
+        style <- if (track.history.canload()) 'full' else 'fast'
     times <- getOption("incr.hist.times")
     if (is.null(times) || nchar(times)==0)
         times <- Sys.getenv("R_INCR_HIST_TIMES")
@@ -230,7 +230,7 @@ find.expr.lines.following <- function (rawhist, last) {
    }
    for (i in rev(pstarts)) {
        lines <- rawhist[seq(from = i, to = length(rawhist))]
-       if (!is(try(parse(text = lines), silent = TRUE), "try-error"))
+       if (!inherits(try(parse(text = lines), silent = TRUE), "try-error"))
            return(lines)
    }
    if (length(pstarts))
@@ -239,7 +239,7 @@ find.expr.lines.following <- function (rawhist, last) {
    pstarts <- seq(to = length(rawhist), len = min(20, length(rawhist)))
    for (i in rev(pstarts)) {
        lines <- rawhist[seq(from = i, to = length(rawhist))]
-       if (!is(try(parse(text = lines), silent = TRUE), "try-error"))
+       if (!inherits(try(parse(text = lines), silent = TRUE), "try-error"))
            return(lines)
    }
    # If we can't find any parsable expression in a tail of the history file,

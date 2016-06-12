@@ -165,7 +165,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     if (!is.null(optionsPath)) {
         tmpenv <- new.env(parent=emptyenv())
         load.res <- try(load(optionsPath, envir=tmpenv), silent=TRUE)
-        if (is(load.res, "try-error"))
+        if (inherits(load.res, "try-error"))
             warning(optionsPath, " cannot be loaded -- ignoring it; for recovery see ?track.rebuild (",
                  as.character(load.res), ")")
         if (length(load.res)!=1 || load.res != ".trackingOptions") {
@@ -198,7 +198,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         if (!create)
             stop("dir \"", dataDir, "\" does not exist (supply create=TRUE to create it)")
         res <- dir.create(file.path(dataDir), recursive=TRUE)
-        if (is(res, "try-error"))
+        if (inherits(res, "try-error"))
             stop("could not creating tracking dir '", dataDir, "': ", res)
         if (!dir.exists(dataDir))
             stop("failed to create tracking dir '", dataDir, "'")
@@ -271,7 +271,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
                         knowSame <- sapply(alreadyExists, function(objName) {
                             objFile <- file.path(dataDir, paste(fileMap[objName], sep='.', opt$RDataSuffix))
                             load.res <- try(load(objFile, envir=tmpenv), silent=TRUE)
-                            if (is(load.res, "try-error"))
+                            if (inherits(load.res, "try-error"))
                                 stop("Failed to load R object ", objName, " from file ", objFile,
                                      " when checking whether existing R objects are same as those in the",
                                      " tracking db on the file system -- repair or delete file and try again;",
@@ -355,7 +355,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         dfn <- file.path(dir, "DESCRIPTION")
         if (!file.exists(dfn)) {
             write.res <- try(cat(track.package.desc(basename(dir)), "\n", sep="\n", file=dfn), silent=TRUE)
-            if (is(write.res, "try-error"))
+            if (inherits(write.res, "try-error"))
                 warning("had problem writing ", dfn, " (", as.character(write.res), ")")
         }
     }
@@ -435,7 +435,7 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
     ## Save the tracking summary after working with .Last
     if (!opt$readonly) {
         save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
-        if (is(save.res, "try-error"))
+        if (inherits(save.res, "try-error"))
             stop("could not save '.trackingSummary' in ", attr(save.res, 'file'), ": fix file problem and try again (", save.res, ")")
     }
     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)

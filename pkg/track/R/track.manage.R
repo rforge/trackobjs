@@ -157,7 +157,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
                 remove(list=objName, envir=trackingEnv)
             if (file.exists(filePath)) {
                 rm.res <- try(file.remove(filePath), silent=TRUE)
-                if (is(rm.res, "try-error"))
+                if (inherits(rm.res, "try-error"))
                     warning("could not remove file for tracked var '", objName, "'")
             }
             i <- match(objName, rownames(objSummary))
@@ -170,7 +170,7 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
                 && (resave || is.element(objName, unsaved))) {
                 save.res <- try(save(list=objName, envir=trackingEnv, file=filePath,
                                      compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
-                if (is(save.res, "try-error"))
+                if (inherits(save.res, "try-error"))
                     stop("could not save '", objName, "' in ", filePath, ": fix file problem and try again")
             }
             if (is.element(op, c("flush", "forget", "lift")) && exists(objName, envir=trackingEnv, inherits=FALSE)
@@ -203,10 +203,10 @@ trackedVarOp <- function(qexpr, pos=1, envir=as.environment(pos), list=NULL, pat
     if ((needSaveObjSummary || resave) && !opt$readonly) {
         assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
         save.res <- saveObjSummary(trackingEnv, opt, dataDir)
-        if (!is(save.res, "try-error"))
+        if (!inherits(save.res, "try-error"))
             assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
     }
-    if (is(save.res, "try-error")) {
+    if (inherits(save.res, "try-error")) {
         warning("unable to save .trackingSummary in ", file.path(dataDir), ": if this message appears repeatedly, fix problem and run track.resave()")
     }
     return(invisible(list))

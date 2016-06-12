@@ -16,7 +16,7 @@ track.clean <- function() {
             trackingEnv <- getTrackingEnv(trackedEnv, stop.on.not.tracked = FALSE)
             res <- try(track.sync(envir=trackedEnv, trackingEnv=trackingEnv,
                                   full=TRUE, master="envir", taskEnd=TRUE), silent=TRUE)
-            if (is(res, "try-error"))
+            if (inherits(res, "try-error"))
                 warning("oops: track.sync() had a problem: ", res)
         }
     }

@@ -125,7 +125,7 @@ summaryRow <- function(name, opt, sumRow=NULL, obj=NULL, file=NULL, change=FALSE
                              SW=as.integer(0), PA=as.integer(0), PW=as.integer(0),
                              cache=NA, stringsAsFactors=FALSE)
         if (!is.null(file) && file.exists(file)
-            && !is(info <- try(file.info(file), silent=TRUE), "try-error")) {
+            && !inherits(info <- try(file.info(file), silent=TRUE), "try-error")) {
             if (length(info$mtime)==1 && !is.na(info$mtime))
                 sumRow$modified <- info$mtime
             if (length(info$ctime)==1 && !is.na(info$ctime))
@@ -151,12 +151,12 @@ summaryRow <- function(name, opt, sumRow=NULL, obj=NULL, file=NULL, change=FALSE
                                    levels=c("fixedno", "no", "yes", "fixedyes"))
         }
         l <- try(length(obj), silent=TRUE)
-        if (is(l, "try-error"))
+        if (inherits(l, "try-error"))
             sumRow$length <- NA
         else
             sumRow$length <- as.integer(l)
         d <- try(dim(obj), silent=TRUE)
-        if (is(d, "try-error"))
+        if (inherits(d, "try-error"))
             sumRow$extent <- "(error)"
         else if (is.numeric(d))
             sumRow$extent <- paste("[", paste(d, collapse="x"), "]", sep="")
@@ -257,7 +257,7 @@ getFileMapObj <- function(trackingEnv) {
 }
 
 writeFileMapFile <- function(fileMap, trackingEnv, dataDir, assignObj=TRUE) {
-    if (assignObj && is(try(assign(".trackingFileMap", fileMap, envir=trackingEnv), silent=TRUE), "try-error"))
+    if (assignObj && inherits(try(assign(".trackingFileMap", fileMap, envir=trackingEnv), silent=TRUE), "try-error"))
         warning("failed to assign '.trackingFileMap' in ", envname(trackingEnv))
     if (length(fileMap)) {
         i <- order(names(fileMap))
@@ -267,13 +267,13 @@ writeFileMapFile <- function(fileMap, trackingEnv, dataDir, assignObj=TRUE) {
     }
     ## open in binary mode so that we use just "\n" as a separator
     open.res <- (con <- file(file.path(dataDir, "filemap.txt"), open="wb"))
-    if (is(open.res, "try-error")) {
+    if (inherits(open.res, "try-error")) {
         warning("failed to open ", file.path(dataDir, "filemap.txt"), " for writing: if this message appears repeatedly try to fix problem, then do 'track.resave()'")
         return(FALSE)
     }
     on.exit(close(con))
     save.res <- try(writeLines(text=fileData, con=con, sep="\n"), silent=TRUE)
-    if (is(save.res, "try-error")) {
+    if (inherits(save.res, "try-error")) {
         warning("failed to save filemap.txt: if this message appears repeatedly try to fix problem, then do 'track.resave()'")
         return(FALSE)
     }
@@ -283,11 +283,11 @@ writeFileMapFile <- function(fileMap, trackingEnv, dataDir, assignObj=TRUE) {
 readFileMapFile <- function(trackingEnv, dataDir, assignObj) {
     ## open in binary mode so that we use just "\n" as a separator
     open.res <- (con <- file(file.path(dataDir, "filemap.txt"), open="rb"))
-    if (is(open.res, "try-error"))
+    if (inherits(open.res, "try-error"))
         stop("failed to open \"", file.path(dataDir, "filemap.txt"), "\" for reading: try using track.rebuild()")
     on.exit(close(con))
     fileData <- try(readLines(con=con, n=-1), silent=TRUE)
-    if (is(fileData, "try-error"))
+    if (inherits(fileData, "try-error"))
         stop("failed to read file map data from \"", file.path(dataDir, "filemap.txt"), "\": try using track.rebuild()")
     ## Remove Windows line termination
     fileData <- gsub("\r", "", fileData)
@@ -296,7 +296,7 @@ readFileMapFile <- function(trackingEnv, dataDir, assignObj) {
         stop("file map contains invalid data (need a ':' in each line): \"", file.path(dataDir, "filemap.txt"), "\": try using track.rebuild()")
     fileMap <- substring(fileData, 1, i-1)
     names(fileMap) <- substring(fileData, i+1)
-    if (assignObj && is(try(assign(".trackingFileMap", fileMap, envir=trackingEnv), silent=TRUE), "try-error"))
+    if (assignObj && inherits(try(assign(".trackingFileMap", fileMap, envir=trackingEnv), silent=TRUE), "try-error"))
         warning("failed to assign '.trackingFileMap' in ", envname(trackingEnv))
     return(fileMap)
 }
@@ -432,7 +432,7 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
             cat("saving '", objName, "' to file ", fullFile, "\n", sep="")
         save.res <- try(save(list=objName, file=fullFile, envir=trackingEnv,
                              compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
-        if (!is(save.res, "try-error")) {
+        if (!inherits(save.res, "try-error")) {
             if (opt$debug >= 2)
                 cat('setTrackedVar: removing', paste(objName, collapse=', '), 'from trackingEnv\n')
             if (!opt$cache && !is.element(objName, opt$alwaysCache))
@@ -486,14 +486,14 @@ setTrackedVar <- function(objName, value, trackingEnv, opt=track.options(trackin
             }
             objSummary[objName, ] <- sumRow
             assign.res <- try(assign(".trackingSummary", objSummary, envir=trackingEnv), silent=TRUE)
-            if (is(assign.res, "try-error")) {
+            if (inherits(assign.res, "try-error")) {
                 warning("unable to assign .trackingSummary back to tracking env on ",
                         envname(trackingEnv), ": ", assign.res)
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv)
                 if (opt$writeToDisk && !is.element("eotPurge", opt$cachePolicy)) {
                     save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
-                    if (is(save.res, "try-error"))
+                    if (inherits(save.res, "try-error"))
                         warning("unable to save .trackingSummary to ", dir)
                     else
                         assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
@@ -605,7 +605,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
             }
             objSummary[objName, ] <- sumRow
             assign.res <- try(assign(".trackingSummary", objSummary, envir=trackingEnv))
-            if (is(assign.res, "try-error")) {
+            if (inherits(assign.res, "try-error")) {
                 warning("unable to assign .trackingSummary back to tracking env on ", envname(trackingEnv))
             } else {
                 ## only makes sense to save() .trackingSummary if we were able to assign it
@@ -614,7 +614,7 @@ getTrackedVar <- function(objName, trackingEnv, opt=track.options(trackingEnv=tr
                     if (is.null(dir))
                         dir <- getTrackingDir(trackingEnv)
                     save.res <- saveObjSummary(trackingEnv, opt=opt, dataDir=getDataDir(dir))
-                    if (is(save.res, "try-error"))
+                    if (inherits(save.res, "try-error"))
                         warning("unable to save .trackingSummary to ", dir, ": ", save.res)
                     else
                         assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
@@ -746,7 +746,7 @@ saveObjSummary <- function(trackingEnv,
         assign(".trackingSummary", objSummary, envir=envir)
     }
     save.res <- try(save(list=".trackingSummary", file=file, envir=envir, compress=FALSE), silent=TRUE)
-    if (is(save.res, 'try-error'))
+    if (inherits(save.res, 'try-error'))
         attr(save.res, 'file') <- file
     if (identical(envir, trackingEnv)) {
         modTime <- file.info(file)
@@ -769,7 +769,7 @@ loadObjSummary <- function(trackingEnv,
         else
             return(NULL)
     load.res <- try(load(file, envir=tmpenv), silent=TRUE)
-    if (is(load.res, "try-error"))
+    if (inherits(load.res, "try-error"))
         stop(file, " cannot be loaded -- for recovery see ?track.rebuild (",
              as.character(load.res), ")")
     if (length(load.res)!=1 || load.res != ".trackingSummary")

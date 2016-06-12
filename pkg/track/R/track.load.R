@@ -15,7 +15,7 @@ track.load <- function(files, pos=1, envir=as.environment(pos), list=NULL, patte
             next
         }
         load.res <- try(load(file=file, envir=tmpenv), silent=TRUE)
-        if (is(load.res, "try-error")) {
+        if (inherits(load.res, "try-error")) {
             warning("skipping ", file, ": could not read saved objects: ", as.character(load.res))
             next
         }

@@ -239,7 +239,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         if (file.exists(file)) {
             tmpenv <- new.env(parent=emptyenv())
             load.res <- try(load(file=file, envir=tmpenv), silent=TRUE)
-            if (is(load.res, "try-error") || length(load.res)!=1 || load.res!=".trackingOptions") {
+            if (inherits(load.res, "try-error") || length(load.res)!=1 || load.res!=".trackingOptions") {
                 warning(file, " does not contain a .trackingOptions object -- ignoring it and using system defaults")
             } else {
                 opt <- get(".trackingOptions", envir=tmpenv, inherits=FALSE)
@@ -329,13 +329,13 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
     fileMapFullPath <- file.path(dataDir, "filemap.txt")
     if (file.exists(fileMapFullPath)) {
         open.res <- try(con <- file(fileMapFullPath, open="rb"), silent=TRUE)
-        if (is(open.res, "try-error")) {
+        if (inherits(open.res, "try-error")) {
             cat("Cannot open '", abbrevWD(fileMapFullPath), "' for reading; ignoring and continuing... (error was: ",
                 formatMsg(open.res), ")\n", sep="")
         } else {
             on.exit(close(con))
             fileData <- try(readLines(con=con, n=-1), silent=TRUE)
-            if (is(fileData, "try-error")) {
+            if (inherits(fileData, "try-error")) {
                 cat("Unable to read '", abbrevWD(fileMapFullPath), "'; ignoring and continuing... (error was: ",
                     formatMsg(fileData), ")\n", sep="")
             } else {
@@ -430,7 +430,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
     }
     if (file.exists(file.path(dataDir, paste(".trackingSummary", suffix, sep=".")))) {
         load.res <- try(load(file=file.path(dataDir, paste(".trackingSummary", suffix, sep=".")), envir=tmpenv), silent=TRUE)
-        if (is(load.res, "try-error")) {
+        if (inherits(load.res, "try-error")) {
             cat("Cannot load '", abbrevWD(file.path(dataDir, paste(".trackingSummary", opt$RDataSuffix, sep="."))),
                 "' -- rebuilding... (error was: ",
                 formatMsg(load.res), ")\n")
@@ -570,7 +570,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                     (if (!is.na(objName)) paste("object '", objName, "'", sep="") else "unknown object"),
                     " ... ", sep="")
             load.res <- try(load(file=file.path(dataDir, objFile), envir=tmpenv), silent=TRUE)
-            if (is(load.res, "try-error")) {
+            if (inherits(load.res, "try-error")) {
                 cat(": loading error\n")
             } else {
                 cat("loaded ", paste("'", load.res, "'", sep="", collapse=", "), "\n", sep="")
@@ -584,7 +584,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                 moving.msg <- "moving"
                 rewriting.msg <- "rewriting"
             }
-            if (is(load.res, "try-error")) {
+            if (inherits(load.res, "try-error")) {
                 cat(objFile, " cannot be loaded (error was '", formatMsg(load.res), "')",
                     if (fix) paste(",", moving.msg, "to", abbrevWD(quarantineDir)), "\n", sep="")
                 ok <- FALSE
@@ -662,7 +662,7 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
                             if (!dryRun) {
                                 save.res <- try(save(list=load.res[i], file=newFile, envir=tmpenv,
                                                      compress=opt$compress, compression_level=opt$compression_level), silent=TRUE)
-                                if (is(save.res, "try-error")) {
+                                if (inherits(save.res, "try-error")) {
                                     cat("Could not save obj '", load.res[i], "' in file '", abbrevWD(newFile), "' (error was '",
                                         formatMsg(save.res), "')\n", sep="")
                                 } else {
@@ -806,11 +806,11 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
         if (activeTracking) {
             if (verbose>1)
                 cat("Assigning '.trackingFileMap' and '.trackingSummary' in tracking environment.\n")
-            if (is(assign.res <- try(assign(".trackingFileMap", newFileMap, envir=trackingEnv), silent=TRUE), "try-error"))
+            if (inherits(assign.res <- try(assign(".trackingFileMap", newFileMap, envir=trackingEnv), silent=TRUE), "try-error"))
                 warning("failed to assign '.trackingFileMap' in ", envname(trackingEnv),
                         " (error was '", formatMsg(res), "')")
             assign.res <- try(assign(".trackingSummary", newSummary, envir=trackingEnv), silent=TRUE)
-            if (is(assign.res, "try-error"))
+            if (inherits(assign.res, "try-error"))
                 warning("unable to assign .trackingSummary back to tracking env on ", envname(envir),
                         " (error was '", formatMsg(assign.res), "')")
             else
@@ -830,9 +830,9 @@ track.rebuild <- function(pos=1, envir=as.environment(pos), dir=NULL, fix=FALSE,
             save.res <- saveObjSummary(trackingEnv, envir=tmpenv, opt=opt, dataDir=getDataDir(dir))
             # save.res <- try(save(list=".trackingSummary", file=file, envir=tmpenv, compress=FALSE), silent=TRUE)
         }
-        if (is(save.res, "try-error"))
+        if (inherits(save.res, "try-error"))
             warning("unable to save .trackingSummary to ", dir, " (error was '", formatMsg(save.res), "')")
-        else if (activeTracking && !is(assign.res, "try-error"))
+        else if (activeTracking && !inherits(assign.res, "try-error"))
             assign(".trackingSummaryChanged", FALSE, envir=trackingEnv)
         return(invisible(res))
     }

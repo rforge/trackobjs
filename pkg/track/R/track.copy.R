@@ -12,7 +12,7 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
         for (i in seq(along=from)) {
             x <- try(track.copy(from=from[[i]], to=to, list=list, pattern=pattern, glob=glob, delete=delete,
                                 clobber=clobber, skipExisting=skipExisting, verbose=verbose, do.untrackable=do.untrackable))
-            if (!is(x, 'try-error'))
+            if (!inherits(x, 'try-error'))
                 res[[i]] <- x
         }
         return(invisible(NULL))
@@ -165,13 +165,13 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
                 objSmy.to <- rbind(objSmy.to, smyRow)
             }
             assign.res <- try(assign(".trackingSummary", objSmy.to, envir=trackingEnv.to), silent=TRUE)
-            if (is(assign.res, "try-error")) {
+            if (inherits(assign.res, "try-error")) {
                 stop("unable to assign .trackingSummary back to tracking env on ",
                         envname(trackingEnv.to), ": ", assign.res)
             } else {
                 assign(".trackingSummaryChanged", TRUE, envir=trackingEnv.to)
                 save.res <- saveObjSummary(trackingEnv=trackingEnv.to, opt=opt.to, dataDir=getDataDir(dir.to))
-                if (is(save.res, "try-error"))
+                if (inherits(save.res, "try-error"))
                     stop("unable to save .trackingSummary to ", dir.to)
                 else
                     assign(".trackingSummaryChanged", FALSE, envir=trackingEnv.to)
@@ -186,13 +186,13 @@ track.copy <- function(from, to=1, list=NULL, pattern=NULL,
             } else {
                 objSmy.from <- objSmy.from[-objSmy.from.i, , drop=FALSE]
                 assign.res <- try(assign(".trackingSummary", objSmy.from, envir=trackingEnv.from), silent=TRUE)
-                if (is(assign.res, "try-error")) {
+                if (inherits(assign.res, "try-error")) {
                     stop("unable to assign .trackingSummary back to tracking env on ",
                             envname(trackingEnv.from), ": ", assign.res)
                 } else {
                     assign(".trackingSummaryChanged", TRUE, envir=trackingEnv.from)
                     save.res <- saveObjSummary(trackingEnv=trackingEnv.from, opt=opt.from, dataDir=getDataDir(dir.from))
-                    if (is(save.res, "try-error"))
+                    if (inherits(save.res, "try-error"))
                         stop("unable to save .trackingSummary to ", dir.from)
                     else
                         assign(".trackingSummaryChanged", FALSE, envir=trackingEnv.from)

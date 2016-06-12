@@ -47,7 +47,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
                     stop("weird: thought I had the options file, but it doesn't exist...; ", file, "; ", x)
                 tmpenv <- new.env(parent=emptyenv())
                 load.res <- try(load(file=file, envir=tmpenv), silent=TRUE)
-                if (is(load.res, "try-error") || length(load.res)!=1 || load.res!=".trackingOptions") {
+                if (inherits(load.res, "try-error") || length(load.res)!=1 || load.res!=".trackingOptions") {
                     warning(file, " does not contain a .trackingOptions object -- ignoring it and using system defaults")
                 } else {
                     currentOptions <- get(".trackingOptions", envir=tmpenv, inherits=FALSE)
@@ -255,7 +255,7 @@ track.options <- function(..., pos=1, envir=as.environment(pos), values=list(...
             file <- file.path(getDataDir(dir), paste(".trackingOptions", currentOptions$RDataSuffix, sep="."))
             ## if we did change any options, they will have been saved in .trackingOptions in trackingEnv
             save.res <- try(save(list=".trackingOptions", file=file, envir=trackingEnv, compress=FALSE), silent=TRUE)
-            if (is(save.res, "try-error"))
+            if (inherits(save.res, "try-error"))
                 stop("unable to save .trackingOptions in ", file)
         }
     }
