@@ -783,3 +783,18 @@ loadObjSummary <- function(trackingEnv,
 
 # used to store data around failures in an attempt to avoid infinite loops
 track.private.env <- as.environment(list(standard.Last=FALSE, last.failed.get=character(100), last.failed.time=rep(Sys.time(), 100), last.failed.i=1))
+
+# Create a closure that can be used as the active binding
+# It has to store the objName and environment where the actual
+# object data could be cached.
+createBindingClosure <- function(objName, trackingEnv) {
+    # Need to force evaluation of the args, otherwise the closure
+    # can get the wrong values :-(
+    force(objName); force(trackingEnv)
+    function(v) {
+        if (missing(v))
+            getTrackedVar(objName, trackingEnv)
+        else
+            setTrackedVar(objName, v, trackingEnv)
+    }
+}

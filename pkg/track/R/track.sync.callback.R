@@ -20,6 +20,8 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
     if (is.call(expr) && as.character(expr[[1]]) == "track.sync")
         return(TRUE)
     ## Loop through all potentially auto-tracked environments and call track.sync where needed
+    ## Avoid looking in 'package:' or 'pkgcode:' environments to speed things up.
+    ## This means that these cannot be autotracked
     envs <- search()
     callback.names <- getTaskCallbackNames()
     envs.look <- grep("^(package:|pkgcode:|Autoloads$)", envs, invert=TRUE)
@@ -41,8 +43,12 @@ track.sync.callback <- function(expr, ok, value, visible, data) {
         flush.console()
     }
     ## Remove the callback when it is no longer wanted
-    if (!isTRUE(any.auto.on))
+    ## Note that this will remove the autotracking when
+    if (!isTRUE(any.auto.on)) {
+        if (trace==1)
+            cat("track.sync.callback: returning FALSE to remove callback because no auto tracks are on\n")
         return(FALSE)
+    }
     ## Check that the monitor is alive -- this is a mutual back-scratching exercise
     ## Callbacks can be deleted unintentionally, e.g., by an unfortunately-timed CTRL-C
     if (!is.element("track.auto.monitor", callback.names))

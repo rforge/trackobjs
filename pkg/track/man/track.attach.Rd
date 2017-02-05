@@ -13,7 +13,7 @@
 track.attach(dir, pos = 2, name = NULL,
              create = FALSE, readonly = !create,
              lockEnv = FALSE, verbose = TRUE, auto = NULL,
-             dup.ok = FALSE)
+             dup.ok = FALSE, ...)
 track.detach(pos = NULL, name = NULL, detach = TRUE)
 }
 \arguments{
@@ -56,6 +56,7 @@ track.detach(pos = NULL, name = NULL, detach = TRUE)
   tracking database is already attached, the function issues a warning
   and does nothing.
 }
+\item{...}{additional arguments passed to track.start()}
 }
 \details{
   \code{track.attach} attaches a new environment to the search path at the specified

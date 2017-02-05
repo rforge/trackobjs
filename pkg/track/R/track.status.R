@@ -78,7 +78,10 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
             list <- intersect(list, fileMap.names)
         else
             list <- setdiff(list, fileMap.names)
-    status <- lapply(list, function(objName) {
+    ## Membership in list.files() is much faster than file.exists() for network drives
+    ## fileExists <- file.exists(file.path(dataDir, paste(fileMap, opt$RDataSuffix, sep=".")))
+    allFiles <- list.files(path=dataDir, pattern=paste0('.*\\.', opt$RDataSuffix), all.files=TRUE)
+    status <- lapply(list, function(objName, allFiles) {
         ## an object is already tracked if the following 2 conditions are met:
         ##   - it exists as an activing binding in envir
         ##   - there is an entry in the fileMap in the trackingEnv
@@ -93,8 +96,9 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
             else
                 status <- "tracked"
             fileBase <- fileMap[objName]
+            ## fileExists <- file.exists(file.path(dataDir, paste(fileBase, opt$RDataSuffix, sep=".")))
             if (file.status)
-                fileExists <- file.exists(file.path(dataDir, paste(fileBase, opt$RDataSuffix, sep=".")))
+                fileExists <- is.element(paste(fileBase, opt$RDataSuffix, sep="."), allFiles)
             inMem <- exists(objName, trackingEnv, inherits=FALSE)
         } else {
             if (!is.element(objName, all.objs))
@@ -106,7 +110,7 @@ track.status <- function(pos=1, envir=as.environment(pos), expr, qexpr=NULL, lis
             saved <- as.logical(NA)
         }
         return(list(status, inMem, fileBase, fileExists, saved))
-    })
+    }, allFiles=allFiles)
     if (what=="all") {
         if (length(status)) {
             status <- as.data.frame(lapply(1:5, function(i) sapply(status, "[[", i)))

@@ -1,3 +1,9 @@
+                CHANGES in track version 1.1.10 (2017-02-04)
+CHANGES
+    o Use is.element() on result of list.files() instead of file.exists()
+      for much better performance on network drives. (E.g., 3 seconds instead
+      of 3 minutes to attach a tracking db with 1000's of objects.)
+
                 CHANGES in track version 1.1.9 (2016-07-20)
 CHANGES
     o Fix problems identified in latest R CMD check

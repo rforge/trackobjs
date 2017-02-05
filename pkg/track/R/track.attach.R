@@ -1,14 +1,16 @@
-track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, lockEnv=FALSE, verbose=TRUE, auto=NULL, dup.ok=FALSE) {
+track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, lockEnv=FALSE, verbose=TRUE, auto=NULL, dup.ok=FALSE, ...) {
     ## if (missing(dir) && missing(pos) && is.null(name) && !readonly && !lockEnv)
     ##    return(track.start())
     if (pos < 2)
         stop("pos must be >= 2")
-    if (file.exists(file.path(dir, "filemap.txt"))) {
+    if (file.exists(file.path(dir, "rdatadir", "filemap.txt"))) {
+        trackingDir <- file.path(dir, "rdatadir")
+    } else if (file.exists(file.path(dir, "filemap.txt"))) {
         trackingDir <- dir
         if (basename(dir)=="rdatadir")
             dir <- dirname(dir)
-    } else if (file.exists(file.path(dir, "rdatadir", "filemap.txt"))) {
-        trackingDir <- file.path(dir, "rdatadir")
+        else if (verbose)
+            cat("Using what looks like tracking db in '", dir, "'; usually expecting it in 'rdatadir' folder\n")
     } else {
         if (!create)
             stop("tracking db does not exist in '", dir, "' or '", file.path(dir, "rdatadir"),
@@ -57,5 +59,5 @@ track.attach <- function(dir, pos=2, name=NULL, create=FALSE, readonly=!create, 
             if (readonly) " (readonly)" else " (writable)", "\n", sep="")
     return(track.start(trackingDir, pos=pos, readonly=readonly,
                        create=create, lockEnv=lockEnv, check.Last=FALSE,
-                       verbose=FALSE, auto=auto))
+                       verbose=FALSE, auto=auto, ...))
 }

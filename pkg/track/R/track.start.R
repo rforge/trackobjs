@@ -1,4 +1,4 @@
-track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
+track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos), forceDirName=FALSE,
                         create=TRUE, clobber=c("no", "files", "variables", "vars", "var"),
                         discardMissing=FALSE,
                         cache=NULL, cachePolicy=NULL,
@@ -14,6 +14,12 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
              get(".trackingDir", envir=getTrackingEnv(envir), inherits=FALSE), "'")
     dir.orig <- dir
     dir <- getAbsolutePath(dir)
+    if (basename(dir) != 'rdatadir' && !forceDirName) {
+        dir.orig <- file.path(dir, 'rdatadir')
+        dir <- getAbsolutePath(dir.orig)
+    }
+    if (regexpr("^(package:|pkgcode:|Autoloads$)", environmentName(envir))>0)
+        warning("autotracking will not work correctly with environment names beginning with 'package:', 'pkgcode:' or 'Autoloads'")
     ## Working out the options values to use is a little tricky.
     ## This is the priority:
     ## (1) values in the 'options' argument ('cache' override options$cache)
@@ -54,7 +60,6 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         }
         ## cat("Valid call to track.stop reg.finalizer for", envname(trackingEnv),
         ##         "on", envname(envir), "\n")
-        ## if (interactive()) browser()
         ## Seems to sometimes be called when not appropriate, so don't
         ## do anything drastic -- just flush.
         ## Example is the track.load() commands in the examples in track.status.Rd
@@ -224,7 +229,10 @@ track.start <- function(dir="rdatadir", pos=1, envir=as.environment(pos),
         if (file.exists(fileMapPath)) {
             fileMap <- readFileMapFile(trackingEnv, dataDir, TRUE)
             if (length(fileMap)) {
-                fileExists <- file.exists(file.path(dataDir, paste(fileMap, sep=".", opt$RDataSuffix)))
+                ## Membership in list.files() is much faster than file.exists() for network drives
+                ## fileExists <- file.exists(file.path(dataDir, paste(fileMap, opt$RDataSuffix, sep=".")))
+                allFiles <- list.files(path=dataDir, pattern=paste0('.*\\.', opt$RDataSuffix), all.files=TRUE)
+                fileExists <- is.element(paste(fileMap, opt$RDataSuffix, sep="."), allFiles)
                 if (any(!fileExists)) {
                     if (discardMissing) {
                         if (verbose)
@@ -454,17 +462,3 @@ track.package.desc <- function(pkg)
       "Title: Tracked R Objects", "Author: track package", "Maintainer: track package",
       "Description: package of saved objects created by track package", "License: None specified")
 
-# Create a closure that can be used as the active binding
-# It has to store the objName and environment where the actual
-# object data could be cached.
-createBindingClosure <- function(objName, trackingEnv) {
-    # Need to force evaluation of the args, otherwise the closure
-    # can get the wrong values :-(
-    force(objName); force(trackingEnv)
-    function(v) {
-        if (missing(v))
-            getTrackedVar(objName, trackingEnv)
-        else
-            setTrackedVar(objName, v, trackingEnv)
-    }
-}

@@ -1,6 +1,6 @@
 Package: track
-Version: 1.1.9
-Date: 2016-07-20
+Version: 1.1.10
+Date: 2017-02-04
 Title: Store Objects on Disk Automatically
 Author: Tony Plate <tplate@acm.org>
 Maintainer: Tony Plate <tplate@acm.org>

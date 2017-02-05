@@ -21,7 +21,7 @@ track.rescan(pos = 2)
 }
 \usage{
 track.start(dir="rdatadir", pos = 1, envir = as.environment(pos),
-        create = TRUE,
+        forceDirName = FALSE, create = TRUE,
         clobber = c("no", "files", "variables", "vars", "var"),
         discardMissing = FALSE,
         cache = NULL, cachePolicy = NULL, options = NULL,
@@ -43,7 +43,11 @@ track.Last()
     (default is 1 for the global environment)}
   \item{envir}{ The environment being tracked.  This is an alternate way
     (to the use of \code{pos=})
-    of specifying the environment being tracked, but should be rarely needed.}
+    of specifying the environment being tracked, but should be rarely
+    needed.}
+  \item{forceDirName}{If \code{FALSE}, add a \code{rdatadir} component
+  to the end of the directory path if one is not already there.  If
+  \code{TRUE}, use the supplied dir without modification.}
   \item{create}{ If \code{TRUE}, create the tracking directory if it
     doesn't exist }
   \item{clobber}{ Controls action taken when there are objects of the
