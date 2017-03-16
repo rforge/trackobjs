@@ -1,3 +1,7 @@
+                CHANGES in track version 1.1.11 (2017-02-12)
+CHANGES
+    o Cope with NA values returned by file.info() for size or mtime
+
                 CHANGES in track version 1.1.10 (2017-02-04)
 CHANGES
     o Use is.element() on result of list.files() instead of file.exists()

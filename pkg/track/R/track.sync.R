@@ -46,7 +46,13 @@ track.sync <- function(pos=1, master=c("auto", "envir", "files"), envir=as.envir
         ## See if the tracking db has changed
         modTime <- file.info(file.path(getTrackingDir(trackingEnv), paste('.trackingSummary', opt$RDataSuffix, sep='.')))
         oldModTime <- mget(envir=trackingEnv, '.trackingModTime', ifnotfound=list(NULL))[[1]]
-        if (!is.null(oldModTime) && (modTime$mtime > oldModTime$mtime || modTime$size != oldModTime$size)) {
+        ## TODO: the following test in the if() can return NA
+        if (!is.null(oldModTime) && (is.na(oldModTime$mtime) || is.na(oldModTime$size)
+                                     || isTRUE(modTime$mtime > oldModTime$mtime)
+                                     || isTRUE(modTime$size != oldModTime$size))) {
+            ## Saw NA values here once on a networked file system
+            if (is.na(modTime$mtime) || is.na(modTime$size))
+                cat('track.sync: got mtime=', modTime$mtime, ' size=', modTime$size, ' from DB ', envname(envir), '\n', sep='')
             cat('track.sync: DB backing ', envname(envir), '[pos=', pos, '] has been modified; rescanning... ', sep='')
             res <- track.rescan(envir=envir, forgetModified=TRUE, level='low', verbose=TRUE)
         }
